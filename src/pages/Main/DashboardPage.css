@@ -1,0 +1,201 @@
+/* src/pages/Main/DashboardPage.css */
+
+/* Main layout container using CSS Grid for a sidebar and main content */
+.layout-container {
+    display: grid;
+    grid-template-columns: 240px 1fr; /* Fixed sidebar, flexible main content */
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+  
+  /* Sidebar Styling */
+  .sidebar {
+    background-color: #1c1e21;
+    color: #ffffff;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sidebar-logo {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 2rem 0;
+    text-align: center;
+  }
+  
+  .workspace-nav .nav-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #aab8c5;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+  }
+  
+  .workspace-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .workspace-item {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .workspace-item:hover {
+    background-color: #3a3b3c;
+  }
+  
+  .workspace-item.active {
+    background-color: #1877f2;
+    color: #ffffff;
+  }
+  
+  /* Main Content Area */
+  .main-content {
+    background-color: #f0f2f5;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #ffffff;
+    border-bottom: 1px solid #dddfe2;
+  }
+  
+  .main-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .user-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .user-menu span {
+    font-weight: 500;
+    color: #4b4f56;
+  }
+  
+  .logout-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1877f2;
+    background-color: transparent;
+    border: 1px solid #1877f2;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  
+  .logout-button:hover {
+    background-color: #1877f2;
+    color: #ffffff;
+  }
+  
+  /* Dashboard Grid for Stats */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
+  }
+  
+  .summary-card {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .summary-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #606770;
+  }
+  
+  .stat-number {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1c1e21;
+  }
+  
+  .summary-card.overdue-card .stat-number {
+    color: #e74c3c;
+  }
+  
+  .quick-links {
+    padding: 0 2rem 2rem;
+  }
+  
+  .quick-link-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #42b72a;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+  
+  .quick-link-button:hover {
+    background-color: #36a420;
+  }
+  
+  /* Loading and Error States */
+  .loading-container, .error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 1.5rem;
+    color: #606770;
+  }
+  
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    .layout-container {
+      grid-template-columns: 1fr; /* Stack sidebar and main content */
+    }
+  
+    .sidebar {
+      /* In a real app, the sidebar would become a slide-out menu. */
+      /* For this version, we'll just stack it. */
+      height: auto;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  
+    .sidebar-logo {
+      margin: 0;
+    }
+  
+    .workspace-nav {
+      display: none; /* Hide nav on mobile for this simple version */
+    }
+  
+    .main-header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+  }
+  

@@ -1,0 +1,118 @@
+/* src/components/specific/ConfirmDeleteModal.css */
+
+/* Using a different class for the confirm modal to allow unique styling */
+.modal-content-confirm {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 450px; /* Sightly smaller for confirmation dialogs */
+    animation: slideIn 0.3s ease-out;
+    text-align: center;
+  }
+  
+  .modal-body-confirm {
+    padding: 1.5rem 2rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #1c1e21;
+  }
+  
+  .modal-body-confirm strong {
+    font-weight: 600;
+  }
+  
+  .confirm-warning {
+    font-size: 0.9rem;
+    color: #606770;
+    margin-top: 0.5rem;
+  }
+  
+  /* Danger button for destructive actions */
+  .button-danger {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+    background-color: #e74c3c;
+    color: #ffffff;
+  }
+  
+  .button-danger:hover {
+    background-color: #c0392b;
+  }
+  
+  .button-danger:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  /* Reusing some base modal styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .modal-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e0e0e0;
+    background-color: #f5f6f7;
+  }
+  
+  .button-secondary {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: #e4e6eb;
+    color: #4b4f56;
+  }
+  
+  .button-secondary:hover {
+    background-color: #d8dade;
+  }
+  
+  .error-message {
+    color: #fa383e;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideIn {
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
