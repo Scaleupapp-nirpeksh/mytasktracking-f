@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { AuthProvider } from './state/contexts/AuthContext';
-import AppRoutes from './routes/AppRoutes';
+import AppRoutes from './routes/AppRoutes.jsx';
 import './App.css';
 
 /**
