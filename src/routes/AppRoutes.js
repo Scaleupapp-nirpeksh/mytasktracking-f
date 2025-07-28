@@ -9,6 +9,8 @@ import LoginPage from '../pages/Auth/LoginPage';
 import SignupPage from '../pages/Auth/SignupPage';
 import DashboardPage from '../pages/Main/DashboardPage';
 import TasksPage from '../pages/Main/TasksPage';
+import SettingsPage from '../pages/Main/SettingsPage';
+import MeetingPage from '../pages/Main/MeetingPage'; // <-- IMPORT MEETING PAGE
 
 /**
  * A protected route component.
@@ -49,6 +51,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        {/* Route for all tasks */}
         <Route
           path="/tasks"
           element={
@@ -57,9 +60,34 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        {/* Route for tasks within a specific workspace */}
+        <Route
+          path="/workspaces/:workspaceId/tasks"
+          element={
+            <ProtectedRoute>
+              <TasksPage />
+            </ProtectedRoute>
+          }
+        />
+        {/* Route for settings */}
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <SettingsPage />
+            </ProtectedRoute>
+          }
+        />
+        {/* Route for meetings */}
+        <Route
+          path="/meetings"
+          element={
+            <ProtectedRoute>
+              <MeetingPage />
+            </ProtectedRoute>
+          }
+        />
         
-        {/* Add other protected routes here */}
-
         {/* Fallback route for unknown paths */}
         <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} />} />
       </Routes>

@@ -1,0 +1,70 @@
+/* src/components/specific/MagicInput.css */
+
+.magic-input-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+    position: relative;
+  }
+  
+  .magic-input {
+    flex-grow: 1;
+    border: none;
+    font-size: 1.1rem;
+    padding: 0.75rem;
+    background-color: transparent;
+  }
+  
+  .magic-input:focus {
+    outline: none;
+  }
+  
+  .magic-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #6a0dad; /* A "magic" purple color */
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+  }
+  
+  .magic-button:hover:not(:disabled) {
+    background-color: #5a0bad;
+  }
+  
+  .magic-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  .magic-error {
+    position: absolute;
+    bottom: -1.5rem;
+    left: 1rem;
+    font-size: 0.875rem;
+    color: #e74c3c;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    .magic-input-container {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+    }
+  
+    .magic-error {
+      position: static;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+  }
+  

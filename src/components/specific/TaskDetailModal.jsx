@@ -12,14 +12,17 @@ const formatDate = (dateString) => {
   });
 };
 
-const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => { // <-- Added onDelete prop
+const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => {
   if (!task) return null;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content-detail" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2 className="detail-title">{task.title}</h2>
+          <div className="detail-title-container">
+            {task.isKeyTask && <span className="key-task-indicator">★</span>}
+            <h2 className="detail-title">{task.title}</h2>
+          </div>
           <button onClick={onClose} className="close-button">&times;</button>
         </div>
         <div className="modal-body">
@@ -55,12 +58,20 @@ const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => 
           )}
 
           <div className="detail-section">
-            <h3 className="detail-section-title">Sub-tasks</h3>
-            <p className="placeholder-text">Sub-task functionality coming soon.</p>
-          </div>
-          <div className="detail-section">
             <h3 className="detail-section-title">Attachments</h3>
-            <p className="placeholder-text">Attachment viewing coming soon.</p>
+            <div className="attachments-list-detail">
+              {task.attachments && task.attachments.length > 0 ? (
+                task.attachments.map((att, index) => (
+                  <div key={index} className="attachment-item">
+                    <a href={att.fileUrl} target="_blank" rel="noopener noreferrer">
+                      {att.fileName}
+                    </a>
+                  </div>
+                ))
+              ) : (
+                <p className="placeholder-text">No files attached to this task.</p>
+              )}
+            </div>
           </div>
 
         </div>

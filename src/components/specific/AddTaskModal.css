@@ -1,6 +1,6 @@
 /* src/components/specific/AddTaskModal.css */
 
-/* The semi-transparent background that covers the entire screen */
+/* --- Base Modal Styles (from previous steps) --- */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -20,7 +20,6 @@
     to { opacity: 1; }
   }
   
-  /* The main modal content box */
   .modal-content {
     background-color: #ffffff;
     border-radius: 8px;
@@ -37,7 +36,6 @@
     to { transform: translateY(0); opacity: 1; }
   }
   
-  /* Modal Header */
   .modal-header {
     display: flex;
     justify-content: space-between;
@@ -62,7 +60,6 @@
     line-height: 1;
   }
   
-  /* Form Styling */
   .modal-content form {
     padding: 1.5rem;
   }
@@ -81,6 +78,7 @@
   
   .form-group input[type="text"],
   .form-group input[type="date"],
+  .form-group input[type="number"],
   .form-group textarea,
   .form-group select {
     width: 100%;
@@ -111,7 +109,6 @@
     flex: 1;
   }
   
-  /* Modal Footer */
   .modal-footer {
     display: flex;
     justify-content: flex-end;
@@ -119,6 +116,48 @@
     padding: 1rem 1.5rem;
     border-top: 1px solid #e0e0e0;
     background-color: #f5f6f7;
+  }
+  
+  /* --- New Styles for Recurring Section --- */
+  
+  .recurring-section {
+    border-top: 1px solid #f0f2f5;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+  }
+  
+  .recurring-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .recurring-toggle label {
+    margin-bottom: 0; /* Override default margin */
+    cursor: pointer;
+  }
+  
+  .recurring-toggle input[type="checkbox"] {
+    width: auto;
+    height: auto;
+    cursor: pointer;
+  }
+  
+  .recurring-options {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #f7f8fa;
+    border-radius: 6px;
+    animation: fadeIn 0.5s;
+  }
+  
+  /* --- Utility Styles --- */
+  
+  .error-message {
+    color: #fa383e;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    text-align: center;
   }
   
   .button-primary,
@@ -153,24 +192,5 @@
   
   .button-secondary:hover {
     background-color: #d8dade;
-  }
-  
-  .error-message {
-    color: #fa383e;
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-  
-  /* Mobile Responsiveness */
-  @media (max-width: 600px) {
-    .modal-content {
-      width: 95%;
-      max-height: 95vh;
-    }
-    .form-row {
-      flex-direction: column;
-      gap: 0;
-    }
   }
   

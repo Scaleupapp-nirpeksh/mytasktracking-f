@@ -1,22 +1,43 @@
 // src/components/specific/AddTaskModal.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createTask } from '../../services/apiService';
 import './AddTaskModal.css';
 
-const AddTaskModal = ({ workspaces, onClose, onTaskAdded }) => {
+const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [workspace, setWorkspace] = useState(workspaces[0]?._id || '');
   const [priority, setPriority] = useState('Medium');
   const [dueDate, setDueDate] = useState('');
+  
+  // --- State for Recurring Tasks ---
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [frequency, setFrequency] = useState('weekly');
+  const [interval, setInterval] = useState(1);
+  const [endDate, setEndDate] = useState('');
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title || '');
+      setDescription(initialData.description || '');
+      if (initialData.dueDate) {
+        setDueDate(new Date(initialData.dueDate).toISOString().split('T')[0]);
+      }
+    }
+  }, [initialData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title || !workspace) {
       setError('Title and workspace are required.');
+      return;
+    }
+    if (isRecurring && !dueDate) {
+      setError('A start date (Due Date) is required for recurring tasks.');
       return;
     }
     setError('');
@@ -30,9 +51,20 @@ const AddTaskModal = ({ workspaces, onClose, onTaskAdded }) => {
         priority,
         dueDate: dueDate || null,
       };
+
+      // If recurring is enabled, add the recurring object to the payload
+      if (isRecurring) {
+        taskData.recurring = {
+          frequency,
+          interval: parseInt(interval, 10),
+          nextDueDate: dueDate, // The first due date is the start date
+          endDate: endDate || null,
+        };
+      }
+
       const response = await createTask(taskData);
-      onTaskAdded(response.data.data.task); // Pass the new task back to the parent
-      onClose(); // Close the modal on success
+      onTaskAdded(response.data.data.task);
+      onClose();
     } catch (err) {
       setError('Failed to create task. Please try again.');
       console.error(err);
@@ -49,6 +81,7 @@ const AddTaskModal = ({ workspaces, onClose, onTaskAdded }) => {
           <button onClick={onClose} className="close-button">&times;</button>
         </div>
         <form onSubmit={handleSubmit}>
+          {/* ... other form groups ... */}
           <div className="form-group">
             <label htmlFor="title">Task Title</label>
             <input
@@ -99,7 +132,9 @@ const AddTaskModal = ({ workspaces, onClose, onTaskAdded }) => {
             </div>
           </div>
           <div className="form-group">
-            <label htmlFor="dueDate">Due Date (Optional)</label>
+            <label htmlFor="dueDate">
+              {isRecurring ? 'Start Date' : 'Due Date'} (Optional)
+            </label>
             <input
               type="date"
               id="dueDate"
@@ -107,6 +142,55 @@ const AddTaskModal = ({ workspaces, onClose, onTaskAdded }) => {
               onChange={(e) => setDueDate(e.target.value)}
             />
           </div>
+
+          {/* --- Recurring Task Section --- */}
+          <div className="form-group recurring-section">
+            <div className="recurring-toggle">
+              <input 
+                type="checkbox"
+                id="isRecurring"
+                checked={isRecurring}
+                onChange={(e) => setIsRecurring(e.target.checked)}
+              />
+              <label htmlFor="isRecurring">Make this a recurring task</label>
+            </div>
+
+            {isRecurring && (
+              <div className="recurring-options">
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="frequency">Frequency</label>
+                    <select id="frequency" value={frequency} onChange={e => setFrequency(e.target.value)}>
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="interval">Repeat Every</label>
+                    <input 
+                      type="number"
+                      id="interval"
+                      value={interval}
+                      onChange={e => setInterval(e.target.value)}
+                      min="1"
+                    />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="endDate">End Date (Optional)</label>
+                  <input 
+                    type="date"
+                    id="endDate"
+                    value={endDate}
+                    onChange={e => setEndDate(e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+
           {error && <p className="error-message">{error}</p>}
           <div className="modal-footer">
             <button type="button" className="button-secondary" onClick={onClose}>Cancel</button>

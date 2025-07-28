@@ -1,0 +1,80 @@
+/* src/pages/Main/SettingsPage.css */
+
+.settings-page-main {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .settings-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+  }
+  
+  .settings-card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1c1e21;
+    margin: 0 0 1.5rem 0;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 1rem;
+  }
+  
+  .integration-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+  }
+  
+  .integration-info h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #1c1e21;
+  }
+  
+  .integration-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #606770;
+  }
+  
+  .connect-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #1877f2;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+  }
+  
+  .connect-button:hover:not(:disabled) {
+    background-color: #166fe5;
+  }
+  
+  .connect-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  .error-message {
+    color: #fa383e;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+  }
+  
+  /* Mobile Responsiveness */
+  @media (max-width: 600px) {
+    .integration-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+  }
+  
