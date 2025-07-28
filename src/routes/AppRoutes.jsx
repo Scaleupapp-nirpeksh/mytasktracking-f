@@ -9,8 +9,9 @@ import LoginPage from '../pages/Auth/LoginPage';
 import SignupPage from '../pages/Auth/SignupPage';
 import DashboardPage from '../pages/Main/DashboardPage';
 import TasksPage from '../pages/Main/TasksPage';
+import KanbanPage from '../pages/Main/KanbanPage'; // <-- ADD THIS IMPORT
 import SettingsPage from '../pages/Main/SettingsPage';
-import MeetingPage from '../pages/Main/MeetingPage'; // <-- IMPORT MEETING PAGE
+import MeetingPage from '../pages/Main/MeetingPage';
 
 /**
  * A protected route component.
@@ -51,6 +52,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        
         {/* Route for all tasks */}
         <Route
           path="/tasks"
@@ -60,6 +62,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        
         {/* Route for tasks within a specific workspace */}
         <Route
           path="/workspaces/:workspaceId/tasks"
@@ -69,6 +72,28 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        
+        {/* ADD THESE KANBAN ROUTES */}
+        {/* Route for kanban board (all workspaces) */}
+        <Route
+          path="/kanban"
+          element={
+            <ProtectedRoute>
+              <KanbanPage />
+            </ProtectedRoute>
+          }
+        />
+        
+        {/* Route for kanban board within a specific workspace */}
+        <Route
+          path="/workspaces/:workspaceId/kanban"
+          element={
+            <ProtectedRoute>
+              <KanbanPage />
+            </ProtectedRoute>
+          }
+        />
+        
         {/* Route for settings */}
         <Route
           path="/settings"
@@ -78,6 +103,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        
         {/* Route for meetings */}
         <Route
           path="/meetings"

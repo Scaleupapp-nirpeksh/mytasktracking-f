@@ -7,6 +7,7 @@ import TaskDetailModal from '../../components/specific/TaskDetailModal';
 import EditTaskModal from '../../components/specific/EditTaskModal';
 import ConfirmDeleteModal from '../../components/specific/ConfirmDeleteModal';
 import MagicInput from '../../components/specific/MagicInput';
+import KanbanBoard from '../../components/specific/KanbanBoard'; // Add this import
 
 const TasksPage = () => {
   const { workspaceId } = useParams();
@@ -23,7 +24,7 @@ const TasksPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  const [viewMode, setViewMode] = useState('grid'); // 'grid', 'list', or 'kanban'
   const { user, logout } = useAuth();
 
   useEffect(() => {
@@ -112,6 +113,11 @@ const TasksPage = () => {
     setPrefilledData(null);
   };
 
+  // Handler for Kanban task clicks
+  const handleKanbanTaskClick = (task) => {
+    setSelectedTask(task);
+  };
+
   const getWorkspaceName = (wsId) => {
     const workspace = workspaces.find(ws => ws._id === wsId);
     return workspace ? workspace.name : 'Unknown';
@@ -160,7 +166,9 @@ const TasksPage = () => {
     document.head.appendChild(styleSheet);
     
     return () => {
-      document.head.removeChild(styleSheet);
+      if (document.head.contains(styleSheet)) {
+        document.head.removeChild(styleSheet);
+      }
     };
   }, []);
 
@@ -340,7 +348,7 @@ const TasksPage = () => {
     
     tasksPageMain: {
       flex: 1,
-      padding: '32px',
+      padding: viewMode === 'kanban' ? '0' : '32px', // Remove padding for kanban view
       overflow: 'auto',
     },
     
@@ -349,6 +357,7 @@ const TasksPage = () => {
       gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
       gap: '16px',
       marginBottom: '32px',
+      padding: viewMode === 'kanban' ? '32px 32px 0 32px' : '0', // Add padding back for kanban
     },
     
     statCard: {
@@ -399,6 +408,7 @@ const TasksPage = () => {
       marginBottom: '24px',
       boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
       border: '1px solid #e2e8f0',
+      margin: viewMode === 'kanban' ? '0 32px 24px 32px' : '0 0 24px 0', // Adjust margin for kanban
     },
     
     magicInputWrapper: {
@@ -472,6 +482,7 @@ const TasksPage = () => {
       justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: '24px',
+      padding: viewMode === 'kanban' ? '0 32px' : '0', // Add padding for kanban
     },
     
     tasksHeaderTitle: {
@@ -503,6 +514,7 @@ const TasksPage = () => {
       display: 'grid',
       gap: '16px',
       gridTemplateColumns: viewMode === 'grid' ? 'repeat(auto-fill, minmax(350px, 1fr))' : '1fr',
+      padding: viewMode === 'kanban' ? '0 32px' : '0', // Add padding for kanban
     },
     
     taskItem: {
@@ -652,6 +664,12 @@ const TasksPage = () => {
       maxWidth: '400px',
       margin: '0 auto',
     },
+
+    // Kanban specific styles
+    kanbanContainer: {
+      backgroundColor: '#f8fafc',
+      minHeight: 'calc(100vh - 200px)', // Adjust based on your header height
+    },
   };
 
   const getPriorityStyles = (priority) => {
@@ -679,6 +697,83 @@ const TasksPage = () => {
     { key: 'completed', label: 'Completed', icon: '✅', color: '#059669' },
     { key: 'keyTasks', label: 'Key Tasks', icon: '⭐', color: '#f59e0b' },
   ];
+
+  // Render content based on view mode
+  const renderTasksContent = () => {
+    if (viewMode === 'kanban') {
+      return (
+        <div style={styles.kanbanContainer}>
+          <KanbanBoard
+            tasks={filteredTasks}
+            onTaskUpdated={handleTaskUpdated}
+            onTaskClick={handleKanbanTaskClick}
+          />
+        </div>
+      );
+    }
+
+    // Grid and List views
+    return (
+      <div style={styles.tasksList}>
+        {filteredTasks.length > 0 ? (
+          filteredTasks.map((task, index) => (
+            <div
+              key={task.id}
+              style={{
+                ...styles.taskItem,
+                animationDelay: `${index * 0.05}s`,
+              }}
+              onClick={() => setSelectedTask(task)}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.12)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 24px rgba(0, 0, 0, 0.06)';
+              }}
+            >
+              <div style={styles.taskItemHeader}>
+                {task.isKeyTask && (
+                  <span style={styles.keyTaskIndicator}>⭐</span>
+                )}
+                <div style={{ flex: 1 }}>
+                  <h4 style={styles.taskTitle}>{task.title}</h4>
+                  {task.description && (
+                    <p style={styles.taskDescription}>{task.description}</p>
+                  )}
+                </div>
+              </div>
+              
+              <div style={styles.taskItemDetails}>
+                {!workspaceId && (
+                  <span style={styles.taskWorkspaceBadge}>
+                    {getWorkspaceName(task.workspace)}
+                  </span>
+                )}
+                <span style={getPriorityStyles(task.priority)}>
+                  {task.priority}
+                </span>
+                <span style={getStatusStyles(task.status)}>
+                  {task.status}
+                </span>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div style={styles.emptyState}>
+            <div style={styles.emptyIcon}>📝</div>
+            <h3 style={styles.emptyTitle}>No Tasks Found</h3>
+            <p style={styles.emptyText}>
+              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
+                ? 'No tasks match your current filters. Try adjusting your search criteria.'
+                : 'No tasks found in this workspace. Create your first task to get started!'}
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div style={styles.layoutContainer}>
@@ -850,145 +945,6 @@ const TasksPage = () => {
         </header>
 
         <main style={styles.tasksPageMain}>
-          {/* Stats Row */}
-          <div style={styles.statsRow}>
-            {statConfigs.map((config, index) => (
-              <div
-                key={config.key}
-                style={{
-                  ...styles.statCard,
-                  animationDelay: `${index * 0.1}s`,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.12)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 24px rgba(0, 0, 0, 0.06)';
-                }}
-              >
-                <div
-                  style={{
-                    ...styles.statIcon,
-                    backgroundColor: config.color,
-                  }}
-                >
-                  {config.icon}
-                </div>
-                <div style={styles.statContent}>
-                  <div style={styles.statNumber}>{taskStats[config.key]}</div>
-                  <div style={styles.statLabel}>{config.label}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Controls Section */}
-          <div style={styles.controlsSection}>
-            <div style={styles.magicInputWrapper}>
-              <MagicInput onParse={handleParse} />
-            </div>
-            
-            <div style={styles.filtersRow}>
-              <input
-                type="text"
-                placeholder="Search tasks..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{
-                  ...styles.searchInput,
-                  borderColor: searchTerm ? '#10b981' : '#e2e8f0',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#10b981';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = searchTerm ? '#10b981' : '#e2e8f0';
-                  e.target.style.boxShadow = 'none';
-                }}
-              />
-              
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                style={styles.filterSelect}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#10b981';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#e2e8f0';
-                }}
-              >
-                <option value="all">All Status</option>
-                <option value="To Do">To Do</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Done">Done</option>
-              </select>
-              
-              <select
-                value={priorityFilter}
-                onChange={(e) => setPriorityFilter(e.target.value)}
-                style={styles.filterSelect}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#10b981';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#e2e8f0';
-                }}
-              >
-                <option value="all">All Priority</option>
-                <option value="High">High</option>
-                <option value="Medium">Medium</option>
-                <option value="Low">Low</option>
-              </select>
-              
-              <div style={styles.viewToggle}>
-                <button
-                  onClick={() => setViewMode('grid')}
-                  style={{
-                    ...styles.viewButton,
-                    ...(viewMode === 'grid' ? styles.viewButtonActive : styles.viewButtonInactive),
-                  }}
-                >
-                  <span>⊞</span> Grid
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  style={{
-                    ...styles.viewButton,
-                    ...(viewMode === 'list' ? styles.viewButtonActive : styles.viewButtonInactive),
-                  }}
-                >
-                  <span>☰</span> List
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Tasks Header */}
-          <div style={styles.tasksHeader}>
-            <h3 style={styles.tasksHeaderTitle}>
-              {filteredTasks.length} {currentWorkspace?.name || 'All'} Tasks
-            </h3>
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              style={styles.addTaskButton}
-              onMouseEnter={(e) => {
-                e.target.style.transform = 'translateY(-2px) scale(1.02)';
-                e.target.style.boxShadow = '0 12px 35px rgba(16, 185, 129, 0.4)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = 'translateY(0) scale(1)';
-                e.target.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.3)';
-              }}
-            >
-              <span style={{ fontSize: '18px' }}>✨</span>
-              New Task
-            </button>
-          </div>
-          
           {loading ? (
             <div style={styles.loadingContainer}>
               <div style={styles.loadingSpinner}></div>
@@ -1000,18 +956,18 @@ const TasksPage = () => {
               {error}
             </div>
           ) : (
-            <div style={styles.tasksList}>
-              {filteredTasks.length > 0 ? (
-                filteredTasks.map((task, index) => (
+            <>
+              {/* Stats Row */}
+              <div style={styles.statsRow}>
+                {statConfigs.map((config, index) => (
                   <div
-                    key={task.id}
+                    key={config.key}
                     style={{
-                      ...styles.taskItem,
-                      animationDelay: `${index * 0.05}s`,
+                      ...styles.statCard,
+                      animationDelay: `${index * 0.1}s`,
                     }}
-                    onClick={() => setSelectedTask(task)}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-4px)';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
                       e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.12)';
                     }}
                     onMouseLeave={(e) => {
@@ -1019,45 +975,141 @@ const TasksPage = () => {
                       e.currentTarget.style.boxShadow = '0 4px 24px rgba(0, 0, 0, 0.06)';
                     }}
                   >
-                    <div style={styles.taskItemHeader}>
-                      {task.isKeyTask && (
-                        <span style={styles.keyTaskIndicator}>⭐</span>
-                      )}
-                      <div style={{ flex: 1 }}>
-                        <h4 style={styles.taskTitle}>{task.title}</h4>
-                        {task.description && (
-                          <p style={styles.taskDescription}>{task.description}</p>
-                        )}
-                      </div>
+                    <div
+                      style={{
+                        ...styles.statIcon,
+                        backgroundColor: config.color,
+                      }}
+                    >
+                      {config.icon}
                     </div>
-                    
-                    <div style={styles.taskItemDetails}>
-                      {!workspaceId && (
-                        <span style={styles.taskWorkspaceBadge}>
-                          {getWorkspaceName(task.workspace)}
-                        </span>
-                      )}
-                      <span style={getPriorityStyles(task.priority)}>
-                        {task.priority}
-                      </span>
-                      <span style={getStatusStyles(task.status)}>
-                        {task.status}
-                      </span>
+                    <div style={styles.statContent}>
+                      <div style={styles.statNumber}>{taskStats[config.key]}</div>
+                      <div style={styles.statLabel}>{config.label}</div>
                     </div>
                   </div>
-                ))
-              ) : (
-                <div style={styles.emptyState}>
-                  <div style={styles.emptyIcon}>📝</div>
-                  <h3 style={styles.emptyTitle}>No Tasks Found</h3>
-                  <p style={styles.emptyText}>
-                    {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
-                      ? 'No tasks match your current filters. Try adjusting your search criteria.'
-                      : 'No tasks found in this workspace. Create your first task to get started!'}
-                  </p>
+                ))}
+              </div>
+
+              {/* Controls Section */}
+              <div style={styles.controlsSection}>
+                <div style={styles.magicInputWrapper}>
+                  <MagicInput onParse={handleParse} />
+                </div>
+                
+                <div style={styles.filtersRow}>
+                  <input
+                    type="text"
+                    placeholder="Search tasks..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{
+                      ...styles.searchInput,
+                      borderColor: searchTerm ? '#10b981' : '#e2e8f0',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#10b981';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = searchTerm ? '#10b981' : '#e2e8f0';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  />
+                  
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    style={styles.filterSelect}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#10b981';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e2e8f0';
+                    }}
+                  >
+                    <option value="all">All Status</option>
+                    <option value="To Do">To Do</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Done">Done</option>
+                  </select>
+                  
+                  <select
+                    value={priorityFilter}
+                    onChange={(e) => setPriorityFilter(e.target.value)}
+                    style={styles.filterSelect}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#10b981';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e2e8f0';
+                    }}
+                  >
+                    <option value="all">All Priority</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                  </select>
+                  
+                  <div style={styles.viewToggle}>
+                    <button
+                      onClick={() => setViewMode('grid')}
+                      style={{
+                        ...styles.viewButton,
+                        ...(viewMode === 'grid' ? styles.viewButtonActive : styles.viewButtonInactive),
+                      }}
+                    >
+                      <span>⊞</span> Grid
+                    </button>
+                    <button
+                      onClick={() => setViewMode('list')}
+                      style={{
+                        ...styles.viewButton,
+                        ...(viewMode === 'list' ? styles.viewButtonActive : styles.viewButtonInactive),
+                      }}
+                    >
+                      <span>☰</span> List
+                    </button>
+                    <button
+                      onClick={() => setViewMode('kanban')}
+                      style={{
+                        ...styles.viewButton,
+                        ...(viewMode === 'kanban' ? styles.viewButtonActive : styles.viewButtonInactive),
+                      }}
+                    >
+                      <span>📋</span> Kanban
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tasks Header */}
+              {viewMode !== 'kanban' && (
+                <div style={styles.tasksHeader}>
+                  <h3 style={styles.tasksHeaderTitle}>
+                    {filteredTasks.length} {currentWorkspace?.name || 'All'} Tasks
+                  </h3>
+                  <button
+                    onClick={() => setIsAddModalOpen(true)}
+                    style={styles.addTaskButton}
+                    onMouseEnter={(e) => {
+                      e.target.style.transform = 'translateY(-2px) scale(1.02)';
+                      e.target.style.boxShadow = '0 12px 35px rgba(16, 185, 129, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.transform = 'translateY(0) scale(1)';
+                      e.target.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.3)';
+                    }}
+                  >
+                    <span style={{ fontSize: '18px' }}>✨</span>
+                    New Task
+                  </button>
                 </div>
               )}
-            </div>
+              
+              {/* Render Tasks Content */}
+              {renderTasksContent()}
+            </>
           )}
         </main>
       </div>
