@@ -1,5 +1,3 @@
-// src/services/apiService.js
-
 import apiClient from '../api/client';
 
 /**
@@ -86,6 +84,10 @@ export const getMeetingById = (meetingId) => {
 
 export const updateMeetingNotes = (meetingId, notes) => {
   return apiClient.patch(`/meetings/${meetingId}`, { notes });
+};
+
+export const deleteMeeting = (meetingId) => {
+  return apiClient.delete(`/meetings/${meetingId}`);
 };
 
 
