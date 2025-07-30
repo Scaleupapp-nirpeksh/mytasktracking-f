@@ -38,7 +38,7 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
       @keyframes modalSlideIn {
         from {
           opacity: 0;
-          transform: translateY(-50px) scale(0.95);
+          transform: translateY(-20px) scale(0.98);
         }
         to {
           opacity: 1;
@@ -51,7 +51,7 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
         to { opacity: 1; }
       }
       
-      @keyframes slideInUp {
+      @keyframes fadeInUp {
         from {
           opacity: 0;
           transform: translateY(20px);
@@ -66,20 +66,14 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
         to { transform: rotate(360deg); }
       }
       
-      @keyframes pulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.8; transform: scale(1.05); }
-      }
-      
       @keyframes checkmark {
-        0% { transform: scale(0) rotate(45deg); }
-        50% { transform: scale(1.2) rotate(45deg); }
-        100% { transform: scale(1) rotate(45deg); }
+        0% { transform: scale(0); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
       }
       
-      @keyframes progressFill {
-        from { width: 0%; }
-        to { width: var(--progress-width); }
+      .fade-in-up {
+        animation: fadeInUp 0.3s ease-out;
       }
     `;
     document.head.appendChild(styleSheet);
@@ -140,22 +134,22 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
 
   const getStatusColor = (status) => {
     const colors = {
-      'To Do': '#64748b',
-      'In Progress': '#3b82f6',
-      'Blocked': '#ef4444',
-      'For Review': '#f59e0b',
-      'Done': '#10b981',
+      'To Do': '#737373',
+      'In Progress': '#0a0a0a',
+      'Blocked': '#dc2626',
+      'For Review': '#ca8a04',
+      'Done': '#16a34a',
     };
-    return colors[status] || '#64748b';
+    return colors[status] || '#737373';
   };
 
   const getStatusBadgeStyle = (status) => ({
-    padding: '4px 12px',
+    padding: '4px 8px',
     borderRadius: '12px',
-    fontSize: '12px',
+    fontSize: '11px',
     fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: '0.5px',
+    letterSpacing: '0.05em',
     color: 'white',
     backgroundColor: getStatusColor(status),
     display: 'inline-block',
@@ -165,6 +159,60 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
     ? Math.round((discussedTasks.size / meeting.taskSnapshots.length) * 100)
     : 0;
 
+  // Professional SVG Icons
+  const XIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const ClockIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+      <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const FileTextIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <polyline points="10,9 9,9 8,9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const CheckIcon = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="20,6 9,17 4,12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const EditIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M18.5 2.5C18.8978 2.10217 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10217 21.5 2.5C21.8978 2.89783 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10217 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const TargetIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+      <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="2"/>
+      <circle cx="12" cy="12" r="2" stroke="currentColor" strokeWidth="2"/>
+    </svg>
+  );
+
+  const SaveIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16L21 8V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <polyline points="17,21 17,13 7,13 7,21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <polyline points="7,3 7,8 15,8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
   const styles = {
     modalOverlay: {
       position: 'fixed',
@@ -172,8 +220,8 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
-      backdropFilter: 'blur(10px)',
+      backgroundColor: 'rgba(0, 0, 0, 0.75)',
+      backdropFilter: 'blur(8px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -183,29 +231,27 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
     },
     
     modalContent: {
-      backgroundColor: 'white',
-      borderRadius: '20px',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+      backgroundColor: '#ffffff',
+      borderRadius: '16px',
+      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
       width: '100%',
       maxWidth: '1200px',
       maxHeight: '90vh',
-      overflow: 'auto',
+      overflow: 'hidden',
       animation: 'modalSlideIn 0.4s ease-out',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
+      border: '1px solid #e5e5e5',
       display: 'flex',
       flexDirection: 'column',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", sans-serif',
     },
     
     modalHeader: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: '32px 32px 0 32px',
-      borderBottom: 'none',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      color: 'white',
-      borderTopLeftRadius: '20px',
-      borderTopRightRadius: '20px',
+      padding: '24px 32px',
+      borderBottom: '1px solid #e5e5e5',
+      backgroundColor: '#ffffff',
     },
     
     headerContent: {
@@ -216,55 +262,62 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
     },
     
     meetingIcon: {
-      fontSize: '32px',
-      animation: 'pulse 2s ease-in-out infinite',
+      width: '48px',
+      height: '48px',
+      backgroundColor: '#0a0a0a',
+      borderRadius: '12px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#ffffff',
+      flexShrink: 0,
     },
     
     headerText: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '8px',
+      gap: '4px',
     },
     
     modalTitle: {
-      fontSize: '28px',
-      fontWeight: '800',
+      fontSize: '24px',
+      fontWeight: '700',
       margin: 0,
+      color: '#0a0a0a',
     },
     
     meetingInfo: {
       display: 'flex',
       alignItems: 'center',
-      gap: '24px',
-      fontSize: '16px',
+      gap: '20px',
+      fontSize: '14px',
       fontWeight: '500',
-      opacity: 0.9,
+      color: '#737373',
     },
     
     timer: {
       display: 'flex',
       alignItems: 'center',
-      gap: '8px',
-      fontSize: '18px',
-      fontWeight: '700',
-      background: 'rgba(255, 255, 255, 0.2)',
-      padding: '8px 16px',
-      borderRadius: '12px',
+      gap: '6px',
+      fontSize: '14px',
+      fontWeight: '600',
+      color: '#0a0a0a',
+      backgroundColor: '#f5f5f5',
+      padding: '6px 12px',
+      borderRadius: '8px',
     },
     
     closeButton: {
       width: '40px',
       height: '40px',
-      borderRadius: '50%',
-      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      borderRadius: '8px',
+      backgroundColor: '#f5f5f5',
       border: 'none',
       cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      fontSize: '24px',
-      fontWeight: 'bold',
-      color: 'white',
+      color: '#737373',
       transition: 'all 0.2s ease',
       flexShrink: 0,
     },
@@ -273,26 +326,32 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
       display: 'flex',
       flex: 1,
       minHeight: '600px',
+      overflow: 'hidden',
     },
     
     leftPanel: {
       flex: 1,
       padding: '32px',
-      borderRight: '1px solid #e2e8f0',
-      backgroundColor: '#f8fafc',
+      borderRight: '1px solid #e5e5e5',
+      backgroundColor: '#fafafa',
+      overflow: 'auto',
     },
     
     rightPanel: {
       flex: 1,
       padding: '32px',
-      backgroundColor: 'white',
+      backgroundColor: '#ffffff',
       display: 'flex',
       flexDirection: 'column',
+      overflow: 'auto',
     },
     
     progressSection: {
       marginBottom: '32px',
-      animation: 'slideInUp 0.5s ease-out',
+      backgroundColor: '#ffffff',
+      border: '1px solid #e5e5e5',
+      borderRadius: '12px',
+      padding: '20px',
     },
     
     progressHeader: {
@@ -303,47 +362,46 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
     },
     
     progressTitle: {
-      fontSize: '18px',
-      fontWeight: '700',
-      color: '#1e293b',
+      fontSize: '16px',
+      fontWeight: '600',
+      color: '#0a0a0a',
       margin: 0,
     },
     
     progressStats: {
-      fontSize: '16px',
-      color: '#64748b',
-      fontWeight: '600',
+      fontSize: '14px',
+      color: '#737373',
+      fontWeight: '500',
     },
     
     progressBar: {
       width: '100%',
-      height: '8px',
-      backgroundColor: '#e2e8f0',
-      borderRadius: '4px',
+      height: '6px',
+      backgroundColor: '#f5f5f5',
+      borderRadius: '3px',
       overflow: 'hidden',
       marginBottom: '8px',
     },
     
     progressFill: {
       height: '100%',
-      background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
-      borderRadius: '4px',
+      backgroundColor: '#0a0a0a',
+      borderRadius: '3px',
       transition: 'width 0.3s ease',
-      boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)',
       width: `${progressPercentage}%`,
     },
     
     progressText: {
-      fontSize: '14px',
-      color: '#64748b',
-      fontWeight: '600',
+      fontSize: '12px',
+      color: '#737373',
+      fontWeight: '500',
       textAlign: 'center',
     },
     
     sectionTitle: {
-      fontSize: '20px',
-      fontWeight: '700',
-      color: '#1e293b',
+      fontSize: '18px',
+      fontWeight: '600',
+      color: '#0a0a0a',
       margin: '0 0 20px 0',
       display: 'flex',
       alignItems: 'center',
@@ -353,56 +411,57 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
     tasksList: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '16px',
-      maxHeight: '500px',
+      gap: '12px',
+      maxHeight: '450px',
       overflowY: 'auto',
       paddingRight: '8px',
     },
     
     taskCard: {
-      backgroundColor: 'white',
+      backgroundColor: '#ffffff',
       borderRadius: '12px',
-      padding: '20px',
-      border: '2px solid #e2e8f0',
-      transition: 'all 0.3s ease',
+      padding: '16px',
+      border: '1px solid #e5e5e5',
+      transition: 'all 0.2s ease',
       cursor: 'pointer',
       position: 'relative',
     },
     
     taskCardDiscussed: {
-      borderColor: '#10b981',
+      borderColor: '#16a34a',
       backgroundColor: '#f0fdf4',
-      boxShadow: '0 4px 20px rgba(16, 185, 129, 0.1)',
+      boxShadow: '0 2px 8px rgba(22, 163, 74, 0.1)',
     },
     
     taskHeader: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
-      marginBottom: '12px',
+      marginBottom: '8px',
     },
     
     taskTitle: {
-      fontSize: '18px',
+      fontSize: '16px',
       fontWeight: '600',
-      color: '#1e293b',
+      color: '#0a0a0a',
       margin: 0,
       flex: 1,
       marginRight: '16px',
+      lineHeight: 1.4,
     },
     
     taskActions: {
       display: 'flex',
       alignItems: 'center',
-      gap: '12px',
+      gap: '8px',
     },
     
     discussedCheckbox: {
-      width: '24px',
-      height: '24px',
-      borderRadius: '6px',
-      border: '2px solid #e2e8f0',
-      backgroundColor: 'white',
+      width: '20px',
+      height: '20px',
+      borderRadius: '4px',
+      border: '2px solid #d4d4d4',
+      backgroundColor: '#ffffff',
       cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',
@@ -412,22 +471,20 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
     },
     
     discussedCheckboxChecked: {
-      backgroundColor: '#10b981',
-      borderColor: '#10b981',
-      color: 'white',
+      backgroundColor: '#16a34a',
+      borderColor: '#16a34a',
+      color: '#ffffff',
     },
     
     checkmark: {
-      fontSize: '14px',
-      fontWeight: 'bold',
       animation: 'checkmark 0.3s ease-out',
     },
     
     taskDescription: {
       fontSize: '14px',
-      color: '#64748b',
+      color: '#737373',
       margin: 0,
-      lineHeight: '1.5',
+      lineHeight: 1.5,
     },
     
     notesSection: {
@@ -446,49 +503,48 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
     saveStatus: {
       display: 'flex',
       alignItems: 'center',
-      gap: '8px',
-      fontSize: '14px',
-      color: '#64748b',
+      gap: '6px',
+      fontSize: '12px',
+      color: '#737373',
+      fontWeight: '500',
     },
     
     notesTextarea: {
       flex: 1,
       minHeight: '300px',
-      padding: '20px',
-      border: '2px solid #e2e8f0',
-      borderRadius: '12px',
-      fontSize: '16px',
-      lineHeight: '1.6',
-      color: '#374151',
-      backgroundColor: 'white',
+      padding: '16px',
+      border: '1px solid #d4d4d4',
+      borderRadius: '8px',
+      fontSize: '14px',
+      lineHeight: 1.6,
+      color: '#0a0a0a',
+      backgroundColor: '#ffffff',
       outline: 'none',
-      transition: 'all 0.3s ease',
+      transition: 'all 0.2s ease',
       resize: 'none',
       fontFamily: 'inherit',
     },
     
     notesTextareaFocused: {
-      borderColor: '#667eea',
-      boxShadow: '0 0 0 4px rgba(102, 126, 234, 0.1)',
+      borderColor: '#0a0a0a',
+      boxShadow: '0 0 0 3px rgba(10, 10, 10, 0.1)',
     },
     
     modalFooter: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: '24px 32px',
-      borderTop: '1px solid #e2e8f0',
-      backgroundColor: '#f8fafc',
-      borderBottomLeftRadius: '20px',
-      borderBottomRightRadius: '20px',
+      padding: '20px 32px',
+      borderTop: '1px solid #e5e5e5',
+      backgroundColor: '#fafafa',
     },
     
     footerInfo: {
       display: 'flex',
       alignItems: 'center',
       gap: '16px',
-      fontSize: '14px',
-      color: '#64748b',
+      fontSize: '12px',
+      color: '#737373',
     },
     
     footerActions: {
@@ -497,45 +553,41 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
     },
     
     buttonSecondary: {
-      padding: '12px 24px',
-      backgroundColor: '#f8fafc',
-      color: '#475569',
-      border: '2px solid #e2e8f0',
-      borderRadius: '12px',
-      fontWeight: '600',
-      fontSize: '16px',
+      padding: '10px 20px',
+      backgroundColor: '#ffffff',
+      color: '#525252',
+      border: '1px solid #d4d4d4',
+      borderRadius: '8px',
+      fontWeight: '500',
+      fontSize: '14px',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
     },
     
     buttonPrimary: {
-      padding: '12px 28px',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      color: 'white',
+      padding: '10px 20px',
+      backgroundColor: '#0a0a0a',
+      color: '#ffffff',
       border: 'none',
-      borderRadius: '12px',
-      fontWeight: '700',
-      fontSize: '16px',
+      borderRadius: '8px',
+      fontWeight: '600',
+      fontSize: '14px',
       cursor: 'pointer',
-      transition: 'all 0.3s ease',
+      transition: 'all 0.2s ease',
       display: 'flex',
       alignItems: 'center',
-      gap: '8px',
-      boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
-      textTransform: 'uppercase',
-      letterSpacing: '0.5px',
+      gap: '6px',
     },
     
     buttonPrimaryDisabled: {
-      background: '#e2e8f0',
-      color: '#94a3b8',
+      backgroundColor: '#f5f5f5',
+      color: '#a3a3a3',
       cursor: 'not-allowed',
-      boxShadow: 'none',
     },
     
     spinner: {
-      width: '16px',
-      height: '16px',
+      width: '14px',
+      height: '14px',
       border: '2px solid transparent',
       borderTop: '2px solid currentColor',
       borderRadius: '50%',
@@ -545,14 +597,14 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
     errorMessage: {
       backgroundColor: '#fef2f2',
       color: '#dc2626',
-      padding: '16px',
-      borderRadius: '12px',
+      padding: '12px 16px',
+      borderRadius: '8px',
       border: '1px solid #fecaca',
-      fontSize: '15px',
-      fontWeight: '600',
+      fontSize: '14px',
+      fontWeight: '500',
       display: 'flex',
       alignItems: 'center',
-      gap: '10px',
+      gap: '8px',
       marginBottom: '16px',
     },
   };
@@ -564,16 +616,18 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
       <div style={styles.modalContent}>
         <div style={styles.modalHeader}>
           <div style={styles.headerContent}>
-            <span style={styles.meetingIcon}>🎯</span>
+            <div style={styles.meetingIcon}>
+              <TargetIcon />
+            </div>
             <div style={styles.headerText}>
               <h2 style={styles.modalTitle}>Active Meeting Session</h2>
               <div style={styles.meetingInfo}>
                 <div style={styles.timer}>
-                  <span>⏱️</span>
+                  <ClockIcon />
                   {formatDuration(startTime, currentTime)}
                 </div>
-                <span>📋 {meeting.taskSnapshots.length} key tasks</span>
-                <span>✅ {discussedTasks.size} discussed</span>
+                <span>{meeting.taskSnapshots.length} key tasks</span>
+                <span>{discussedTasks.size} discussed</span>
               </div>
             </div>
           </div>
@@ -581,22 +635,22 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
             style={styles.closeButton}
             onClick={onClose}
             onMouseEnter={(e) => {
-              e.target.style.backgroundColor = 'rgba(239, 68, 68, 0.8)';
-              e.target.style.transform = 'scale(1.1)';
+              e.target.style.backgroundColor = '#e5e5e5';
+              e.target.style.color = '#dc2626';
             }}
             onMouseLeave={(e) => {
-              e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-              e.target.style.transform = 'scale(1)';
+              e.target.style.backgroundColor = '#f5f5f5';
+              e.target.style.color = '#737373';
             }}
           >
-            ×
+            <XIcon />
           </button>
         </div>
 
         <div style={styles.modalBody}>
           {/* Left Panel - Tasks */}
           <div style={styles.leftPanel}>
-            <div style={styles.progressSection}>
+            <div style={styles.progressSection} className="fade-in-up">
               <div style={styles.progressHeader}>
                 <h3 style={styles.progressTitle}>Meeting Progress</h3>
                 <span style={styles.progressStats}>
@@ -610,7 +664,7 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
             </div>
 
             <h3 style={styles.sectionTitle}>
-              <span>📋</span>
+              <FileTextIcon />
               Key Tasks to Review
             </h3>
             
@@ -623,19 +677,19 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
                     style={{
                       ...styles.taskCard,
                       ...(isDiscussed ? styles.taskCardDiscussed : {}),
-                      animationDelay: `${index * 0.1}s`,
                     }}
+                    className="fade-in-up"
                     onClick={() => toggleTaskDiscussed(task.originalTaskId)}
                     onMouseEnter={(e) => {
                       if (!isDiscussed) {
-                        e.currentTarget.style.borderColor = '#667eea';
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.boxShadow = '0 8px 25px rgba(102, 126, 234, 0.15)';
+                        e.currentTarget.style.borderColor = '#d4d4d4';
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (!isDiscussed) {
-                        e.currentTarget.style.borderColor = '#e2e8f0';
+                        e.currentTarget.style.borderColor = '#e5e5e5';
                         e.currentTarget.style.transform = 'translateY(0)';
                         e.currentTarget.style.boxShadow = 'none';
                       }
@@ -652,7 +706,9 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
                           ...(isDiscussed ? styles.discussedCheckboxChecked : {})
                         }}>
                           {isDiscussed && (
-                            <span style={styles.checkmark}>✓</span>
+                            <div style={styles.checkmark}>
+                              <CheckIcon />
+                            </div>
                           )}
                         </div>
                       </div>
@@ -671,7 +727,7 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
             <div style={styles.notesSection}>
               <div style={styles.notesHeader}>
                 <h3 style={styles.sectionTitle}>
-                  <span>📝</span>
+                  <EditIcon />
                   Meeting Notes
                 </h3>
                 <div style={styles.saveStatus}>
@@ -683,7 +739,7 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
                   )}
                   {lastSaved && !autoSaving && (
                     <>
-                      <span>✅</span>
+                      <CheckIcon />
                       Saved {lastSaved.toLocaleTimeString()}
                     </>
                   )}
@@ -692,7 +748,11 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
 
               {error && (
                 <div style={styles.errorMessage}>
-                  <span>❌</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                    <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" strokeWidth="2"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
                   {error}
                 </div>
               )}
@@ -711,7 +771,7 @@ Any blockers or challenges discussed?"
                   Object.assign(e.target.style, styles.notesTextareaFocused);
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = '#e2e8f0';
+                  e.target.style.borderColor = '#d4d4d4';
                   e.target.style.boxShadow = 'none';
                 }}
               />
@@ -721,20 +781,20 @@ Any blockers or challenges discussed?"
 
         <div style={styles.modalFooter}>
           <div style={styles.footerInfo}>
-            <span>💡 Click tasks to mark as discussed</span>
-            <span>💾 Notes auto-save every 30 seconds</span>
+            <span>Click tasks to mark as discussed</span>
+            <span>Notes auto-save every 30 seconds</span>
           </div>
           <div style={styles.footerActions}>
             <button 
               style={styles.buttonSecondary}
               onClick={onClose}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#e2e8f0';
-                e.target.style.borderColor = '#cbd5e1';
+                e.target.style.backgroundColor = '#f5f5f5';
+                e.target.style.borderColor = '#a3a3a3';
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#f8fafc';
-                e.target.style.borderColor = '#e2e8f0';
+                e.target.style.backgroundColor = '#ffffff';
+                e.target.style.borderColor = '#d4d4d4';
               }}
             >
               Continue Later
@@ -748,14 +808,14 @@ Any blockers or challenges discussed?"
               disabled={isSaving}
               onMouseEnter={(e) => {
                 if (!isSaving) {
-                  e.target.style.transform = 'translateY(-2px) scale(1.05)';
-                  e.target.style.boxShadow = '0 12px 35px rgba(102, 126, 234, 0.4)';
+                  e.target.style.backgroundColor = '#262626';
+                  e.target.style.transform = 'translateY(-1px)';
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isSaving) {
-                  e.target.style.transform = 'translateY(0) scale(1)';
-                  e.target.style.boxShadow = '0 8px 25px rgba(102, 126, 234, 0.3)';
+                  e.target.style.backgroundColor = '#0a0a0a';
+                  e.target.style.transform = 'translateY(0)';
                 }
               }}
             >
@@ -766,7 +826,7 @@ Any blockers or challenges discussed?"
                 </>
               ) : (
                 <>
-                  <span>🎯</span>
+                  <SaveIcon />
                   End Meeting
                 </>
               )}

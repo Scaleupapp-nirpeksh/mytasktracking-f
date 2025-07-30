@@ -48,14 +48,14 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
     }
   }, [currentTask]);
 
-  // Add CSS animations
+  // Add CSS animations matching the design system
   useEffect(() => {
     const styleSheet = document.createElement("style");
     styleSheet.innerText = `
       @keyframes modalSlideIn {
         from {
           opacity: 0;
-          transform: translateY(-50px) scale(0.95);
+          transform: translateY(-20px) scale(0.98);
         }
         to {
           opacity: 1;
@@ -83,14 +83,10 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
         }
       }
       
-      @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.8; }
-      }
-      
-      @keyframes toggleSlide {
-        from { transform: translateX(0); }
-        to { transform: translateX(24px); }
+      @keyframes checkmark {
+        0% { transform: scale(0); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
       }
     `;
     document.head.appendChild(styleSheet);
@@ -146,6 +142,65 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
     onTaskUpdated(updatedTaskWithAttachment);
   };
 
+  // Professional SVG Icons matching the design system
+  const XIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const EditIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M18.5 2.5C18.8978 2.10217 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10217 21.5 2.5C21.8978 2.89783 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10217 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const SaveIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16L21 8V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <polyline points="17,21 17,13 7,13 7,21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <polyline points="7,3 7,8 15,8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const CalendarIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
+      <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+
+  const RefreshIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="23,4 23,10 17,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <polyline points="1,20 1,14 7,14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M20.49 9C19.05 5.99 16.2 4 12.89 4C8.51 4 4.96 7.36 4.46 11.73M3.51 15C4.95 18.01 7.8 20 11.11 20C15.49 20 19.04 16.64 19.54 12.27" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const FlagIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 15S11 9 20 15L20 3S11 9 4 3Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="4" y1="22" x2="4" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+
+  const StarIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const CheckIcon = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="20,6 9,17 4,12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
   const styles = {
     modalOverlay: {
       position: 'fixed',
@@ -153,7 +208,7 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      backgroundColor: 'rgba(0, 0, 0, 0.75)',
       backdropFilter: 'blur(8px)',
       display: 'flex',
       alignItems: 'center',
@@ -164,49 +219,47 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
     },
     
     modalContent: {
-      backgroundColor: 'white',
-      borderRadius: '20px',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      backgroundColor: '#ffffff',
+      borderRadius: '16px',
+      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
       width: '100%',
       maxWidth: '700px',
       maxHeight: '90vh',
       overflow: 'auto',
       animation: 'modalSlideIn 0.4s ease-out',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
+      border: '1px solid #e5e5e5',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", sans-serif',
     },
     
     modalHeader: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: '32px 32px 0 32px',
-      borderBottom: 'none',
+      padding: '24px 32px',
+      borderBottom: '1px solid #e5e5e5',
     },
     
     modalTitle: {
-      fontSize: '28px',
-      fontWeight: '800',
-      color: '#1e293b',
+      fontSize: '24px',
+      fontWeight: '700',
+      color: '#0a0a0a',
       margin: 0,
-      background: 'linear-gradient(135deg, #1e293b 0%, #10b981 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
     },
     
     closeButton: {
       width: '40px',
       height: '40px',
-      borderRadius: '50%',
-      backgroundColor: '#f1f5f9',
+      borderRadius: '8px',
+      backgroundColor: '#f5f5f5',
       border: 'none',
       cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      fontSize: '24px',
-      fontWeight: 'bold',
-      color: '#64748b',
+      color: '#737373',
       transition: 'all 0.2s ease',
     },
     
@@ -223,7 +276,7 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
     formGroup: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '8px',
+      gap: '6px',
     },
     
     formRow: {
@@ -239,159 +292,124 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
     },
     
     label: {
-      fontSize: '16px',
-      fontWeight: '600',
-      color: '#374151',
-      transition: 'color 0.2s ease',
-    },
-    
-    labelFocused: {
-      color: '#10b981',
+      fontSize: '14px',
+      fontWeight: '500',
+      color: '#0a0a0a',
+      marginBottom: '6px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
     },
     
     input: {
-      padding: '14px 16px',
-      border: '2px solid #e5e7eb',
-      borderRadius: '12px',
+      padding: '12px 16px',
+      border: '1px solid #d4d4d4',
+      borderRadius: '8px',
       fontSize: '16px',
-      transition: 'all 0.3s ease',
-      backgroundColor: 'white',
-      fontWeight: '500',
+      transition: 'all 0.2s ease',
+      backgroundColor: '#ffffff',
       outline: 'none',
+      color: '#0a0a0a',
+      boxSizing: 'border-box',
     },
     
     inputFocused: {
-      borderColor: '#10b981',
-      boxShadow: '0 0 0 4px rgba(16, 185, 129, 0.1)',
-      transform: 'translateY(-1px)',
+      borderColor: '#0a0a0a',
+      boxShadow: '0 0 0 3px rgba(10, 10, 10, 0.1)',
     },
     
     textarea: {
-      padding: '14px 16px',
-      border: '2px solid #e5e7eb',
-      borderRadius: '12px',
+      padding: '12px 16px',
+      border: '1px solid #d4d4d4',
+      borderRadius: '8px',
       fontSize: '16px',
-      transition: 'all 0.3s ease',
-      backgroundColor: 'white',
-      fontWeight: '500',
+      transition: 'all 0.2s ease',
+      backgroundColor: '#ffffff',
       outline: 'none',
       resize: 'vertical',
       minHeight: '80px',
       fontFamily: 'inherit',
+      color: '#0a0a0a',
+      boxSizing: 'border-box',
     },
     
     select: {
-      padding: '14px 16px',
-      border: '2px solid #e5e7eb',
-      borderRadius: '12px',
+      padding: '12px 16px',
+      border: '1px solid #d4d4d4',
+      borderRadius: '8px',
       fontSize: '16px',
-      transition: 'all 0.3s ease',
-      backgroundColor: 'white',
-      fontWeight: '500',
+      transition: 'all 0.2s ease',
+      backgroundColor: '#ffffff',
       outline: 'none',
       cursor: 'pointer',
-    },
-    
-    prioritySelect: {
-      padding: '14px 16px',
-      border: '2px solid #e5e7eb',
-      borderRadius: '12px',
-      fontSize: '16px',
-      transition: 'all 0.3s ease',
-      backgroundColor: 'white',
-      fontWeight: '600',
-      outline: 'none',
-      cursor: 'pointer',
-    },
-    
-    statusSelect: {
-      padding: '14px 16px',
-      border: '2px solid #e5e7eb',
-      borderRadius: '12px',
-      fontSize: '16px',
-      transition: 'all 0.3s ease',
-      backgroundColor: 'white',
-      fontWeight: '600',
-      outline: 'none',
-      cursor: 'pointer',
+      color: '#0a0a0a',
+      boxSizing: 'border-box',
     },
     
     keyTaskSection: {
-      backgroundColor: '#f8fafc',
-      borderRadius: '16px',
+      backgroundColor: '#fafafa',
+      borderRadius: '12px',
       padding: '20px',
-      border: '2px solid #e2e8f0',
+      border: '1px solid #e5e5e5',
       transition: 'all 0.3s ease',
     },
     
     keyTaskSectionActive: {
-      backgroundColor: '#fef3c7',
-      borderColor: '#f59e0b',
-      boxShadow: '0 0 0 4px rgba(245, 158, 11, 0.05)',
+      backgroundColor: '#fefce8',
+      borderColor: '#ca8a04',
     },
     
     keyTaskToggle: {
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: '16px',
+      gap: '12px',
     },
     
     keyTaskLabel: {
-      fontSize: '16px',
-      fontWeight: '600',
-      color: '#374151',
+      fontSize: '14px',
+      fontWeight: '500',
+      color: '#0a0a0a',
+      cursor: 'pointer',
+      userSelect: 'none',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
       flex: 1,
     },
     
-    toggleSwitch: {
-      position: 'relative',
-      width: '52px',
-      height: '28px',
-      backgroundColor: '#e5e7eb',
-      borderRadius: '14px',
+    checkbox: {
+      width: '18px',
+      height: '18px',
+      borderRadius: '4px',
+      border: '1px solid #d4d4d4',
       cursor: 'pointer',
-      transition: 'all 0.3s ease',
-      border: '2px solid transparent',
+      position: 'relative',
+      transition: 'all 0.2s ease',
+      appearance: 'none',
+      outline: 'none',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#ffffff',
     },
     
-    toggleSwitchActive: {
-      backgroundColor: '#10b981',
-      borderColor: '#059669',
-    },
-    
-    toggleSlider: {
-      position: 'absolute',
-      top: '2px',
-      left: '2px',
-      width: '20px',
-      height: '20px',
-      backgroundColor: 'white',
-      borderRadius: '50%',
-      transition: 'transform 0.3s ease',
-      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-    },
-    
-    toggleSliderActive: {
-      transform: 'translateX(24px)',
-    },
-    
-    toggleInput: {
-      display: 'none',
+    checkboxChecked: {
+      backgroundColor: '#0a0a0a',
+      borderColor: '#0a0a0a',
+      color: '#ffffff',
     },
     
     recurringSection: {
-      backgroundColor: '#f8fafc',
-      borderRadius: '16px',
+      backgroundColor: '#fafafa',
+      borderRadius: '12px',
       padding: '20px',
-      border: '2px solid #e2e8f0',
+      border: '1px solid #e5e5e5',
       transition: 'all 0.3s ease',
     },
     
     recurringSectionActive: {
       backgroundColor: '#f0fdf4',
-      borderColor: '#10b981',
-      boxShadow: '0 0 0 4px rgba(16, 185, 129, 0.05)',
+      borderColor: '#16a34a',
     },
     
     recurringToggle: {
@@ -401,29 +419,15 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
       marginBottom: '16px',
     },
     
-    checkbox: {
-      width: '20px',
-      height: '20px',
-      borderRadius: '6px',
-      border: '2px solid #e5e7eb',
-      cursor: 'pointer',
-      position: 'relative',
-      transition: 'all 0.2s ease',
-      appearance: 'none',
-      outline: 'none',
-    },
-    
-    checkboxChecked: {
-      backgroundColor: '#10b981',
-      borderColor: '#10b981',
-    },
-    
-    checkboxLabel: {
-      fontSize: '16px',
-      fontWeight: '600',
-      color: '#374151',
+    recurringLabel: {
+      fontSize: '14px',
+      fontWeight: '500',
+      color: '#0a0a0a',
       cursor: 'pointer',
       userSelect: 'none',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
     },
     
     recurringOptions: {
@@ -436,105 +440,92 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
     errorMessage: {
       backgroundColor: '#fef2f2',
       color: '#dc2626',
-      padding: '16px',
-      borderRadius: '12px',
+      padding: '12px 16px',
+      borderRadius: '8px',
       border: '1px solid #fecaca',
-      fontSize: '15px',
-      fontWeight: '600',
+      fontSize: '14px',
+      fontWeight: '500',
       display: 'flex',
       alignItems: 'center',
-      gap: '10px',
+      gap: '8px',
     },
     
     modalFooter: {
       display: 'flex',
       justifyContent: 'flex-end',
       gap: '12px',
-      padding: '0 32px 32px 32px',
-      borderTop: 'none',
+      padding: '20px 32px',
+      borderTop: '1px solid #e5e5e5',
+      backgroundColor: '#fafafa',
     },
     
     buttonSecondary: {
-      padding: '14px 24px',
-      backgroundColor: '#f8fafc',
-      color: '#475569',
-      border: '2px solid #e2e8f0',
-      borderRadius: '12px',
-      fontWeight: '600',
-      fontSize: '16px',
+      padding: '10px 20px',
+      backgroundColor: '#ffffff',
+      color: '#525252',
+      border: '1px solid #d4d4d4',
+      borderRadius: '8px',
+      fontWeight: '500',
+      fontSize: '14px',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
     },
     
     buttonPrimary: {
-      padding: '14px 28px',
-      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-      color: 'white',
+      padding: '10px 20px',
+      backgroundColor: '#0a0a0a',
+      color: '#ffffff',
       border: 'none',
-      borderRadius: '12px',
-      fontWeight: '700',
-      fontSize: '16px',
+      borderRadius: '8px',
+      fontWeight: '600',
+      fontSize: '14px',
       cursor: 'pointer',
-      transition: 'all 0.3s ease',
+      transition: 'all 0.2s ease',
       display: 'flex',
       alignItems: 'center',
-      gap: '8px',
-      boxShadow: '0 8px 25px rgba(16, 185, 129, 0.3)',
-      textTransform: 'uppercase',
-      letterSpacing: '0.5px',
+      gap: '6px',
     },
     
     buttonPrimaryDisabled: {
-      background: '#e2e8f0',
-      color: '#94a3b8',
+      backgroundColor: '#f5f5f5',
+      color: '#a3a3a3',
       cursor: 'not-allowed',
-      boxShadow: 'none',
     },
     
     spinner: {
-      width: '16px',
-      height: '16px',
+      width: '14px',
+      height: '14px',
       border: '2px solid transparent',
       borderTop: '2px solid currentColor',
       borderRadius: '50%',
       animation: 'spin 1s linear infinite',
     },
+    
+    checkmark: {
+      animation: 'checkmark 0.3s ease-out',
+    },
   };
 
   const getPriorityColor = (priorityValue) => {
     const colors = {
-      'Low': '#059669',
-      'Medium': '#d97706',
+      'Low': '#16a34a',
+      'Medium': '#ca8a04',  
       'High': '#dc2626',
       'Critical': '#7c2d12',
     };
-    return colors[priorityValue] || '#64748b';
+    return colors[priorityValue] || '#737373';
   };
 
   const getStatusColor = (statusValue) => {
     const colors = {
-      'To Do': '#64748b',
-      'In Progress': '#3b82f6',
-      'Blocked': '#ef4444',
-      'For Review': '#f59e0b',
-      'Done': '#10b981',
+      'To Do': '#737373',
+      'In Progress': '#0a0a0a',
+      'Blocked': '#dc2626',
+      'For Review': '#ca8a04',
+      'Done': '#16a34a',
     };
-    return colors[statusValue] || '#64748b';
+    return colors[statusValue] || '#737373';
   };
-
-  const getPrioritySelectStyle = (currentPriority) => ({
-    ...styles.prioritySelect,
-    color: getPriorityColor(currentPriority),
-    borderColor: focusedField === 'priority' ? '#10b981' : '#e5e7eb',
-    boxShadow: focusedField === 'priority' ? '0 0 0 4px rgba(16, 185, 129, 0.1)' : 'none',
-  });
-
-  const getStatusSelectStyle = (currentStatus) => ({
-    ...styles.statusSelect,
-    color: getStatusColor(currentStatus),
-    borderColor: focusedField === 'status' ? '#10b981' : '#e5e7eb',
-    boxShadow: focusedField === 'status' ? '0 0 0 4px rgba(16, 185, 129, 0.1)' : 'none',
-  });
 
   if (!currentTask) return null;
 
@@ -542,22 +533,23 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
     <div style={styles.modalOverlay} onClick={onClose}>
       <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div style={styles.modalHeader}>
-          <h2 style={styles.modalTitle}>✏️ Edit Task</h2>
+          <h2 style={styles.modalTitle}>
+            <EditIcon />
+            Edit Task
+          </h2>
           <button 
             style={styles.closeButton}
             onClick={onClose}
             onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#ef4444';
-              e.target.style.color = 'white';
-              e.target.style.transform = 'scale(1.1)';
+              e.target.style.backgroundColor = '#e5e5e5';
+              e.target.style.color = '#dc2626';
             }}
             onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#f1f5f9';
-              e.target.style.color = '#64748b';
-              e.target.style.transform = 'scale(1)';
+              e.target.style.backgroundColor = '#f5f5f5';
+              e.target.style.color = '#737373';
             }}
           >
-            ×
+            <XIcon />
           </button>
         </div>
 
@@ -565,13 +557,7 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
           <form style={styles.form} onSubmit={handleSubmit}>
             {/* Title Field */}
             <div style={styles.formGroup}>
-              <label 
-                htmlFor="edit-title" 
-                style={{
-                  ...styles.label,
-                  ...(focusedField === 'title' ? styles.labelFocused : {})
-                }}
-              >
+              <label htmlFor="edit-title" style={styles.label}>
                 Task Title *
               </label>
               <input
@@ -592,13 +578,7 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
 
             {/* Description Field */}
             <div style={styles.formGroup}>
-              <label 
-                htmlFor="edit-description"
-                style={{
-                  ...styles.label,
-                  ...(focusedField === 'description' ? styles.labelFocused : {})
-                }}
-              >
+              <label htmlFor="edit-description" style={styles.label}>
                 Description (Optional)
               </label>
               <textarea
@@ -610,9 +590,7 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
                 onBlur={() => setFocusedField('')}
                 style={{
                   ...styles.textarea,
-                  borderColor: focusedField === 'description' ? '#10b981' : '#e5e7eb',
-                  boxShadow: focusedField === 'description' ? '0 0 0 4px rgba(16, 185, 129, 0.1)' : 'none',
-                  transform: focusedField === 'description' ? 'translateY(-1px)' : 'translateY(0)',
+                  ...(focusedField === 'description' ? styles.inputFocused : {})
                 }}
                 placeholder="Add more details about this task..."
               />
@@ -621,13 +599,7 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
             {/* Status, Priority, and Workspace Row */}
             <div style={styles.formRowThree}>
               <div style={styles.formGroup}>
-                <label 
-                  htmlFor="edit-status"
-                  style={{
-                    ...styles.label,
-                    ...(focusedField === 'status' ? styles.labelFocused : {})
-                  }}
-                >
+                <label htmlFor="edit-status" style={styles.label}>
                   Status
                 </label>
                 <select
@@ -636,24 +608,23 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
                   onChange={(e) => setStatus(e.target.value)}
                   onFocus={() => setFocusedField('status')}
                   onBlur={() => setFocusedField('')}
-                  style={getStatusSelectStyle(status)}
+                  style={{
+                    ...styles.select,
+                    color: getStatusColor(status),
+                    ...(focusedField === 'status' ? styles.inputFocused : {})
+                  }}
                 >
-                  <option value="To Do" style={{ color: '#64748b' }}>📋 To Do</option>
-                  <option value="In Progress" style={{ color: '#3b82f6' }}>🔄 In Progress</option>
-                  <option value="Blocked" style={{ color: '#ef4444' }}>🚫 Blocked</option>
-                  <option value="For Review" style={{ color: '#f59e0b' }}>👁️ For Review</option>
-                  <option value="Done" style={{ color: '#10b981' }}>✅ Done</option>
+                  <option value="To Do">To Do</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Blocked">Blocked</option>
+                  <option value="For Review">For Review</option>
+                  <option value="Done">Done</option>
                 </select>
               </div>
 
               <div style={styles.formGroup}>
-                <label 
-                  htmlFor="edit-priority"
-                  style={{
-                    ...styles.label,
-                    ...(focusedField === 'priority' ? styles.labelFocused : {})
-                  }}
-                >
+                <label htmlFor="edit-priority" style={styles.label}>
+                  <FlagIcon />
                   Priority Level
                 </label>
                 <select
@@ -662,23 +633,21 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
                   onChange={(e) => setPriority(e.target.value)}
                   onFocus={() => setFocusedField('priority')}
                   onBlur={() => setFocusedField('')}
-                  style={getPrioritySelectStyle(priority)}
+                  style={{
+                    ...styles.select,
+                    color: getPriorityColor(priority),
+                    ...(focusedField === 'priority' ? styles.inputFocused : {})
+                  }}
                 >
-                  <option value="Low" style={{ color: '#059669' }}>🟢 Low Priority</option>
-                  <option value="Medium" style={{ color: '#d97706' }}>🟡 Medium Priority</option>
-                  <option value="High" style={{ color: '#dc2626' }}>🔴 High Priority</option>
-                  <option value="Critical" style={{ color: '#7c2d12' }}>🚨 Critical Priority</option>
+                  <option value="Low">Low Priority</option>
+                  <option value="Medium">Medium Priority</option>
+                  <option value="High">High Priority</option>
+                  <option value="Critical">Critical Priority</option>
                 </select>
               </div>
 
               <div style={styles.formGroup}>
-                <label 
-                  htmlFor="edit-workspace"
-                  style={{
-                    ...styles.label,
-                    ...(focusedField === 'workspace' ? styles.labelFocused : {})
-                  }}
-                >
+                <label htmlFor="edit-workspace" style={styles.label}>
                   Workspace *
                 </label>
                 <select
@@ -689,8 +658,7 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
                   onBlur={() => setFocusedField('')}
                   style={{
                     ...styles.select,
-                    borderColor: focusedField === 'workspace' ? '#10b981' : '#e5e7eb',
-                    boxShadow: focusedField === 'workspace' ? '0 0 0 4px rgba(16, 185, 129, 0.1)' : 'none',
+                    ...(focusedField === 'workspace' ? styles.inputFocused : {})
                   }}
                   required
                 >
@@ -703,14 +671,9 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
 
             {/* Due Date Field */}
             <div style={styles.formGroup}>
-              <label 
-                htmlFor="edit-dueDate"
-                style={{
-                  ...styles.label,
-                  ...(focusedField === 'dueDate' ? styles.labelFocused : {})
-                }}
-              >
-                {isRecurring ? '📅 Start Date' : '📅 Due Date'} (Optional)
+              <label htmlFor="edit-dueDate" style={styles.label}>
+                <CalendarIcon />
+                {isRecurring ? 'Start Date' : 'Due Date'} (Optional)
               </label>
               <input
                 type="date"
@@ -732,28 +695,26 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
               ...(isKeyTask ? styles.keyTaskSectionActive : {})
             }}>
               <div style={styles.keyTaskToggle}>
-                <label htmlFor="keyTask" style={styles.keyTaskLabel}>
-                  ⭐ Mark as Key Task for Manager Reviews
-                </label>
-                <div 
+                <div
                   style={{
-                    ...styles.toggleSwitch,
-                    ...(isKeyTask ? styles.toggleSwitchActive : {})
+                    ...styles.checkbox,
+                    ...(isKeyTask ? styles.checkboxChecked : {})
                   }}
                   onClick={() => setIsKeyTask(!isKeyTask)}
                 >
-                  <input
-                    type="checkbox"
-                    id="keyTask"
-                    checked={isKeyTask}
-                    onChange={(e) => setIsKeyTask(e.target.checked)}
-                    style={styles.toggleInput}
-                  />
-                  <div style={{
-                    ...styles.toggleSlider,
-                    ...(isKeyTask ? styles.toggleSliderActive : {})
-                  }} />
+                  {isKeyTask && (
+                    <div style={styles.checkmark}>
+                      <CheckIcon />
+                    </div>
+                  )}
                 </div>
+                <label 
+                  style={styles.keyTaskLabel}
+                  onClick={() => setIsKeyTask(!isKeyTask)}
+                >
+                  <StarIcon />
+                  Mark as Key Task for Manager Reviews
+                </label>
               </div>
             </div>
 
@@ -763,32 +724,25 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
               ...(isRecurring ? styles.recurringSectionActive : {})
             }}>
               <div style={styles.recurringToggle}>
-                <input
-                  type="checkbox"
-                  id="isRecurring-edit"
-                  checked={isRecurring}
-                  onChange={(e) => setIsRecurring(e.target.checked)}
+                <div
                   style={{
                     ...styles.checkbox,
                     ...(isRecurring ? styles.checkboxChecked : {})
                   }}
-                />
-                {isRecurring && (
-                  <span style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    color: 'white',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    pointerEvents: 'none',
-                  }}>
-                    ✓
-                  </span>
-                )}
-                <label htmlFor="isRecurring-edit" style={styles.checkboxLabel}>
-                  🔄 Make this a recurring task
+                  onClick={() => setIsRecurring(!isRecurring)}
+                >
+                  {isRecurring && (
+                    <div style={styles.checkmark}>
+                      <CheckIcon />
+                    </div>
+                  )}
+                </div>
+                <label 
+                  style={styles.recurringLabel}
+                  onClick={() => setIsRecurring(!isRecurring)}
+                >
+                  <RefreshIcon />
+                  Make this a recurring task
                 </label>
               </div>
 
@@ -796,13 +750,7 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
                 <div style={styles.recurringOptions}>
                   <div style={styles.formRow}>
                     <div style={styles.formGroup}>
-                      <label 
-                        htmlFor="frequency-edit"
-                        style={{
-                          ...styles.label,
-                          ...(focusedField === 'frequency' ? styles.labelFocused : {})
-                        }}
-                      >
+                      <label htmlFor="frequency-edit" style={styles.label}>
                         Frequency
                       </label>
                       <select 
@@ -813,24 +761,17 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
                         onBlur={() => setFocusedField('')}
                         style={{
                           ...styles.select,
-                          borderColor: focusedField === 'frequency' ? '#10b981' : '#e5e7eb',
-                          boxShadow: focusedField === 'frequency' ? '0 0 0 4px rgba(16, 185, 129, 0.1)' : 'none',
+                          ...(focusedField === 'frequency' ? styles.inputFocused : {})
                         }}
                       >
-                        <option value="daily">📅 Daily</option>
-                        <option value="weekly">📆 Weekly</option>
-                        <option value="monthly">🗓️ Monthly</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
                       </select>
                     </div>
 
                     <div style={styles.formGroup}>
-                      <label 
-                        htmlFor="interval-edit"
-                        style={{
-                          ...styles.label,
-                          ...(focusedField === 'interval' ? styles.labelFocused : {})
-                        }}
-                      >
+                      <label htmlFor="interval-edit" style={styles.label}>
                         Repeat Every
                       </label>
                       <input 
@@ -851,14 +792,9 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
                   </div>
 
                   <div style={styles.formGroup}>
-                    <label 
-                      htmlFor="endDate-edit"
-                      style={{
-                        ...styles.label,
-                        ...(focusedField === 'endDate' ? styles.labelFocused : {})
-                      }}
-                    >
-                      🏁 End Date (Optional)
+                    <label htmlFor="endDate-edit" style={styles.label}>
+                      <CalendarIcon />
+                      End Date (Optional)
                     </label>
                     <input 
                       type="date"
@@ -885,7 +821,11 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
 
             {error && (
               <div style={styles.errorMessage}>
-                <span style={{ fontSize: '18px' }}>⚠️</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                  <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" strokeWidth="2"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" strokeWidth="2"/>
+                </svg>
                 {error}
               </div>
             )}
@@ -898,14 +838,12 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
             style={styles.buttonSecondary}
             onClick={onClose}
             onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#e2e8f0';
-              e.target.style.borderColor = '#cbd5e1';
-              e.target.style.transform = 'translateY(-1px)';
+              e.target.style.backgroundColor = '#f5f5f5';
+              e.target.style.borderColor = '#a3a3a3';
             }}
             onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#f8fafc';
-              e.target.style.borderColor = '#e2e8f0';
-              e.target.style.transform = 'translateY(0)';
+              e.target.style.backgroundColor = '#ffffff';
+              e.target.style.borderColor = '#d4d4d4';
             }}
           >
             Cancel
@@ -920,14 +858,14 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
             }}
             onMouseEnter={(e) => {
               if (!loading && title && workspace) {
-                e.target.style.transform = 'translateY(-2px) scale(1.02)';
-                e.target.style.boxShadow = '0 12px 35px rgba(16, 185, 129, 0.4)';
+                e.target.style.backgroundColor = '#262626';
+                e.target.style.transform = 'translateY(-1px)';
               }
             }}
             onMouseLeave={(e) => {
               if (!loading && title && workspace) {
-                e.target.style.transform = 'translateY(0) scale(1)';
-                e.target.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.3)';
+                e.target.style.backgroundColor = '#0a0a0a';
+                e.target.style.transform = 'translateY(0)';
               }
             }}
           >
@@ -938,7 +876,7 @@ const EditTaskModal = ({ task, workspaces, onClose, onTaskUpdated }) => {
               </>
             ) : (
               <>
-                <span style={{ fontSize: '16px' }}>💾</span>
+                <SaveIcon />
                 Save Changes
               </>
             )}

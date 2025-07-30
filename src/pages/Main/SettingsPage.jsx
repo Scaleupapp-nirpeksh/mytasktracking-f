@@ -7,29 +7,30 @@ const SettingsPage = () => {
   const { user, logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Update time every minute
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Add CSS animations
   useEffect(() => {
     const styleSheet = document.createElement("style");
     styleSheet.innerText = `
-      @keyframes slideInUp {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
       }
       
       @keyframes spin {
         to { transform: rotate(360deg); }
       }
       
-      @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.8; }
+      .fade-in-up {
+        animation: fadeInUp 0.3s ease-out;
       }
     `;
     document.head.appendChild(styleSheet);
@@ -52,65 +53,231 @@ const SettingsPage = () => {
     }
   };
 
+  const formatTime = (date) => {
+    return date.toLocaleTimeString('en-US', { 
+      hour: 'numeric', 
+      minute: '2-digit',
+      hour12: true 
+    });
+  };
+
+  // Professional SVG Icons
+  const FolderIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M22 19C22 19.5304 21.7893 20.0391 21.4142 20.4142C21.0391 20.7893 20.5304 21 20 21H4C3.46957 21 2.96086 20.7893 2.58579 20.4142C2.21071 20.0391 2 19.5304 2 19V5C2 4.46957 2.21071 3.96086 2.58579 3.58579C2.96086 3.21071 3.46957 3 4 3H9L11 6H20C20.5304 6 21.0391 6.21071 21.4142 6.58579C21.7893 6.96086 22 7.46957 22 8V19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const TaskIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <polyline points="10,9 9,9 8,9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const CalendarIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
+      <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+
+  const UsersIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M23 21V19C23 18.1645 22.7155 17.3541 22.2065 16.6977C21.6975 16.0413 20.9999 15.5787 20.2 15.3687" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M16 3.36875C16.8003 3.57864 17.4985 4.04126 18.0078 4.69776C18.5171 5.35425 18.8018 6.16479 18.8018 7.00063C18.8018 7.83646 18.5171 8.647 18.0078 9.30349C17.4985 9.95999 16.8003 10.4226 16 10.6325" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const SettingsIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+      <path d="M19.4 15C19.2669 15.3016 19.2272 15.6362 19.286 15.9606C19.3448 16.285 19.4995 16.5843 19.73 16.82L19.79 16.88C19.976 17.0657 20.1235 17.2863 20.2241 17.5291C20.3248 17.7719 20.3766 18.0322 20.3766 18.295C20.3766 18.5578 20.3248 18.8181 20.2241 19.0609C20.1235 19.3037 19.976 19.5243 19.79 19.71C19.6043 19.896 19.3837 20.0435 19.1409 20.1441C18.8981 20.2448 18.6378 20.2966 18.375 20.2966C18.1122 20.2966 17.8519 20.2448 17.6091 20.1441C17.3663 20.0435 17.1457 19.896 16.96 19.71L16.9 19.65C16.6643 19.4195 16.365 19.2648 16.0406 19.206C15.7162 19.1472 15.3816 19.1869 15.08 19.32C14.7842 19.4468 14.532 19.6572 14.3543 19.9255C14.1766 20.1938 14.0813 20.5082 14.08 20.83V21C14.08 21.5304 13.8693 22.0391 13.4942 22.4142C13.1191 22.7893 12.6104 23 12.08 23C11.5496 23 11.0409 22.7893 10.6658 22.4142C10.2907 22.0391 10.08 21.5304 10.08 21V20.91C10.0723 20.579 9.96512 20.2579 9.77251 19.9887C9.5799 19.7194 9.31074 19.5143 9 19.4C8.69838 19.2669 8.36381 19.2272 8.03941 19.286C7.71502 19.3448 7.41568 19.4995 7.18 19.73L7.12 19.79C6.93425 19.976 6.71368 20.1235 6.47088 20.2241C6.22808 20.3248 5.96783 20.3766 5.705 20.3766C5.44217 20.3766 5.18192 20.3248 4.93912 20.2241C4.69632 20.1235 4.47575 19.976 4.29 19.79C4.10405 19.6043 3.95653 19.3837 3.85588 19.1409C3.75523 18.8981 3.70343 18.6378 3.70343 18.375C3.70343 18.1122 3.75523 17.8519 3.85588 17.6091C3.95653 17.3663 4.10405 17.1457 4.29 16.96L4.35 16.9C4.58054 16.6643 4.73519 16.365 4.794 16.0406C4.85282 15.7162 4.81312 15.3816 4.68 15.08C4.55324 14.7842 4.34276 14.532 4.07447 14.3543C3.80618 14.1766 3.49179 14.0813 3.17 14.08H3C2.46957 14.08 1.96086 13.8693 1.58579 13.4942C1.21071 13.1191 1 12.6104 1 12.08C1 11.5496 1.21071 11.0409 1.58579 10.6658C1.96086 10.2907 2.46957 10.08 3 10.08H3.09C3.42099 10.0723 3.742 9.96512 4.01127 9.77251C4.28054 9.5799 4.48571 9.31074 4.6 9C4.73312 8.69838 4.77282 8.36381 4.714 8.03941C4.65519 7.71502 4.50054 7.41568 4.27 7.18L4.21 7.12C4.02405 6.93425 3.87653 6.71368 3.77588 6.47088C3.67523 6.22808 3.62343 5.96783 3.62343 5.705C3.62343 5.44217 3.67523 5.18192 3.77588 4.93912C3.87653 4.69632 4.02405 4.47575 4.21 4.29C4.39575 4.10405 4.61632 3.95653 4.85912 3.85588C5.10192 3.75523 5.36217 3.70343 5.625 3.70343C5.88783 3.70343 6.14808 3.75523 6.39088 3.85588C6.63368 3.95653 6.85425 4.10405 7.04 4.29L7.1 4.35C7.33568 4.58054 7.63502 4.73519 7.95941 4.794C8.28381 4.85282 8.61838 4.81312 8.92 4.68H9C9.29577 4.55324 9.54802 4.34276 9.72569 4.07447C9.90337 3.80618 9.99872 3.49179 10 3.17V3C10 2.46957 10.2107 1.96086 10.5858 1.58579C10.9609 1.21071 11.4696 1 12 1C12.5304 1 13.0391 1.21071 13.4142 1.58579C13.7893 1.96086 14 2.46957 14 3V3.09C14.0013 3.41179 14.0966 3.72618 14.2743 3.99447C14.452 4.26276 14.7042 4.47324 15 4.6C15.3016 4.73312 15.6362 4.77282 15.9606 4.714C16.285 4.65519 16.5843 4.50054 16.82 4.27L16.88 4.21C17.0657 4.02405 17.2863 3.87653 17.5291 3.77588C17.7719 3.67523 18.0322 3.62343 18.295 3.62343C18.5578 3.62343 18.8181 3.67523 19.0609 3.77588C19.3037 3.87653 19.5243 4.02405 19.71 4.21C19.896 4.39575 20.0435 4.61632 20.1441 4.85912C20.2448 5.10192 20.2966 5.36217 20.2966 5.625C20.2966 5.88783 20.2448 6.14808 20.1441 6.39088C20.0435 6.63368 19.896 6.85425 19.71 7.04L19.65 7.1C19.4195 7.33568 19.2648 7.63502 19.206 7.95941C19.1472 8.28381 19.1869 8.61838 19.32 8.92V9C19.4468 9.29577 19.6572 9.54802 19.9255 9.72569C20.1938 9.90337 20.5082 9.99872 20.83 10H21C21.5304 10 22.0391 10.2107 22.4142 10.5858C22.7893 10.9609 23 11.4696 23 12C23 12.5304 22.7893 13.0391 22.4142 13.4142C22.0391 13.7893 21.5304 14 21 14H20.91C20.5882 14.0013 20.2738 14.0966 20.0055 14.2743C19.7372 14.452 19.5268 14.7042 19.4 15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const UserIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const LinkIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 13C10.4295 13.5741 10.9774 14.0491 11.6066 14.3929C12.2357 14.7367 12.9315 14.9411 13.6467 14.9923C14.3618 15.0435 15.0796 14.9403 15.7513 14.6897C16.4231 14.4392 17.0331 14.047 17.54 13.54L20.54 10.54C21.4508 9.59695 21.9548 8.33394 21.9434 7.02296C21.932 5.71198 21.4061 4.45791 20.4791 3.53087C19.5521 2.60383 18.298 2.07799 16.987 2.0666C15.676 2.0552 14.413 2.55918 13.47 3.47L11.75 5.18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M14 11C13.5705 10.4259 13.0226 9.95085 12.3934 9.60706C11.7643 9.26327 11.0685 9.05885 10.3533 9.00769C9.63819 8.95653 8.92037 9.05973 8.24862 9.31028C7.57688 9.56084 6.96687 9.95303 6.46 10.46L3.46 13.46C2.54918 14.403 2.04520 15.6661 2.05660 16.977C2.068 18.288 2.59384 19.5421 3.52088 20.4691C4.44791 21.3962 5.70198 21.922 7.01296 21.9334C8.32394 21.9448 9.58695 21.4408 10.53 20.53L12.24 18.82" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const GoogleIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M22.56 12.25C22.56 11.47 22.49 10.72 22.36 10H12V14.255H17.92C17.665 15.63 16.89 16.795 15.725 17.575V20.335H19.28C21.36 18.42 22.56 15.6 22.56 12.25Z" fill="#4285F4"/>
+      <path d="M12 23C15.24 23 17.955 21.92 19.28 20.335L15.725 17.575C14.747 18.235 13.48 18.625 12 18.625C8.875 18.625 6.225 16.69 5.345 13.975H1.68V16.825C3.005 19.455 7.22 23 12 23Z" fill="#34A853"/>
+      <path d="M5.345 13.975C5.125 13.315 5 12.615 5 11.875S5.125 10.435 5.345 9.775V6.925H1.68C0.61 8.96 0 10.355 0 11.875S0.61 14.79 1.68 16.825L5.345 13.975Z" fill="#FBBC05"/>
+      <path d="M12 5.125C13.615 5.125 15.065 5.68 16.205 6.765L19.36 3.61C17.95 2.29 15.235 1.25 12 1.25C7.22 1.25 3.005 4.795 1.68 7.425L5.345 10.275C6.225 7.56 8.875 5.625 12 5.625V5.125Z" fill="#EA4335"/>
+    </svg>
+  );
+
+  const SlackIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14.5 10C15.3284 10 16 9.32843 16 8.5C16 7.67157 15.3284 7 14.5 7C13.6716 7 13 7.67157 13 8.5V10H14.5Z" fill="#E01E5A"/>
+      <path d="M5.5 10C4.67157 10 4 10.6716 4 11.5C4 12.3284 4.67157 13 5.5 13C6.32843 13 7 12.3284 7 11.5V10H5.5Z" fill="#E01E5A"/>
+      <path d="M14.5 16C15.3284 16 16 15.3284 16 14.5C16 13.6716 15.3284 13 14.5 13H13V14.5C13 15.3284 13.6716 16 14.5 16Z" fill="#2EB67D"/>
+      <path d="M10 14.5C10 15.3284 9.32843 16 8.5 16C7.67157 16 7 15.3284 7 14.5C7 13.6716 7.67157 13 8.5 13H10V14.5Z" fill="#2EB67D"/>
+      <path d="M10 5.5C10 4.67157 10.6716 4 11.5 4C12.3284 4 13 4.67157 13 5.5C13 6.32843 12.3284 7 11.5 7H10V5.5Z" fill="#ECB22E"/>
+      <path d="M14 9.5C14 8.67157 14.6716 8 15.5 8C16.3284 8 17 8.67157 17 9.5C17 10.3284 16.3284 11 15.5 11H14V9.5Z" fill="#36C5F0"/>
+    </svg>
+  );
+
+  const MailIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const BellIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18 8C18 6.4087 17.3679 4.88258 16.2426 3.75736C15.1174 2.63214 13.5913 2 12 2C10.4087 2 8.88258 2.63214 7.75736 3.75736C6.63214 4.88258 6 6.4087 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M13.73 21C13.5542 21.3031 13.3019 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6982 21.5547 10.4458 21.3031 10.27 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const ShieldIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 22S8 18 8 12V7L12 5L16 7V12C16 18 12 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const ChevronLeftIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="15,18 9,12 15,6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const ChevronRightIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="9,18 15,12 9,6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const KeystoneIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="8" width="24" height="16" rx="2" stroke="currentColor" strokeWidth="2"/>
+      <path d="M12 8V24" stroke="currentColor" strokeWidth="2"/>
+      <path d="M20 8V24" stroke="currentColor" strokeWidth="2"/>
+      <circle cx="16" cy="16" r="3" fill="currentColor"/>
+    </svg>
+  );
+
   const styles = {
-    layoutContainer: {
+    container: {
       display: 'flex',
       minHeight: '100vh',
-      backgroundColor: '#f8fafc',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", sans-serif',
+      backgroundColor: '#fafafa',
+      color: '#0a0a0a',
     },
     
     sidebar: {
-      width: '280px',
-      backgroundColor: 'white',
-      borderRight: '1px solid #e2e8f0',
-      padding: '0',
-      boxShadow: '2px 0 10px rgba(0, 0, 0, 0.05)',
+      width: sidebarCollapsed ? '64px' : '280px',
+      backgroundColor: '#ffffff',
+      borderRight: '1px solid #e5e5e5',
+      display: 'flex',
+      flexDirection: 'column',
+      transition: 'width 0.2s ease',
+      position: 'relative',
     },
     
-    sidebarLogo: {
-      fontSize: '28px',
-      fontWeight: '800',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      margin: '0',
-      padding: '32px 24px',
-      borderBottom: '1px solid #e2e8f0',
+    sidebarHeader: {
+      padding: '20px',
+      borderBottom: '1px solid #e5e5e5',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
     },
     
-    workspaceNav: {
-      padding: '24px',
-    },
-    
-    navTitle: {
-      fontSize: '12px',
+    logo: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      color: '#0a0a0a',
+      fontSize: '18px',
       fontWeight: '700',
-      color: '#64748b',
-      textTransform: 'uppercase',
-      letterSpacing: '1px',
-      margin: '0 0 16px 0',
+      opacity: sidebarCollapsed ? 0 : 1,
+      transition: 'opacity 0.2s ease',
     },
     
-    navList: {
-      listStyle: 'none',
-      padding: 0,
-      margin: 0,
+    collapseButton: {
+      width: '32px',
+      height: '32px',
+      border: 'none',
+      backgroundColor: '#f5f5f5',
+      borderRadius: '6px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#737373',
+      transition: 'all 0.2s ease',
+    },
+    
+    navigation: {
+      flex: 1,
+      padding: '16px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '24px',
+    },
+    
+    navSection: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '4px',
+    },
+    
+    navSectionTitle: {
+      fontSize: '12px',
+      fontWeight: '600',
+      color: '#737373',
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em',
+      marginBottom: '8px',
+      paddingLeft: '12px',
+      opacity: sidebarCollapsed ? 0 : 1,
+      transition: 'opacity 0.2s ease',
     },
     
     navItem: {
-      marginBottom: '8px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      padding: '10px 12px',
+      borderRadius: '6px',
+      color: '#525252',
+      textDecoration: 'none',
+      fontSize: '14px',
+      fontWeight: '500',
+      transition: 'all 0.2s ease',
+      cursor: 'pointer',
     },
     
-    workspaceItem: {
-      display: 'block',
-      padding: '12px 16px',
-      color: '#64748b',
-      textDecoration: 'none',
-      borderRadius: '10px',
-      fontSize: '15px',
-      fontWeight: '600',
-      transition: 'all 0.2s ease',
+    navItemActive: {
+      backgroundColor: '#0a0a0a',
+      color: '#ffffff',
+    },
+    
+    navItemText: {
+      opacity: sidebarCollapsed ? 0 : 1,
+      transition: 'opacity 0.2s ease',
     },
     
     mainContent: {
@@ -119,95 +286,176 @@ const SettingsPage = () => {
       flexDirection: 'column',
     },
     
-    mainHeader: {
-      backgroundColor: 'white',
-      borderBottom: '1px solid #e2e8f0',
-      padding: '24px 32px',
+    topBar: {
+      height: '72px',
+      backgroundColor: '#ffffff',
+      borderBottom: '1px solid #e5e5e5',
       display: 'flex',
-      justifyContent: 'space-between',
       alignItems: 'center',
-      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+      justifyContent: 'space-between',
+      padding: '0 32px',
     },
     
-    headerTitle: {
-      fontSize: '32px',
-      fontWeight: '800',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      margin: 0,
+    topBarLeft: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '16px',
+    },
+    
+    pageTitle: {
+      fontSize: '24px',
+      fontWeight: '700',
+      color: '#0a0a0a',
+    },
+    
+    timeDisplay: {
+      fontSize: '14px',
+      color: '#737373',
+      fontWeight: '500',
+    },
+    
+    topBarRight: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '16px',
+    },
+    
+    userSection: {
       display: 'flex',
       alignItems: 'center',
       gap: '12px',
     },
     
-    userMenu: {
+    userInfo: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-end',
+    },
+    
+    userName: {
+      fontSize: '14px',
+      fontWeight: '600',
+      color: '#0a0a0a',
+    },
+    
+    userEmail: {
+      fontSize: '12px',
+      color: '#737373',
+    },
+    
+    userAvatar: {
+      width: '36px',
+      height: '36px',
+      borderRadius: '50%',
+      backgroundColor: '#0a0a0a',
+      color: '#ffffff',
       display: 'flex',
       alignItems: 'center',
-      gap: '16px',
-      fontSize: '16px',
-      color: '#64748b',
-      fontWeight: '500',
+      justifyContent: 'center',
+      fontSize: '14px',
+      fontWeight: '600',
     },
     
     logoutButton: {
-      padding: '10px 20px',
-      backgroundColor: '#ef4444',
-      color: 'white',
-      border: 'none',
-      borderRadius: '8px',
-      fontWeight: '600',
+      padding: '8px 16px',
+      backgroundColor: '#fafafa',
+      border: '1px solid #e5e5e5',
+      borderRadius: '6px',
+      fontSize: '14px',
+      fontWeight: '500',
+      color: '#525252',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
     },
     
-    settingsPageMain: {
-      padding: '32px',
+    pageContent: {
       flex: 1,
+      padding: '32px',
+      backgroundColor: '#fafafa',
+      overflow: 'auto',
       maxWidth: '800px',
       margin: '0 auto',
       width: '100%',
     },
     
     settingsCard: {
-      backgroundColor: 'white',
-      borderRadius: '20px',
+      backgroundColor: '#ffffff',
+      border: '1px solid #e5e5e5',
+      borderRadius: '12px',
       padding: '32px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
-      border: '1px solid #e2e8f0',
       marginBottom: '24px',
-      animation: 'slideInUp 0.5s ease-out',
+      transition: 'all 0.2s ease',
     },
     
     cardTitle: {
-      fontSize: '24px',
-      fontWeight: '800',
-      color: '#1e293b',
-      margin: '0 0 24px 0',
+      fontSize: '20px',
+      fontWeight: '600',
+      color: '#0a0a0a',
+      margin: '0 0 20px 0',
       display: 'flex',
       alignItems: 'center',
-      gap: '12px',
+      gap: '10px',
       paddingBottom: '16px',
-      borderBottom: '2px solid #e2e8f0',
+      borderBottom: '1px solid #e5e5e5',
     },
     
     cardDescription: {
-      fontSize: '16px',
-      color: '#64748b',
-      margin: '0 0 32px 0',
-      lineHeight: '1.6',
+      fontSize: '14px',
+      color: '#737373',
+      margin: '0 0 24px 0',
+      lineHeight: 1.6,
+    },
+    
+    accountInfo: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '16px',
+      padding: '20px',
+      backgroundColor: '#fafafa',
+      borderRadius: '12px',
+      border: '1px solid #e5e5e5',
+    },
+    
+    avatar: {
+      width: '56px',
+      height: '56px',
+      borderRadius: '50%',
+      backgroundColor: '#0a0a0a',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: '20px',
+      fontWeight: '700',
+      color: 'white',
+      flexShrink: 0,
+    },
+    
+    accountDetails: {
+      flex: 1,
+    },
+    
+    accountName: {
+      fontSize: '18px',
+      fontWeight: '600',
+      color: '#0a0a0a',
+      margin: '0 0 4px 0',
+    },
+    
+    accountEmail: {
+      fontSize: '14px',
+      color: '#737373',
+      margin: 0,
     },
     
     integrationItem: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: '24px',
-      backgroundColor: '#f8fafc',
-      borderRadius: '16px',
-      border: '1px solid #e2e8f0',
-      marginBottom: '20px',
+      padding: '20px',
+      backgroundColor: '#fafafa',
+      borderRadius: '12px',
+      border: '1px solid #e5e5e5',
+      marginBottom: '16px',
       transition: 'all 0.2s ease',
     },
     
@@ -217,71 +465,70 @@ const SettingsPage = () => {
     },
     
     integrationTitle: {
-      fontSize: '20px',
-      fontWeight: '700',
-      color: '#1e293b',
-      margin: '0 0 8px 0',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-    },
-    
-    integrationDescription: {
       fontSize: '16px',
-      color: '#64748b',
-      margin: 0,
-      lineHeight: '1.5',
-    },
-    
-    connectButton: {
-      padding: '12px 24px',
-      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-      color: 'white',
-      border: 'none',
-      borderRadius: '12px',
-      fontSize: '16px',
-      fontWeight: '700',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease',
+      fontWeight: '600',
+      color: '#0a0a0a',
+      margin: '0 0 6px 0',
       display: 'flex',
       alignItems: 'center',
       gap: '8px',
-      boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
+    },
+    
+    integrationDescription: {
+      fontSize: '14px',
+      color: '#737373',
+      margin: 0,
+      lineHeight: 1.5,
+    },
+    
+    connectButton: {
+      padding: '10px 20px',
+      backgroundColor: '#0a0a0a',
+      color: '#ffffff',
+      border: 'none',
+      borderRadius: '8px',
+      fontSize: '14px',
+      fontWeight: '600',
+      cursor: 'pointer',
+      transition: 'all 0.2s ease',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
+      minHeight: '40px',
     },
     
     connectButtonDisabled: {
-      background: '#e2e8f0',
-      color: '#94a3b8',
+      backgroundColor: '#f5f5f5',
+      color: '#a3a3a3',
       cursor: 'not-allowed',
-      boxShadow: 'none',
     },
     
     comingSoonItem: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: '24px',
-      backgroundColor: '#f1f5f9',
-      borderRadius: '16px',
-      border: '2px dashed #cbd5e1',
-      marginBottom: '20px',
+      padding: '20px',
+      backgroundColor: '#f5f5f5',
+      borderRadius: '12px',
+      border: '1px dashed #d4d4d4',
+      marginBottom: '16px',
       opacity: 0.7,
     },
     
     comingSoonBadge: {
-      padding: '6px 12px',
+      padding: '4px 12px',
       backgroundColor: '#fbbf24',
       color: '#92400e',
-      borderRadius: '20px',
-      fontSize: '12px',
-      fontWeight: '700',
+      borderRadius: '16px',
+      fontSize: '11px',
+      fontWeight: '600',
       textTransform: 'uppercase',
-      letterSpacing: '0.5px',
+      letterSpacing: '0.05em',
     },
     
     spinner: {
-      width: '16px',
-      height: '16px',
+      width: '14px',
+      height: '14px',
       border: '2px solid transparent',
       borderTop: '2px solid currentColor',
       borderRadius: '50%',
@@ -291,170 +538,219 @@ const SettingsPage = () => {
     errorMessage: {
       backgroundColor: '#fef2f2',
       color: '#dc2626',
-      padding: '16px',
-      borderRadius: '12px',
+      padding: '12px 16px',
+      borderRadius: '8px',
       border: '1px solid #fecaca',
-      fontSize: '15px',
-      fontWeight: '600',
+      fontSize: '14px',
+      fontWeight: '500',
       display: 'flex',
       alignItems: 'center',
-      gap: '10px',
+      gap: '8px',
       marginTop: '16px',
-    },
-    
-    accountInfo: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '20px',
-      padding: '24px',
-      backgroundColor: '#f8fafc',
-      borderRadius: '16px',
-      border: '1px solid #e2e8f0',
-      marginBottom: '32px',
-    },
-    
-    avatar: {
-      width: '64px',
-      height: '64px',
-      borderRadius: '50%',
-      backgroundColor: '#667eea',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontSize: '24px',
-      fontWeight: '700',
-      color: 'white',
-    },
-    
-    accountDetails: {
-      flex: 1,
-    },
-    
-    accountName: {
-      fontSize: '20px',
-      fontWeight: '700',
-      color: '#1e293b',
-      margin: '0 0 4px 0',
-    },
-    
-    accountEmail: {
-      fontSize: '16px',
-      color: '#64748b',
-      margin: 0,
     },
   };
 
   return (
-    <div style={styles.layoutContainer}>
+    <div style={styles.container}>
       {/* Sidebar */}
       <aside style={styles.sidebar}>
-        <h1 style={styles.sidebarLogo}>🔑 Keystone</h1>
-        <nav style={styles.workspaceNav}>
-          <p style={styles.navTitle}>Navigation</p>
-          <ul style={styles.navList}>
-            <li style={styles.navItem}>
-              <NavLink 
-                to="/" 
-                style={styles.workspaceItem}
-                className={({ isActive }) => isActive ? 'active' : ''}
-                end
-              >
-                📊 Dashboard
-              </NavLink>
-            </li>
-            <li style={styles.navItem}>
-              <NavLink 
-                to="/tasks" 
-                style={styles.workspaceItem}
-                className={({ isActive }) => isActive ? 'active' : ''}
-              >
-                ✅ Tasks
-              </NavLink>
-            </li>
-            <li style={styles.navItem}>
-              <NavLink 
-                to="/meetings" 
-                style={styles.workspaceItem}
-                className={({ isActive }) => isActive ? 'active' : ''}
-              >
-                🤝 Meetings
-              </NavLink>
-            </li>
-            <li style={styles.navItem}>
-              <NavLink 
-                to="/settings" 
-                style={styles.workspaceItem}
-                className={({ isActive }) => isActive ? 'active' : ''}
-              >
-                ⚙️ Settings
-              </NavLink>
-            </li>
-          </ul>
+        <div style={styles.sidebarHeader}>
+          <div style={styles.logo}>
+            <KeystoneIcon />
+            <span>Keystone</span>
+          </div>
+          <button 
+            style={styles.collapseButton}
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#e5e5e5';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#f5f5f5';
+            }}
+          >
+            {sidebarCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          </button>
+        </div>
+        
+        <nav style={styles.navigation}>
+          <div style={styles.navSection}>
+            <div style={styles.navSectionTitle}>Views</div>
+            <NavLink
+              to="/"
+              style={({ isActive }) => ({
+                ...styles.navItem,
+                ...(isActive ? styles.navItemActive : {}),
+              })}
+              onMouseEnter={(e) => {
+                if (!e.target.classList.contains('active')) {
+                  e.target.style.backgroundColor = '#f5f5f5';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!e.target.classList.contains('active')) {
+                  e.target.style.backgroundColor = 'transparent';
+                }
+              }}
+            >
+              <TaskIcon />
+              <span style={styles.navItemText}>Dashboard</span>
+            </NavLink>
+            <NavLink
+              to="/tasks"
+              style={({ isActive }) => ({
+                ...styles.navItem,
+                ...(isActive ? styles.navItemActive : {}),
+              })}
+              onMouseEnter={(e) => {
+                if (!e.target.classList.contains('active')) {
+                  e.target.style.backgroundColor = '#f5f5f5';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!e.target.classList.contains('active')) {
+                  e.target.style.backgroundColor = 'transparent';
+                }
+              }}
+            >
+              <CalendarIcon />
+              <span style={styles.navItemText}>All Tasks</span>
+            </NavLink>
+            <NavLink
+              to="/meetings"
+              style={({ isActive }) => ({
+                ...styles.navItem,
+                ...(isActive ? styles.navItemActive : {}),
+              })}
+              onMouseEnter={(e) => {
+                if (!e.target.classList.contains('active')) {
+                  e.target.style.backgroundColor = '#f5f5f5';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!e.target.classList.contains('active')) {
+                  e.target.style.backgroundColor = 'transparent';
+                }
+              }}
+            >
+              <UsersIcon />
+              <span style={styles.navItemText}>Meetings</span>
+            </NavLink>
+            <NavLink
+              to="/settings"
+              style={({ isActive }) => ({
+                ...styles.navItem,
+                ...(isActive ? styles.navItemActive : {}),
+              })}
+              onMouseEnter={(e) => {
+                if (!e.target.classList.contains('active')) {
+                  e.target.style.backgroundColor = '#f5f5f5';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!e.target.classList.contains('active')) {
+                  e.target.style.backgroundColor = 'transparent';
+                }
+              }}
+            >
+              <SettingsIcon />
+              <span style={styles.navItemText}>Settings</span>
+            </NavLink>
+          </div>
         </nav>
       </aside>
 
       {/* Main Content */}
-      <div style={styles.mainContent}>
-        <header style={styles.mainHeader}>
-          <h2 style={styles.headerTitle}>
-            <span>⚙️</span>
-            Settings
-          </h2>
-          <div style={styles.userMenu}>
-            <span>Welcome, {user?.name}</span>
+      <main style={styles.mainContent}>
+        {/* Top Bar */}
+        <header style={styles.topBar}>
+          <div style={styles.topBarLeft}>
+            <h1 style={styles.pageTitle}>Settings</h1>
+            <div style={styles.timeDisplay}>
+              {formatTime(currentTime)} • {currentTime.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </div>
+          </div>
+          
+          <div style={styles.topBarRight}>
+            <div style={styles.userSection}>
+              <div style={styles.userInfo}>
+                <div style={styles.userName}>{user?.name || 'User'}</div>
+                <div style={styles.userEmail}>{user?.email || 'user@example.com'}</div>
+              </div>
+              <div style={styles.userAvatar}>
+                {(user?.name || 'U').charAt(0).toUpperCase()}
+              </div>
+            </div>
             <button 
-              onClick={logout} 
               style={styles.logoutButton}
+              onClick={logout}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#dc2626';
-                e.target.style.transform = 'translateY(-1px)';
+                e.target.style.backgroundColor = '#f5f5f5';
+                e.target.style.borderColor = '#d4d4d4';
+                e.target.style.color = '#dc2626';
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#ef4444';
-                e.target.style.transform = 'translateY(0)';
+                e.target.style.backgroundColor = '#fafafa';
+                e.target.style.borderColor = '#e5e5e5';
+                e.target.style.color = '#525252';
               }}
             >
-              Log Out
+              Sign out
             </button>
           </div>
         </header>
 
-        <main style={styles.settingsPageMain}>
+        {/* Page Content */}
+        <div style={styles.pageContent}>
           {/* Account Information */}
-          <div style={styles.settingsCard}>
-            <h3 style={styles.cardTitle}>
-              <span>👤</span>
+          <div style={styles.settingsCard} className="fade-in-up">
+            <h2 style={styles.cardTitle}>
+              <UserIcon />
               Account Information
-            </h3>
+            </h2>
             
             <div style={styles.accountInfo}>
               <div style={styles.avatar}>
                 {user?.name?.charAt(0)?.toUpperCase() || 'U'}
               </div>
               <div style={styles.accountDetails}>
-                <h4 style={styles.accountName}>{user?.name || 'User'}</h4>
+                <h3 style={styles.accountName}>{user?.name || 'User'}</h3>
                 <p style={styles.accountEmail}>{user?.email || 'user@example.com'}</p>
               </div>
             </div>
           </div>
 
-          {/* Integrations - What Actually Works */}
-          <div style={styles.settingsCard}>
-            <h3 style={styles.cardTitle}>
-              <span>🔗</span>
+          {/* Integrations */}
+          <div style={styles.settingsCard} className="fade-in-up">
+            <h2 style={styles.cardTitle}>
+              <LinkIcon />
               Integrations
-            </h3>
+            </h2>
             <p style={styles.cardDescription}>
-              Connect your favorite tools and services to enhance your productivity.
+              Connect your favorite tools and services to enhance your productivity workflow.
             </p>
 
             {/* Google Calendar - WORKING */}
-            <div style={styles.integrationItem}>
+            <div 
+              style={styles.integrationItem}
+              onMouseEnter={(e) => {
+                e.target.style.borderColor = '#d4d4d4';
+                e.target.style.backgroundColor = '#f5f5f5';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.borderColor = '#e5e5e5';
+                e.target.style.backgroundColor = '#fafafa';
+              }}
+            >
               <div style={styles.integrationInfo}>
-                <h4 style={styles.integrationTitle}>
-                  <span>📅</span>
+                <h3 style={styles.integrationTitle}>
+                  <GoogleIcon />
                   Google Calendar
-                </h4>
+                </h3>
                 <p style={styles.integrationDescription}>
                   Sync your tasks with due dates directly to your Google Calendar and get reminders across all your devices.
                 </p>
@@ -468,14 +764,14 @@ const SettingsPage = () => {
                 disabled={loading}
                 onMouseEnter={(e) => {
                   if (!loading) {
-                    e.target.style.transform = 'translateY(-2px)';
-                    e.target.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.4)';
+                    e.target.style.backgroundColor = '#262626';
+                    e.target.style.transform = 'translateY(-1px)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!loading) {
+                    e.target.style.backgroundColor = '#0a0a0a';
                     e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = '0 4px 15px rgba(16, 185, 129, 0.3)';
                   }
                 }}
               >
@@ -486,7 +782,7 @@ const SettingsPage = () => {
                   </>
                 ) : (
                   <>
-                    <span>🔗</span>
+                    <LinkIcon />
                     Connect
                   </>
                 )}
@@ -496,10 +792,10 @@ const SettingsPage = () => {
             {/* Coming Soon Items */}
             <div style={styles.comingSoonItem}>
               <div style={styles.integrationInfo}>
-                <h4 style={styles.integrationTitle}>
-                  <span>💬</span>
+                <h3 style={styles.integrationTitle}>
+                  <SlackIcon />
                   Slack Integration
-                </h4>
+                </h3>
                 <p style={styles.integrationDescription}>
                   Get task notifications and updates directly in your Slack workspace.
                 </p>
@@ -511,10 +807,10 @@ const SettingsPage = () => {
 
             <div style={styles.comingSoonItem}>
               <div style={styles.integrationInfo}>
-                <h4 style={styles.integrationTitle}>
-                  <span>📧</span>
+                <h3 style={styles.integrationTitle}>
+                  <MailIcon />
                   Microsoft Outlook
-                </h4>
+                </h3>
                 <p style={styles.integrationDescription}>
                   Sync tasks and meetings with your Outlook calendar and email.
                 </p>
@@ -526,28 +822,32 @@ const SettingsPage = () => {
 
             {error && (
               <div style={styles.errorMessage}>
-                <span>❌</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                  <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" strokeWidth="2"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" strokeWidth="2"/>
+                </svg>
                 {error}
               </div>
             )}
           </div>
 
-          {/* Coming Soon Sections */}
-          <div style={styles.settingsCard}>
-            <h3 style={styles.cardTitle}>
-              <span>🔔</span>
+          {/* Notification Preferences */}
+          <div style={styles.settingsCard} className="fade-in-up">
+            <h2 style={styles.cardTitle}>
+              <BellIcon />
               Notification Preferences
-            </h3>
+            </h2>
             <p style={styles.cardDescription}>
               Control how and when you receive notifications about your tasks and meetings.
             </p>
             
             <div style={styles.comingSoonItem}>
               <div style={styles.integrationInfo}>
-                <h4 style={styles.integrationTitle}>
-                  <span>📧</span>
+                <h3 style={styles.integrationTitle}>
+                  <MailIcon />
                   Email Notifications & Task Reminders
-                </h4>
+                </h3>
                 <p style={styles.integrationDescription}>
                   Configure email alerts, weekly reports, and task due date reminders.
                 </p>
@@ -558,21 +858,22 @@ const SettingsPage = () => {
             </div>
           </div>
 
-          <div style={styles.settingsCard}>
-            <h3 style={styles.cardTitle}>
-              <span>🔒</span>
+          {/* Security & Privacy */}
+          <div style={styles.settingsCard} className="fade-in-up">
+            <h2 style={styles.cardTitle}>
+              <ShieldIcon />
               Security & Privacy
-            </h3>
+            </h2>
             <p style={styles.cardDescription}>
               Manage your account security and privacy settings.
             </p>
             
             <div style={styles.comingSoonItem}>
               <div style={styles.integrationInfo}>
-                <h4 style={styles.integrationTitle}>
-                  <span>🔐</span>
+                <h3 style={styles.integrationTitle}>
+                  <ShieldIcon />
                   Password & Two-Factor Authentication
-                </h4>
+                </h3>
                 <p style={styles.integrationDescription}>
                   Change your password and enable two-factor authentication for enhanced security.
                 </p>
@@ -582,8 +883,8 @@ const SettingsPage = () => {
               </div>
             </div>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };

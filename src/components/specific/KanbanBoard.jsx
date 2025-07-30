@@ -1,4 +1,3 @@
-//src/components/specific/KanbanBoard.jsx
 import React, { useState, useEffect } from 'react';
 import { updateTask } from '../../services/apiService';
 
@@ -6,15 +5,16 @@ const KanbanBoard = ({ tasks, onTaskUpdated, onTaskClick }) => {
   const [draggedTask, setDraggedTask] = useState(null);
   const [dragOverColumn, setDragOverColumn] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [collapsedColumns, setCollapsedColumns] = useState(new Set());
 
-  // Add CSS animations
+  // Professional CSS animations
   useEffect(() => {
     const styleSheet = document.createElement("style");
     styleSheet.innerText = `
-      @keyframes slideInUp {
+      @keyframes fadeIn {
         from {
           opacity: 0;
-          transform: translateY(20px);
+          transform: translateY(8px);
         }
         to {
           opacity: 1;
@@ -22,40 +22,32 @@ const KanbanBoard = ({ tasks, onTaskUpdated, onTaskClick }) => {
         }
       }
       
-      @keyframes cardHover {
-        from { transform: translateY(0) scale(1); }
-        to { transform: translateY(-4px) scale(1.02); }
-      }
-      
-      @keyframes cardDrag {
-        from { transform: rotate(0deg) scale(1); }
-        to { transform: rotate(5deg) scale(1.05); }
-      }
-      
-      @keyframes columnPulse {
-        0%, 100% { 
-          background-color: rgba(16, 185, 129, 0.05);
-          border-color: rgba(16, 185, 129, 0.3);
-        }
-        50% { 
-          background-color: rgba(16, 185, 129, 0.1);
-          border-color: rgba(16, 185, 129, 0.5);
-        }
-      }
-      
-      @keyframes taskDrop {
-        0% { transform: scale(1.1); }
-        50% { transform: scale(0.95); }
-        100% { transform: scale(1); }
-      }
-      
       @keyframes spin {
         to { transform: rotate(360deg); }
       }
       
-      @keyframes shimmer {
-        0% { background-position: -200% 0; }
-        100% { background-position: 200% 0; }
+      @keyframes dragOverPulse {
+        0%, 100% { 
+          background-color: rgba(10, 10, 10, 0.02);
+          border-color: rgba(10, 10, 10, 0.1);
+        }
+        50% { 
+          background-color: rgba(10, 10, 10, 0.05);
+          border-color: rgba(10, 10, 10, 0.2);
+        }
+      }
+      
+      .kanban-task-card {
+        animation: fadeIn 0.3s ease-out;
+      }
+      
+      .kanban-task-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      
+      .kanban-column-drag-over {
+        animation: dragOverPulse 1s ease-in-out infinite;
       }
     `;
     document.head.appendChild(styleSheet);
@@ -71,42 +63,32 @@ const KanbanBoard = ({ tasks, onTaskUpdated, onTaskClick }) => {
     { 
       id: 'To Do', 
       title: 'To Do', 
-      icon: '📋', 
-      color: '#64748b',
-      bgColor: '#f8fafc',
-      borderColor: '#e2e8f0'
+      color: '#737373',
+      bgColor: '#fafafa'
     },
     { 
       id: 'In Progress', 
       title: 'In Progress', 
-      icon: '🔄', 
-      color: '#3b82f6',
-      bgColor: '#eff6ff',
-      borderColor: '#bfdbfe'
+      color: '#0a0a0a',
+      bgColor: '#fafafa'
     },
     { 
       id: 'Blocked', 
       title: 'Blocked', 
-      icon: '🚫', 
-      color: '#ef4444',
-      bgColor: '#fef2f2',
-      borderColor: '#fecaca'
+      color: '#dc2626',
+      bgColor: '#fef2f2'
     },
     { 
       id: 'For Review', 
       title: 'For Review', 
-      icon: '👁️', 
-      color: '#f59e0b',
-      bgColor: '#fffbeb',
-      borderColor: '#fde68a'
+      color: '#ca8a04',
+      bgColor: '#fefce8'
     },
     { 
       id: 'Done', 
       title: 'Done', 
-      icon: '✅', 
-      color: '#10b981',
-      bgColor: '#f0fdf4',
-      borderColor: '#bbf7d0'
+      color: '#16a34a',
+      bgColor: '#f0fdf4'
     }
   ];
 
@@ -117,18 +99,15 @@ const KanbanBoard = ({ tasks, onTaskUpdated, onTaskClick }) => {
   const handleDragStart = (e, task) => {
     setDraggedTask(task);
     e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', e.target.outerHTML);
     
-    // Add visual feedback
+    // Subtle visual feedback
     setTimeout(() => {
-      e.target.style.opacity = '0.5';
-      e.target.style.transform = 'rotate(5deg) scale(1.05)';
+      e.target.style.opacity = '0.6';
     }, 0);
   };
 
   const handleDragEnd = (e) => {
     e.target.style.opacity = '1';
-    e.target.style.transform = 'rotate(0deg) scale(1)';
     setDraggedTask(null);
     setDragOverColumn(null);
   };
@@ -145,7 +124,6 @@ const KanbanBoard = ({ tasks, onTaskUpdated, onTaskClick }) => {
 
   const handleDragLeave = (e) => {
     e.preventDefault();
-    // Only clear drag over if we're leaving the column entirely
     if (!e.currentTarget.contains(e.relatedTarget)) {
       setDragOverColumn(null);
     }
@@ -164,32 +142,31 @@ const KanbanBoard = ({ tasks, onTaskUpdated, onTaskClick }) => {
     try {
       const response = await updateTask(draggedTask._id, { status: newStatus });
       onTaskUpdated(response.data.data.task);
-      
-      // Add success animation to the dropped task
-      const dropTarget = e.currentTarget.querySelector(`[data-task-id="${draggedTask._id}"]`);
-      if (dropTarget) {
-        dropTarget.style.animation = 'taskDrop 0.3s ease-out';
-        setTimeout(() => {
-          dropTarget.style.animation = '';
-        }, 300);
-      }
-      
     } catch (error) {
       console.error('Failed to update task status:', error);
-      // Could add error notification here
     } finally {
       setIsUpdating(false);
     }
   };
 
+  const toggleColumnCollapse = (columnId) => {
+    const newCollapsed = new Set(collapsedColumns);
+    if (newCollapsed.has(columnId)) {
+      newCollapsed.delete(columnId);
+    } else {
+      newCollapsed.add(columnId);
+    }
+    setCollapsedColumns(newCollapsed);
+  };
+
   const getPriorityColor = (priority) => {
     const colors = {
-      'Low': '#059669',
-      'Medium': '#d97706',
+      'Low': '#16a34a',
+      'Medium': '#ca8a04',
       'High': '#dc2626',
       'Critical': '#7c2d12',
     };
-    return colors[priority] || '#64748b';
+    return colors[priority] || '#737373';
   };
 
   const formatDate = (dateString) => {
@@ -202,200 +179,249 @@ const KanbanBoard = ({ tasks, onTaskUpdated, onTaskClick }) => {
     if (diffDays < 0) {
       return { text: `${Math.abs(diffDays)}d overdue`, color: '#dc2626', urgent: true };
     } else if (diffDays === 0) {
-      return { text: 'Due today', color: '#f59e0b', urgent: true };
+      return { text: 'Today', color: '#ca8a04', urgent: true };
     } else if (diffDays === 1) {
-      return { text: 'Due tomorrow', color: '#f59e0b', urgent: false };
+      return { text: 'Tomorrow', color: '#ca8a04', urgent: false };
     } else if (diffDays <= 7) {
-      return { text: `Due in ${diffDays}d`, color: '#64748b', urgent: false };
+      return { text: `${diffDays}d`, color: '#737373', urgent: false };
     } else {
-      return { text: date.toLocaleDateString(), color: '#64748b', urgent: false };
+      return { text: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), color: '#737373', urgent: false };
     }
   };
 
+  // Professional SVG Icons
+  const ChevronDownIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="6,9 12,15 18,9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const ChevronRightIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="9,18 15,12 9,6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const StarIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="currentColor"/>
+    </svg>
+  );
+
+  const PaperclipIcon = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M21.44 11.05L12.25 20.24C11.1242 21.3658 9.59722 21.9983 8.005 21.9983C6.41278 21.9983 4.88578 21.3658 3.76 20.24C2.63421 19.1142 2.00167 17.5872 2.00167 15.995C2.00167 14.4028 2.63421 12.8758 3.76 11.75L12.95 2.56C13.7006 1.80944 14.7186 1.38825 15.78 1.38825C16.8414 1.38825 17.8594 1.80944 18.61 2.56C19.3606 3.31056 19.7818 4.32861 19.7818 5.39C19.7818 6.45139 19.3606 7.46944 18.61 8.22L9.41 17.41C9.03494 17.7851 8.52433 17.9972 7.99 17.9972C7.45567 17.9972 6.94506 17.7851 6.57 17.41C6.19494 17.0349 5.98283 16.5243 5.98283 15.99C5.98283 15.4557 6.19494 14.9451 6.57 14.57L15.07 6.07" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
   const styles = {
     kanbanContainer: {
-      padding: '24px',
-      backgroundColor: '#f8fafc',
-      minHeight: '100vh',
-    },
-    
-    kanbanHeader: {
-      marginBottom: '32px',
-      textAlign: 'center',
-    },
-    
-    kanbanTitle: {
-      fontSize: '32px',
-      fontWeight: '800',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      margin: '0 0 12px 0',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '12px',
-    },
-    
-    kanbanSubtitle: {
-      fontSize: '16px',
-      color: '#64748b',
-      margin: 0,
-      fontWeight: '500',
+      backgroundColor: '#ffffff',
+      border: '1px solid #e5e5e5',
+      borderRadius: '12px',
+      overflow: 'hidden',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", sans-serif',
     },
     
     board: {
       display: 'flex',
-      gap: '24px',
-      overflowX: 'auto',
-      paddingBottom: '24px',
-      minHeight: '600px',
+      minHeight: '500px',
+      maxHeight: '600px',
+      overflow: 'hidden',
     },
     
     column: {
-      minWidth: '320px',
-      backgroundColor: 'white',
-      borderRadius: '16px',
-      boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
-      border: '2px solid transparent',
-      transition: 'all 0.3s ease',
+      flex: 1,
+      minWidth: '0',
+      borderRight: '1px solid #e5e5e5',
       display: 'flex',
       flexDirection: 'column',
-      maxHeight: '80vh',
+      backgroundColor: '#ffffff',
+      transition: 'all 0.2s ease',
+    },
+    
+    columnLast: {
+      borderRight: 'none',
+    },
+    
+    columnCollapsed: {
+      flex: '0 0 60px',
+      minWidth: '60px',
     },
     
     columnDragOver: {
-      animation: 'columnPulse 1s ease-in-out infinite',
-      transform: 'scale(1.02)',
-      boxShadow: '0 8px 32px rgba(16, 185, 129, 0.2)',
+      backgroundColor: '#fafafa',
     },
     
     columnHeader: {
-      padding: '24px 20px 16px 20px',
-      borderBottom: '2px solid #f1f5f9',
+      padding: '16px 20px',
+      borderBottom: '1px solid #e5e5e5',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
+      cursor: 'pointer',
+      transition: 'background-color 0.2s ease',
       flexShrink: 0,
     },
     
-    columnTitle: {
-      fontSize: '18px',
-      fontWeight: '700',
-      margin: 0,
+    columnHeaderHover: {
+      backgroundColor: '#fafafa',
+    },
+    
+    columnTitleContainer: {
       display: 'flex',
       alignItems: 'center',
       gap: '8px',
+      flex: 1,
+      minWidth: 0,
+    },
+    
+    columnTitle: {
+      fontSize: '14px',
+      fontWeight: '600',
+      margin: 0,
+      color: '#0a0a0a',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
     },
     
     columnCount: {
-      backgroundColor: '#e2e8f0',
-      color: '#64748b',
-      padding: '4px 10px',
+      backgroundColor: '#f5f5f5',
+      color: '#737373',
+      padding: '2px 8px',
       borderRadius: '12px',
-      fontSize: '14px',
+      fontSize: '12px',
       fontWeight: '600',
-      minWidth: '24px',
+      minWidth: '20px',
       textAlign: 'center',
+      flexShrink: 0,
+    },
+    
+    collapseIcon: {
+      color: '#737373',
+      transition: 'transform 0.2s ease, color 0.2s ease',
+      flexShrink: 0,
+      marginLeft: '8px',
+    },
+    
+    collapseIconRotated: {
+      transform: 'rotate(-90deg)',
     },
     
     tasksContainer: {
       flex: 1,
-      padding: '20px',
+      padding: '12px',
       overflowY: 'auto',
       display: 'flex',
       flexDirection: 'column',
-      gap: '12px',
+      gap: '8px',
+    },
+    
+    tasksContainerCollapsed: {
+      display: 'none',
     },
     
     taskCard: {
-      backgroundColor: 'white',
-      borderRadius: '12px',
-      padding: '16px',
-      border: '1px solid #e2e8f0',
-      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
-      cursor: 'grab',
+      backgroundColor: '#ffffff',
+      borderRadius: '8px',
+      padding: '12px',
+      border: '1px solid #e5e5e5',
+      cursor: 'pointer',
       transition: 'all 0.2s ease',
-      animation: 'slideInUp 0.3s ease-out',
       position: 'relative',
       userSelect: 'none',
     },
     
     taskCardDragging: {
-      opacity: 0.5,
-      transform: 'rotate(5deg) scale(1.05)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
-      zIndex: 1000,
+      opacity: 0.6,
+      transform: 'rotate(2deg) scale(1.02)',
     },
     
     taskHeader: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
-      marginBottom: '12px',
-      gap: '12px',
+      marginBottom: '8px',
+      gap: '8px',
     },
     
     taskTitle: {
-      fontSize: '16px',
+      fontSize: '14px',
       fontWeight: '600',
-      color: '#1e293b',
+      color: '#0a0a0a',
       margin: 0,
       lineHeight: '1.4',
       flex: 1,
-    },
-    
-    keyTaskBadge: {
-      fontSize: '16px',
-      filter: 'drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3))',
-      animation: 'pulse 2s infinite',
-      flexShrink: 0,
-    },
-    
-    taskDescription: {
-      fontSize: '14px',
-      color: '#64748b',
-      margin: '0 0 12px 0',
-      lineHeight: '1.4',
+      overflow: 'hidden',
       display: '-webkit-box',
       WebkitLineClamp: 2,
       WebkitBoxOrient: 'vertical',
+    },
+    
+    keyTaskIndicator: {
+      color: '#ca8a04',
+      flexShrink: 0,
+      marginTop: '1px',
+    },
+    
+    taskDescription: {
+      fontSize: '12px',
+      color: '#737373',
+      margin: '0 0 8px 0',
+      lineHeight: '1.4',
       overflow: 'hidden',
+      display: '-webkit-box',
+      WebkitLineClamp: 2,
+      WebkitBoxOrient: 'vertical',
     },
     
     taskMeta: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginTop: '12px',
-      paddingTop: '12px',
-      borderTop: '1px solid #f1f5f9',
+      gap: '8px',
+    },
+    
+    taskMetaLeft: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
     },
     
     priorityBadge: {
-      padding: '4px 8px',
-      borderRadius: '6px',
-      fontSize: '12px',
+      padding: '2px 6px',
+      borderRadius: '4px',
+      fontSize: '10px',
       fontWeight: '600',
       textTransform: 'uppercase',
-      letterSpacing: '0.5px',
+      letterSpacing: '0.05em',
       color: 'white',
     },
     
+    attachmentIndicator: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '2px',
+      color: '#737373',
+      fontSize: '10px',
+    },
+    
     dueDateBadge: {
-      padding: '4px 8px',
-      borderRadius: '6px',
-      fontSize: '12px',
-      fontWeight: '600',
-      backgroundColor: '#f1f5f9',
-      border: '1px solid #e2e8f0',
+      padding: '2px 6px',
+      borderRadius: '4px',
+      fontSize: '10px',
+      fontWeight: '500',
+      backgroundColor: '#f5f5f5',
+      border: '1px solid #e5e5e5',
+      flexShrink: 0,
     },
     
     dueDateUrgent: {
       backgroundColor: '#fef2f2',
       borderColor: '#fecaca',
-      animation: 'pulse 2s infinite',
+      color: '#dc2626',
+      fontWeight: '600',
     },
     
     emptyColumn: {
@@ -405,51 +431,45 @@ const KanbanBoard = ({ tasks, onTaskUpdated, onTaskClick }) => {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '40px 20px',
-      color: '#94a3b8',
-      fontSize: '14px',
-      fontWeight: '500',
+      color: '#a3a3a3',
+      fontSize: '12px',
       textAlign: 'center',
-      border: '2px dashed #e2e8f0',
-      borderRadius: '12px',
-      backgroundColor: '#fafbfc',
+      border: '2px dashed #e5e5e5',
+      borderRadius: '8px',
+      margin: '8px',
     },
     
-    emptyIcon: {
-      fontSize: '32px',
-      marginBottom: '12px',
-      opacity: 0.6,
+    emptyText: {
+      margin: '8px 0 4px 0',
+      fontWeight: '500',
+    },
+    
+    emptySubtext: {
+      fontSize: '11px',
+      opacity: 0.7,
     },
     
     loadingOverlay: {
-      position: 'fixed',
+      position: 'absolute',
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.3)',
+      backgroundColor: 'rgba(255, 255, 255, 0.8)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      zIndex: 10000,
-      backdropFilter: 'blur(4px)',
+      zIndex: 1000,
+      borderRadius: '12px',
     },
     
     loadingSpinner: {
-      width: '48px',
-      height: '48px',
-      border: '4px solid #e2e8f0',
-      borderTop: '4px solid #10b981',
+      width: '24px',
+      height: '24px',
+      border: '2px solid #e5e5e5',
+      borderTop: '2px solid #0a0a0a',
       borderRadius: '50%',
       animation: 'spin 1s linear infinite',
-    },
-    
-    attachmentIndicator: {
-      fontSize: '12px',
-      color: '#64748b',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '4px',
-      marginTop: '8px',
     },
   };
 
@@ -461,62 +481,71 @@ const KanbanBoard = ({ tasks, onTaskUpdated, onTaskClick }) => {
         </div>
       )}
       
-      <div style={styles.kanbanHeader}>
-        <h1 style={styles.kanbanTitle}>
-          <span>📋</span>
-          Task Board
-        </h1>
-        <p style={styles.kanbanSubtitle}>
-          Drag and drop tasks between columns to update their status
-        </p>
-      </div>
-
       <div style={styles.board}>
-        {columns.map((column) => {
+        {columns.map((column, index) => {
           const columnTasks = getTasksByStatus(column.id);
           const isDragOver = dragOverColumn === column.id;
+          const isCollapsed = collapsedColumns.has(column.id);
+          const isLast = index === columns.length - 1;
 
           return (
             <div
               key={column.id}
               style={{
                 ...styles.column,
+                ...(isLast ? styles.columnLast : {}),
+                ...(isCollapsed ? styles.columnCollapsed : {}),
                 ...(isDragOver ? styles.columnDragOver : {}),
               }}
+              className={isDragOver ? 'kanban-column-drag-over' : ''}
               onDragOver={handleDragOver}
               onDragEnter={(e) => handleDragEnter(e, column.id)}
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, column.id)}
             >
-              <div style={styles.columnHeader}>
-                <h3 style={{
-                  ...styles.columnTitle,
-                  color: column.color
-                }}>
-                  <span>{column.icon}</span>
-                  {column.title}
-                </h3>
+              <div 
+                style={styles.columnHeader}
+                onClick={() => toggleColumnCollapse(column.id)}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#fafafa';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                }}
+              >
+                <div style={styles.columnTitleContainer}>
+                  <h3 style={styles.columnTitle}>
+                    {isCollapsed ? column.title.charAt(0) : column.title}
+                  </h3>
+                  {!isCollapsed && (
+                    <div style={{
+                      ...styles.columnCount,
+                      backgroundColor: column.bgColor,
+                      color: column.color,
+                    }}>
+                      {columnTasks.length}
+                    </div>
+                  )}
+                </div>
                 <div style={{
-                  ...styles.columnCount,
-                  backgroundColor: column.bgColor,
-                  color: column.color,
-                  border: `1px solid ${column.borderColor}`,
+                  ...styles.collapseIcon,
+                  ...(isCollapsed ? styles.collapseIconRotated : {}),
                 }}>
-                  {columnTasks.length}
+                  {isCollapsed ? <ChevronRightIcon /> : <ChevronDownIcon />}
                 </div>
               </div>
 
-              <div style={styles.tasksContainer}>
+              <div style={{
+                ...styles.tasksContainer,
+                ...(isCollapsed ? styles.tasksContainerCollapsed : {}),
+              }}>
                 {columnTasks.length === 0 ? (
                   <div style={styles.emptyColumn}>
-                    <div style={styles.emptyIcon}>{column.icon}</div>
-                    <div>No tasks in {column.title.toLowerCase()}</div>
-                    <div style={{ fontSize: '12px', marginTop: '4px', opacity: 0.7 }}>
-                      Drop tasks here
-                    </div>
+                    <div style={styles.emptyText}>No tasks</div>
+                    <div style={styles.emptySubtext}>Drop tasks here</div>
                   </div>
                 ) : (
-                  columnTasks.map((task, index) => {
+                  columnTasks.map((task, taskIndex) => {
                     const dueDateInfo = formatDate(task.dueDate);
                     
                     return (
@@ -527,34 +556,18 @@ const KanbanBoard = ({ tasks, onTaskUpdated, onTaskClick }) => {
                         onDragStart={(e) => handleDragStart(e, task)}
                         onDragEnd={handleDragEnd}
                         onClick={() => onTaskClick && onTaskClick(task)}
+                        className="kanban-task-card"
                         style={{
                           ...styles.taskCard,
-                          animationDelay: `${index * 0.1}s`,
-                        }}
-                        onMouseEnter={(e) => {
-                          if (!draggedTask) {
-                            e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)';
-                            e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.12)';
-                            e.currentTarget.style.cursor = 'grab';
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!draggedTask) {
-                            e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.04)';
-                          }
-                        }}
-                        onMouseDown={(e) => {
-                          e.currentTarget.style.cursor = 'grabbing';
-                        }}
-                        onMouseUp={(e) => {
-                          e.currentTarget.style.cursor = 'grab';
+                          animationDelay: `${taskIndex * 0.05}s`,
                         }}
                       >
                         <div style={styles.taskHeader}>
                           <h4 style={styles.taskTitle}>{task.title}</h4>
                           {task.isKeyTask && (
-                            <span style={styles.keyTaskBadge}>⭐</span>
+                            <div style={styles.keyTaskIndicator}>
+                              <StarIcon />
+                            </div>
                           )}
                         </div>
 
@@ -562,19 +575,21 @@ const KanbanBoard = ({ tasks, onTaskUpdated, onTaskClick }) => {
                           <p style={styles.taskDescription}>{task.description}</p>
                         )}
 
-                        {task.attachments && task.attachments.length > 0 && (
-                          <div style={styles.attachmentIndicator}>
-                            <span>📎</span>
-                            <span>{task.attachments.length} file{task.attachments.length !== 1 ? 's' : ''}</span>
-                          </div>
-                        )}
-
                         <div style={styles.taskMeta}>
-                          <div style={{
-                            ...styles.priorityBadge,
-                            backgroundColor: getPriorityColor(task.priority),
-                          }}>
-                            {task.priority}
+                          <div style={styles.taskMetaLeft}>
+                            <div style={{
+                              ...styles.priorityBadge,
+                              backgroundColor: getPriorityColor(task.priority),
+                            }}>
+                              {task.priority.charAt(0)}
+                            </div>
+                            
+                            {task.attachments && task.attachments.length > 0 && (
+                              <div style={styles.attachmentIndicator}>
+                                <PaperclipIcon />
+                                <span>{task.attachments.length}</span>
+                              </div>
+                            )}
                           </div>
 
                           {dueDateInfo && (

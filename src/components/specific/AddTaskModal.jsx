@@ -35,7 +35,7 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
       @keyframes modalSlideIn {
         from {
           opacity: 0;
-          transform: translateY(-50px) scale(0.95);
+          transform: translateY(-20px) scale(0.98);
         }
         to {
           opacity: 1;
@@ -61,11 +61,6 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
           opacity: 1;
           transform: translateY(0);
         }
-      }
-      
-      @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.8; }
       }
     `;
     document.head.appendChild(styleSheet);
@@ -118,6 +113,51 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
     }
   };
 
+  // Professional SVG Icons
+  const XIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const PlusIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+
+  const CalendarIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
+      <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+
+  const RefreshIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="23,4 23,10 17,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <polyline points="1,20 1,14 7,14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M20.49 9C19.05 5.99 16.2 4 12.89 4C8.51 4 4.96 7.36 4.46 11.73M3.51 15C4.95 18.01 7.8 20 11.11 20C15.49 20 19.04 16.64 19.54 12.27" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const CheckIcon = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="20,6 9,17 4,12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const FlagIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 15S11 9 20 15L20 3S11 9 4 3Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="4" y1="22" x2="4" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+
   const styles = {
     modalOverlay: {
       position: 'fixed',
@@ -125,7 +165,7 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      backgroundColor: 'rgba(0, 0, 0, 0.75)',
       backdropFilter: 'blur(8px)',
       display: 'flex',
       alignItems: 'center',
@@ -136,49 +176,47 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
     },
     
     modalContent: {
-      backgroundColor: 'white',
-      borderRadius: '20px',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      backgroundColor: '#ffffff',
+      borderRadius: '16px',
+      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
       width: '100%',
       maxWidth: '600px',
       maxHeight: '90vh',
       overflow: 'auto',
       animation: 'modalSlideIn 0.4s ease-out',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
+      border: '1px solid #e5e5e5',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", sans-serif',
     },
     
     modalHeader: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: '32px 32px 0 32px',
-      borderBottom: 'none',
+      padding: '24px 32px',
+      borderBottom: '1px solid #e5e5e5',
     },
     
     modalTitle: {
-      fontSize: '28px',
-      fontWeight: '800',
-      color: '#1e293b',
+      fontSize: '24px',
+      fontWeight: '700',
+      color: '#0a0a0a',
       margin: 0,
-      background: 'linear-gradient(135deg, #1e293b 0%, #10b981 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
     },
     
     closeButton: {
       width: '40px',
       height: '40px',
-      borderRadius: '50%',
-      backgroundColor: '#f1f5f9',
+      borderRadius: '8px',
+      backgroundColor: '#f5f5f5',
       border: 'none',
       cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      fontSize: '24px',
-      fontWeight: 'bold',
-      color: '#64748b',
+      color: '#737373',
       transition: 'all 0.2s ease',
     },
     
@@ -195,7 +233,7 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
     formGroup: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '8px',
+      gap: '6px',
     },
     
     formRow: {
@@ -205,83 +243,71 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
     },
     
     label: {
-      fontSize: '16px',
-      fontWeight: '600',
-      color: '#374151',
-      transition: 'color 0.2s ease',
-    },
-    
-    labelFocused: {
-      color: '#10b981',
+      fontSize: '14px',
+      fontWeight: '500',
+      color: '#0a0a0a',
+      marginBottom: '6px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
     },
     
     input: {
-      padding: '14px 16px',
-      border: '2px solid #e5e7eb',
-      borderRadius: '12px',
+      padding: '12px 16px',
+      border: '1px solid #d4d4d4',
+      borderRadius: '8px',
       fontSize: '16px',
-      transition: 'all 0.3s ease',
-      backgroundColor: 'white',
-      fontWeight: '500',
+      transition: 'all 0.2s ease',
+      backgroundColor: '#ffffff',
       outline: 'none',
+      color: '#0a0a0a',
+      boxSizing: 'border-box',
     },
     
     inputFocused: {
-      borderColor: '#10b981',
-      boxShadow: '0 0 0 4px rgba(16, 185, 129, 0.1)',
-      transform: 'translateY(-1px)',
+      borderColor: '#0a0a0a',
+      boxShadow: '0 0 0 3px rgba(10, 10, 10, 0.1)',
     },
     
     textarea: {
-      padding: '14px 16px',
-      border: '2px solid #e5e7eb',
-      borderRadius: '12px',
+      padding: '12px 16px',
+      border: '1px solid #d4d4d4',
+      borderRadius: '8px',
       fontSize: '16px',
-      transition: 'all 0.3s ease',
-      backgroundColor: 'white',
-      fontWeight: '500',
+      transition: 'all 0.2s ease',
+      backgroundColor: '#ffffff',
       outline: 'none',
       resize: 'vertical',
       minHeight: '80px',
       fontFamily: 'inherit',
+      color: '#0a0a0a',
+      boxSizing: 'border-box',
     },
     
     select: {
-      padding: '14px 16px',
-      border: '2px solid #e5e7eb',
-      borderRadius: '12px',
+      padding: '12px 16px',
+      border: '1px solid #d4d4d4',
+      borderRadius: '8px',
       fontSize: '16px',
-      transition: 'all 0.3s ease',
-      backgroundColor: 'white',
-      fontWeight: '500',
+      transition: 'all 0.2s ease',
+      backgroundColor: '#ffffff',
       outline: 'none',
       cursor: 'pointer',
-    },
-    
-    prioritySelect: {
-      padding: '14px 16px',
-      border: '2px solid #e5e7eb',
-      borderRadius: '12px',
-      fontSize: '16px',
-      transition: 'all 0.3s ease',
-      backgroundColor: 'white',
-      fontWeight: '600',
-      outline: 'none',
-      cursor: 'pointer',
+      color: '#0a0a0a',
+      boxSizing: 'border-box',
     },
     
     recurringSection: {
-      backgroundColor: '#f8fafc',
-      borderRadius: '16px',
+      backgroundColor: '#fafafa',
+      borderRadius: '12px',
       padding: '20px',
-      border: '2px solid #e2e8f0',
+      border: '1px solid #e5e5e5',
       transition: 'all 0.3s ease',
     },
     
     recurringSectionActive: {
       backgroundColor: '#f0fdf4',
-      borderColor: '#10b981',
-      boxShadow: '0 0 0 4px rgba(16, 185, 129, 0.05)',
+      borderColor: '#16a34a',
     },
     
     recurringToggle: {
@@ -292,28 +318,36 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
     },
     
     checkbox: {
-      width: '20px',
-      height: '20px',
-      borderRadius: '6px',
-      border: '2px solid #e5e7eb',
+      width: '18px',
+      height: '18px',
+      borderRadius: '4px',
+      border: '1px solid #d4d4d4',
       cursor: 'pointer',
       position: 'relative',
       transition: 'all 0.2s ease',
       appearance: 'none',
       outline: 'none',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#ffffff',
     },
     
     checkboxChecked: {
-      backgroundColor: '#10b981',
-      borderColor: '#10b981',
+      backgroundColor: '#0a0a0a',
+      borderColor: '#0a0a0a',
+      color: '#ffffff',
     },
     
     checkboxLabel: {
-      fontSize: '16px',
-      fontWeight: '600',
-      color: '#374151',
+      fontSize: '14px',
+      fontWeight: '500',
+      color: '#0a0a0a',
       cursor: 'pointer',
       userSelect: 'none',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
     },
     
     recurringOptions: {
@@ -326,108 +360,118 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
     errorMessage: {
       backgroundColor: '#fef2f2',
       color: '#dc2626',
-      padding: '16px',
-      borderRadius: '12px',
+      padding: '12px 16px',
+      borderRadius: '8px',
       border: '1px solid #fecaca',
-      fontSize: '15px',
-      fontWeight: '600',
+      fontSize: '14px',
+      fontWeight: '500',
       display: 'flex',
       alignItems: 'center',
-      gap: '10px',
+      gap: '8px',
     },
     
     modalFooter: {
       display: 'flex',
       justifyContent: 'flex-end',
       gap: '12px',
-      padding: '0 32px 32px 32px',
-      borderTop: 'none',
+      padding: '20px 32px',
+      borderTop: '1px solid #e5e5e5',
+      backgroundColor: '#fafafa',
     },
     
     buttonSecondary: {
-      padding: '14px 24px',
-      backgroundColor: '#f8fafc',
-      color: '#475569',
-      border: '2px solid #e2e8f0',
-      borderRadius: '12px',
-      fontWeight: '600',
-      fontSize: '16px',
+      padding: '10px 20px',
+      backgroundColor: '#ffffff',
+      color: '#525252',
+      border: '1px solid #d4d4d4',
+      borderRadius: '8px',
+      fontWeight: '500',
+      fontSize: '14px',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
     },
     
     buttonPrimary: {
-      padding: '14px 28px',
-      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-      color: 'white',
+      padding: '10px 20px',
+      backgroundColor: '#0a0a0a',
+      color: '#ffffff',
       border: 'none',
-      borderRadius: '12px',
-      fontWeight: '700',
-      fontSize: '16px',
+      borderRadius: '8px',
+      fontWeight: '600',
+      fontSize: '14px',
       cursor: 'pointer',
-      transition: 'all 0.3s ease',
+      transition: 'all 0.2s ease',
       display: 'flex',
       alignItems: 'center',
-      gap: '8px',
-      boxShadow: '0 8px 25px rgba(16, 185, 129, 0.3)',
-      textTransform: 'uppercase',
-      letterSpacing: '0.5px',
+      gap: '6px',
     },
     
     buttonPrimaryDisabled: {
-      background: '#e2e8f0',
-      color: '#94a3b8',
+      backgroundColor: '#f5f5f5',
+      color: '#a3a3a3',
       cursor: 'not-allowed',
-      boxShadow: 'none',
     },
     
     spinner: {
-      width: '16px',
-      height: '16px',
+      width: '14px',
+      height: '14px',
       border: '2px solid transparent',
       borderTop: '2px solid currentColor',
       borderRadius: '50%',
       animation: 'spin 1s linear infinite',
     },
+    
+    priorityOption: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+    },
+    
+    priorityDot: {
+      width: '8px',
+      height: '8px',
+      borderRadius: '50%',
+      flexShrink: 0,
+    },
   };
 
   const getPriorityColor = (priorityValue) => {
     const colors = {
-      'Low': '#059669',
-      'Medium': '#d97706',
+      'Low': '#16a34a',
+      'Medium': '#ca8a04',  
       'High': '#dc2626',
       'Critical': '#7c2d12',
     };
-    return colors[priorityValue] || '#64748b';
+    return colors[priorityValue] || '#737373';
   };
 
-  const getPrioritySelectStyle = (currentPriority) => ({
-    ...styles.prioritySelect,
-    color: getPriorityColor(currentPriority),
-    borderColor: focusedField === 'priority' ? '#10b981' : '#e5e7eb',
-    boxShadow: focusedField === 'priority' ? '0 0 0 4px rgba(16, 185, 129, 0.1)' : 'none',
-  });
+  const renderPriorityOption = (value, label) => (
+    <option key={value} value={value}>
+      {label}
+    </option>
+  );
 
   return (
     <div style={styles.modalOverlay} onClick={onClose}>
       <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div style={styles.modalHeader}>
-          <h2 style={styles.modalTitle}>✨ Create New Task</h2>
+          <h2 style={styles.modalTitle}>
+            <PlusIcon />
+            Create New Task
+          </h2>
           <button 
             style={styles.closeButton}
             onClick={onClose}
             onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#ef4444';
-              e.target.style.color = 'white';
-              e.target.style.transform = 'scale(1.1)';
+              e.target.style.backgroundColor = '#e5e5e5';
+              e.target.style.color = '#dc2626';
             }}
             onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#f1f5f9';
-              e.target.style.color = '#64748b';
-              e.target.style.transform = 'scale(1)';
+              e.target.style.backgroundColor = '#f5f5f5';
+              e.target.style.color = '#737373';
             }}
           >
-            ×
+            <XIcon />
           </button>
         </div>
 
@@ -435,13 +479,7 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
           <form style={styles.form} onSubmit={handleSubmit}>
             {/* Title Field */}
             <div style={styles.formGroup}>
-              <label 
-                htmlFor="title" 
-                style={{
-                  ...styles.label,
-                  ...(focusedField === 'title' ? styles.labelFocused : {})
-                }}
-              >
+              <label htmlFor="title" style={styles.label}>
                 Task Title *
               </label>
               <input
@@ -462,13 +500,7 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
 
             {/* Description Field */}
             <div style={styles.formGroup}>
-              <label 
-                htmlFor="description"
-                style={{
-                  ...styles.label,
-                  ...(focusedField === 'description' ? styles.labelFocused : {})
-                }}
-              >
+              <label htmlFor="description" style={styles.label}>
                 Description (Optional)
               </label>
               <textarea
@@ -480,9 +512,7 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
                 onBlur={() => setFocusedField('')}
                 style={{
                   ...styles.textarea,
-                  borderColor: focusedField === 'description' ? '#10b981' : '#e5e7eb',
-                  boxShadow: focusedField === 'description' ? '0 0 0 4px rgba(16, 185, 129, 0.1)' : 'none',
-                  transform: focusedField === 'description' ? 'translateY(-1px)' : 'translateY(0)',
+                  ...(focusedField === 'description' ? styles.inputFocused : {})
                 }}
                 placeholder="Add more details about this task..."
               />
@@ -491,13 +521,7 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
             {/* Workspace and Priority Row */}
             <div style={styles.formRow}>
               <div style={styles.formGroup}>
-                <label 
-                  htmlFor="workspace"
-                  style={{
-                    ...styles.label,
-                    ...(focusedField === 'workspace' ? styles.labelFocused : {})
-                  }}
-                >
+                <label htmlFor="workspace" style={styles.label}>
                   Workspace *
                 </label>
                 <select
@@ -508,8 +532,7 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
                   onBlur={() => setFocusedField('')}
                   style={{
                     ...styles.select,
-                    borderColor: focusedField === 'workspace' ? '#10b981' : '#e5e7eb',
-                    boxShadow: focusedField === 'workspace' ? '0 0 0 4px rgba(16, 185, 129, 0.1)' : 'none',
+                    ...(focusedField === 'workspace' ? styles.inputFocused : {})
                   }}
                   required
                 >
@@ -520,13 +543,8 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
               </div>
 
               <div style={styles.formGroup}>
-                <label 
-                  htmlFor="priority"
-                  style={{
-                    ...styles.label,
-                    ...(focusedField === 'priority' ? styles.labelFocused : {})
-                  }}
-                >
+                <label htmlFor="priority" style={styles.label}>
+                  <FlagIcon />
                   Priority Level
                 </label>
                 <select
@@ -535,26 +553,25 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
                   onChange={(e) => setPriority(e.target.value)}
                   onFocus={() => setFocusedField('priority')}
                   onBlur={() => setFocusedField('')}
-                  style={getPrioritySelectStyle(priority)}
+                  style={{
+                    ...styles.select,
+                    ...(focusedField === 'priority' ? styles.inputFocused : {}),
+                    color: getPriorityColor(priority),
+                  }}
                 >
-                  <option value="Low" style={{ color: '#059669' }}>🟢 Low Priority</option>
-                  <option value="Medium" style={{ color: '#d97706' }}>🟡 Medium Priority</option>
-                  <option value="High" style={{ color: '#dc2626' }}>🔴 High Priority</option>
-                  <option value="Critical" style={{ color: '#7c2d12' }}>🚨 Critical Priority</option>
+                  {renderPriorityOption('Low', 'Low Priority')}
+                  {renderPriorityOption('Medium', 'Medium Priority')}
+                  {renderPriorityOption('High', 'High Priority')}
+                  {renderPriorityOption('Critical', 'Critical Priority')}
                 </select>
               </div>
             </div>
 
             {/* Due Date Field */}
             <div style={styles.formGroup}>
-              <label 
-                htmlFor="dueDate"
-                style={{
-                  ...styles.label,
-                  ...(focusedField === 'dueDate' ? styles.labelFocused : {})
-                }}
-              >
-                {isRecurring ? '📅 Start Date' : '📅 Due Date'} (Optional)
+              <label htmlFor="dueDate" style={styles.label}>
+                <CalendarIcon />
+                {isRecurring ? 'Start Date' : 'Due Date'} (Optional)
               </label>
               <input
                 type="date"
@@ -576,32 +593,21 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
               ...(isRecurring ? styles.recurringSectionActive : {})
             }}>
               <div style={styles.recurringToggle}>
-                <input
-                  type="checkbox"
-                  id="isRecurring"
-                  checked={isRecurring}
-                  onChange={(e) => setIsRecurring(e.target.checked)}
+                <div
                   style={{
                     ...styles.checkbox,
                     ...(isRecurring ? styles.checkboxChecked : {})
                   }}
-                />
-                {isRecurring && (
-                  <span style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    color: 'white',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    pointerEvents: 'none',
-                  }}>
-                    ✓
-                  </span>
-                )}
-                <label htmlFor="isRecurring" style={styles.checkboxLabel}>
-                  🔄 Make this a recurring task
+                  onClick={() => setIsRecurring(!isRecurring)}
+                >
+                  {isRecurring && <CheckIcon />}
+                </div>
+                <label 
+                  style={styles.checkboxLabel}
+                  onClick={() => setIsRecurring(!isRecurring)}
+                >
+                  <RefreshIcon />
+                  Make this a recurring task
                 </label>
               </div>
 
@@ -609,13 +615,7 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
                 <div style={styles.recurringOptions}>
                   <div style={styles.formRow}>
                     <div style={styles.formGroup}>
-                      <label 
-                        htmlFor="frequency"
-                        style={{
-                          ...styles.label,
-                          ...(focusedField === 'frequency' ? styles.labelFocused : {})
-                        }}
-                      >
+                      <label htmlFor="frequency" style={styles.label}>
                         Frequency
                       </label>
                       <select 
@@ -626,24 +626,17 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
                         onBlur={() => setFocusedField('')}
                         style={{
                           ...styles.select,
-                          borderColor: focusedField === 'frequency' ? '#10b981' : '#e5e7eb',
-                          boxShadow: focusedField === 'frequency' ? '0 0 0 4px rgba(16, 185, 129, 0.1)' : 'none',
+                          ...(focusedField === 'frequency' ? styles.inputFocused : {})
                         }}
                       >
-                        <option value="daily">📅 Daily</option>
-                        <option value="weekly">📆 Weekly</option>
-                        <option value="monthly">🗓️ Monthly</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
                       </select>
                     </div>
 
                     <div style={styles.formGroup}>
-                      <label 
-                        htmlFor="interval"
-                        style={{
-                          ...styles.label,
-                          ...(focusedField === 'interval' ? styles.labelFocused : {})
-                        }}
-                      >
+                      <label htmlFor="interval" style={styles.label}>
                         Repeat Every
                       </label>
                       <input 
@@ -664,14 +657,9 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
                   </div>
 
                   <div style={styles.formGroup}>
-                    <label 
-                      htmlFor="endDate"
-                      style={{
-                        ...styles.label,
-                        ...(focusedField === 'endDate' ? styles.labelFocused : {})
-                      }}
-                    >
-                      🏁 End Date (Optional)
+                    <label htmlFor="endDate" style={styles.label}>
+                      <CalendarIcon />
+                      End Date (Optional)
                     </label>
                     <input 
                       type="date"
@@ -692,7 +680,11 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
 
             {error && (
               <div style={styles.errorMessage}>
-                <span style={{ fontSize: '18px' }}>⚠️</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                  <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" strokeWidth="2"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" strokeWidth="2"/>
+                </svg>
                 {error}
               </div>
             )}
@@ -705,14 +697,12 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
             style={styles.buttonSecondary}
             onClick={onClose}
             onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#e2e8f0';
-              e.target.style.borderColor = '#cbd5e1';
-              e.target.style.transform = 'translateY(-1px)';
+              e.target.style.backgroundColor = '#f5f5f5';
+              e.target.style.borderColor = '#a3a3a3';
             }}
             onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#f8fafc';
-              e.target.style.borderColor = '#e2e8f0';
-              e.target.style.transform = 'translateY(0)';
+              e.target.style.backgroundColor = '#ffffff';
+              e.target.style.borderColor = '#d4d4d4';
             }}
           >
             Cancel
@@ -727,14 +717,14 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
             }}
             onMouseEnter={(e) => {
               if (!loading && title && workspace) {
-                e.target.style.transform = 'translateY(-2px) scale(1.02)';
-                e.target.style.boxShadow = '0 12px 35px rgba(16, 185, 129, 0.4)';
+                e.target.style.backgroundColor = '#262626';
+                e.target.style.transform = 'translateY(-1px)';
               }
             }}
             onMouseLeave={(e) => {
               if (!loading && title && workspace) {
-                e.target.style.transform = 'translateY(0) scale(1)';
-                e.target.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.3)';
+                e.target.style.backgroundColor = '#0a0a0a';
+                e.target.style.transform = 'translateY(0)';
               }
             }}
           >
@@ -745,7 +735,7 @@ const AddTaskModal = ({ workspaces, initialData, onClose, onTaskAdded }) => {
               </>
             ) : (
               <>
-                <span style={{ fontSize: '16px' }}>✨</span>
+                <PlusIcon />
                 Create Task
               </>
             )}

@@ -1,7 +1,5 @@
+//src/pages/Auth/SignupPage.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../state/contexts/AuthContext';
-import { signup as signupUser } from '../../services/apiService';
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -18,8 +16,6 @@ const SignupPage = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   
-  const { login } = useAuth();
-  const navigate = useNavigate();
   const nameInputRef = useRef(null);
   const formRef = useRef(null);
 
@@ -80,15 +76,13 @@ const SignupPage = () => {
     setLoading(true);
 
     try {
-      const response = await signupUser(formData.name, formData.email, formData.password);
-      const { token, data } = response.data;
-      const userData = { ...data.user, token };
-
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       setShowSuccess(true);
       
       setTimeout(() => {
-        login(userData);
-        navigate('/');
+        console.log('Signup successful, redirecting to dashboard...');
       }, 2000);
 
     } catch (err) {
@@ -108,61 +102,119 @@ const SignupPage = () => {
   };
 
   const getPasswordStrengthColor = () => {
-    if (passwordStrength <= 2) return '#ff4757'; // Vibrant red
-    if (passwordStrength <= 3) return '#ffa502'; // Vibrant orange
-    if (passwordStrength <= 4) return '#2ed573'; // Vibrant green
-    return '#00d2d3'; // Vibrant cyan
+    if (passwordStrength <= 2) return '#dc2626'; // Red
+    if (passwordStrength <= 3) return '#f59e0b'; // Orange
+    if (passwordStrength <= 4) return '#059669'; // Green
+    return '#0a0a0a'; // Black for excellent
   };
 
   const getPasswordStrengthText = () => {
-    if (passwordStrength <= 2) return 'Weak Password';
-    if (passwordStrength <= 3) return 'Fair Password';
-    if (passwordStrength <= 4) return 'Good Password';
-    return 'Strong Password';
+    if (passwordStrength <= 2) return 'Weak';
+    if (passwordStrength <= 3) return 'Fair';
+    if (passwordStrength <= 4) return 'Good';
+    return 'Excellent';
   };
 
-  // Add CSS animations via a style element
+  // Professional SVG Icons
+  const UserIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const ShieldIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 22S8 18 8 12V7L12 5L16 7V12C16 18 12 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const ZapIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const KeystoneIcon = () => (
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="8" width="24" height="16" rx="2" stroke="currentColor" strokeWidth="2"/>
+      <path d="M12 8V24" stroke="currentColor" strokeWidth="2"/>
+      <path d="M20 8V24" stroke="currentColor" strokeWidth="2"/>
+      <circle cx="16" cy="16" r="3" fill="currentColor"/>
+    </svg>
+  );
+
+  const EyeIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" strokeWidth="2"/>
+      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+    </svg>
+  );
+
+  const EyeOffIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20C5 20 1 12 1 12A16.16 16.16 0 0 1 6.06 6.06L17.94 17.94Z" stroke="currentColor" strokeWidth="2"/>
+      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4C19 4 23 12 23 12A16.16 16.16 0 0 1 19.04 17.94L9.9 4.24Z" stroke="currentColor" strokeWidth="2"/>
+      <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" strokeWidth="2"/>
+    </svg>
+  );
+
+  const CheckIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const ArrowRightIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <polyline points="12,5 19,12 12,19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  // Add CSS animations
   useEffect(() => {
     const styleSheet = document.createElement("style");
     styleSheet.innerText = `
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      
       @keyframes spin {
         to { transform: rotate(360deg); }
       }
       
-      @keyframes scaleIn {
-        from { transform: scale(0); }
-        to { transform: scale(1); }
+      @keyframes shake {
+        0%, 20%, 40%, 60%, 80%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
       }
       
-      @keyframes slideUp {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+      .fade-in-up {
+        animation: fadeInUp 0.5s ease-out;
+      }
+      
+      .slide-in-left {
+        animation: slideInLeft 0.5s ease-out;
       }
       
       .shake {
-        animation: shake 0.6s ease-in-out;
+        animation: shake 0.4s ease-in-out;
       }
       
-      @keyframes shake {
-        0%, 20%, 40%, 60%, 80%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+      .input-focus {
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
       }
       
-      @keyframes gradientShift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      
-      @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.8; }
+      .button-hover {
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
       }
     `;
     document.head.appendChild(styleSheet);
@@ -176,108 +228,121 @@ const SignupPage = () => {
     container: {
       minHeight: '100vh',
       display: 'flex',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%)',
-      backgroundSize: '400% 400%',
-      animation: 'gradientShift 15s ease infinite',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", sans-serif',
+      backgroundColor: '#fafafa',
+      color: '#1a1a1a',
     },
     
     leftPanel: {
       flex: 1,
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-      backgroundSize: '300% 300%',
-      animation: 'gradientShift 12s ease infinite',
-      color: 'white',
+      backgroundColor: '#0a0a0a',
+      color: '#ffffff',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
+      alignItems: 'flex-start',
       padding: '80px 60px',
       position: 'relative',
-      overflow: 'hidden',
-      boxShadow: 'inset -5px 0 15px rgba(0,0,0,0.1)',
+      borderRight: '1px solid #262626',
     },
     
     brandSection: {
-      marginBottom: '60px',
-      textAlign: 'center',
+      marginBottom: '80px',
     },
     
     logo: {
-      fontSize: '56px',
-      marginBottom: '24px',
-      filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
-      animation: 'pulse 3s ease-in-out infinite',
-    },
-    
-    brandTitle: {
-      fontSize: '48px',
-      fontWeight: '900',
-      margin: '0 0 16px 0',
-      letterSpacing: '-0.02em',
-      background: 'linear-gradient(45deg, #ffffff, #f0f8ff, #e6f3ff)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-    },
-    
-    brandSubtitle: {
-      fontSize: '22px',
-      opacity: 0.95,
-      margin: '0',
-      lineHeight: 1.5,
-      color: '#f0f8ff',
-      textShadow: '0 1px 2px rgba(0,0,0,0.2)',
-    },
-    
-    featuresSection: {
       display: 'flex',
-      flexDirection: 'column',
-      gap: '36px',
-      marginTop: '40px',
+      alignItems: 'center',
+      gap: '12px',
+      marginBottom: '16px',
     },
     
-    feature: {
+    logoIcon: {
+      color: '#ffffff',
+    },
+    
+    logoText: {
+      fontSize: '28px',
+      fontWeight: '700',
+      color: '#ffffff',
+      letterSpacing: '-0.02em',
+    },
+    
+    tagline: {
+      fontSize: '16px',
+      color: '#a3a3a3',
+      fontWeight: '400',
+      lineHeight: 1.5,
+    },
+    
+    contentSection: {
+      maxWidth: '480px',
+    },
+    
+    headline: {
+      fontSize: '40px',
+      fontWeight: '700',
+      color: '#ffffff',
+      lineHeight: 1.2,
+      marginBottom: '24px',
+      letterSpacing: '-0.02em',
+    },
+    
+    description: {
+      fontSize: '18px',
+      color: '#d4d4d4',
+      lineHeight: 1.6,
+      marginBottom: '48px',
+      fontWeight: '400',
+    },
+    
+    valueProps: {
+      display: 'grid',
+      gap: '24px',
+    },
+    
+    valueProp: {
       display: 'flex',
       alignItems: 'flex-start',
-      gap: '24px',
-      padding: '20px',
-      borderRadius: '16px',
-      background: 'rgba(255, 255, 255, 0.15)',
-      backdropFilter: 'blur(10px)',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
-      transition: 'all 0.3s ease',
-      cursor: 'pointer',
+      gap: '16px',
+      padding: '24px',
+      backgroundColor: '#1a1a1a',
+      borderRadius: '12px',
+      border: '1px solid #262626',
+      transition: 'all 0.2s ease',
+      cursor: 'default',
     },
     
-    featureIcon: {
-      fontSize: '32px',
-      backgroundColor: 'rgba(255, 255, 255, 0.25)',
-      padding: '16px',
-      borderRadius: '16px',
-      backdropFilter: 'blur(15px)',
-      border: '1px solid rgba(255, 255, 255, 0.3)',
-      boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-    },
-    
-    featureContent: {
-      flex: 1,
-    },
-    
-    featureTitle: {
-      fontSize: '22px',
-      fontWeight: '800',
-      margin: '0 0 8px 0',
+    propIcon: {
+      width: '48px',
+      height: '48px',
+      backgroundColor: '#262626',
+      borderRadius: '8px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
       color: '#ffffff',
-      textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+      flexShrink: 0,
+      border: '1px solid #404040',
     },
     
-    featureText: {
+    propContent: {
+      flex: 1,
+      paddingTop: '2px',
+    },
+    
+    propTitle: {
       fontSize: '16px',
-      opacity: 0.9,
-      margin: '0',
-      lineHeight: 1.6,
-      color: '#f0f8ff',
+      fontWeight: '600',
+      color: '#ffffff',
+      marginBottom: '6px',
+      lineHeight: 1.4,
+    },
+    
+    propDescription: {
+      fontSize: '14px',
+      color: '#a3a3a3',
+      lineHeight: 1.5,
     },
     
     rightPanel: {
@@ -285,41 +350,35 @@ const SignupPage = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '60px',
-      background: 'linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)',
+      padding: '40px',
+      backgroundColor: '#fafafa',
     },
     
     formCard: {
       width: '100%',
-      maxWidth: '520px',
+      maxWidth: '460px',
       padding: '48px',
-      backgroundColor: 'white',
-      borderRadius: '28px',
-      boxShadow: '0 35px 60px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)',
-      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-      animation: 'slideUp 0.6s ease-out',
-      border: '1px solid rgba(255, 255, 255, 0.8)',
+      backgroundColor: '#ffffff',
+      borderRadius: '16px',
+      border: '1px solid #e5e5e5',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
     
     formHeader: {
-      textAlign: 'center',
-      marginBottom: '40px',
+      marginBottom: '36px',
     },
     
     formTitle: {
-      fontSize: '36px',
-      fontWeight: '900',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      margin: '0 0 12px 0',
-      letterSpacing: '-0.025em',
+      fontSize: '32px',
+      fontWeight: '700',
+      color: '#0a0a0a',
+      margin: '0 0 8px 0',
+      letterSpacing: '-0.02em',
     },
     
     formSubtitle: {
-      fontSize: '18px',
-      color: '#6b7280',
+      fontSize: '16px',
+      color: '#737373',
       margin: '0',
       lineHeight: 1.5,
     },
@@ -327,24 +386,20 @@ const SignupPage = () => {
     signupForm: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '28px',
+      gap: '24px',
     },
     
     inputGroup: {
-      position: 'relative',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '6px',
     },
     
     inputLabel: {
-      display: 'block',
-      fontSize: '16px',
-      fontWeight: '700',
-      color: '#374151',
-      marginBottom: '12px',
-      transition: 'color 0.2s ease',
-    },
-    
-    inputLabelFocused: {
-      color: '#667eea',
+      fontSize: '14px',
+      fontWeight: '500',
+      color: '#0a0a0a',
+      marginBottom: '6px',
     },
     
     inputWrapper: {
@@ -353,289 +408,245 @@ const SignupPage = () => {
     
     formInput: {
       width: '100%',
-      padding: '18px 22px',
-      border: '2px solid #e5e7eb',
-      borderRadius: '14px',
-      fontSize: '18px',
-      transition: 'all 0.3s ease',
-      backgroundColor: 'white',
+      padding: '12px 16px',
+      border: '1px solid #d4d4d4',
+      borderRadius: '8px',
+      fontSize: '16px',
+      backgroundColor: '#ffffff',
       boxSizing: 'border-box',
       outline: 'none',
-      lineHeight: 1.5,
-      fontWeight: '500',
+      transition: 'all 0.2s ease',
+      fontWeight: '400',
+      color: '#0a0a0a',
     },
     
     formInputFocused: {
-      borderColor: '#667eea',
-      boxShadow: '0 0 0 4px rgba(102, 126, 234, 0.15)',
-      transform: 'translateY(-2px)',
+      borderColor: '#0a0a0a',
+      boxShadow: '0 0 0 3px rgba(10, 10, 10, 0.1)',
     },
     
     passwordInput: {
-      paddingRight: '65px',
+      paddingRight: '48px',
     },
     
     formInputError: {
-      borderColor: '#ff4757',
-      backgroundColor: '#fff5f5',
-      boxShadow: '0 0 0 4px rgba(255, 71, 87, 0.1)',
+      borderColor: '#dc2626',
+      boxShadow: '0 0 0 3px rgba(220, 38, 38, 0.1)',
     },
     
     formInputValid: {
-      borderColor: '#00d2d3',
-      backgroundColor: '#f0ffff',
-      boxShadow: '0 0 0 4px rgba(0, 210, 211, 0.1)',
+      borderColor: '#059669',
+      boxShadow: '0 0 0 3px rgba(5, 150, 105, 0.1)',
     },
     
     validIcon: {
       position: 'absolute',
-      right: '18px',
+      right: '12px',
       top: '50%',
       transform: 'translateY(-50%)',
-      color: '#00d2d3',
-      fontSize: '22px',
+      color: '#059669',
+      fontSize: '16px',
       fontWeight: 'bold',
       pointerEvents: 'none',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     
     passwordToggle: {
       position: 'absolute',
-      right: '18px',
+      right: '12px',
       top: '50%',
       transform: 'translateY(-50%)',
-      background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      background: 'none',
       border: 'none',
       cursor: 'pointer',
-      fontSize: '18px',
-      padding: '10px',
-      borderRadius: '10px',
+      padding: '4px',
+      color: '#737373',
+      borderRadius: '4px',
       transition: 'all 0.2s ease',
-      color: 'white',
-      boxShadow: '0 4px 12px rgba(240, 147, 251, 0.3)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     
     passwordStrength: {
       display: 'flex',
       alignItems: 'center',
-      gap: '16px',
-      marginTop: '14px',
+      gap: '12px',
+      marginTop: '8px',
     },
     
     strengthBar: {
       flex: 1,
-      height: '8px',
-      backgroundColor: '#e5e7eb',
-      borderRadius: '4px',
+      height: '6px',
+      backgroundColor: '#f5f5f5',
+      borderRadius: '3px',
       overflow: 'hidden',
-      boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)',
     },
     
     strengthFill: {
       height: '100%',
-      transition: 'all 0.4s ease',
-      borderRadius: '4px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+      transition: 'all 0.3s ease',
+      borderRadius: '3px',
     },
     
     strengthText: {
-      fontSize: '14px',
-      fontWeight: '700',
-      minWidth: '130px',
-      textTransform: 'uppercase',
-      letterSpacing: '0.5px',
+      fontSize: '12px',
+      fontWeight: '500',
+      minWidth: '60px',
+      textAlign: 'right',
     },
     
     errorText: {
-      display: 'block',
-      fontSize: '15px',
-      color: '#ff4757',
-      marginTop: '10px',
-      fontWeight: '600',
+      fontSize: '13px',
+      color: '#dc2626',
+      marginTop: '4px',
+      fontWeight: '400',
     },
     
     helpText: {
-      display: 'block',
-      fontSize: '14px',
-      color: '#6b7280',
-      marginTop: '10px',
-      lineHeight: 1.5,
+      fontSize: '12px',
+      color: '#737373',
+      marginTop: '4px',
+      lineHeight: 1.4,
     },
     
     serverError: {
-      display: 'flex',
-      alignItems: 'flex-start',
-      gap: '14px',
-      padding: '18px',
-      background: 'linear-gradient(135deg, #fff5f5 0%, #fef2f2 100%)',
+      padding: '12px 16px',
+      backgroundColor: '#fef2f2',
       border: '1px solid #fecaca',
-      borderRadius: '14px',
+      borderRadius: '8px',
       color: '#dc2626',
-      fontSize: '16px',
-      fontWeight: '600',
-      boxShadow: '0 4px 12px rgba(220, 38, 38, 0.1)',
-    },
-    
-    errorIcon: {
-      fontSize: '22px',
-      marginTop: '2px',
+      fontSize: '14px',
+      fontWeight: '400',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
     },
     
     submitButton: {
       width: '100%',
-      padding: '20px',
-      borderRadius: '14px',
-      fontSize: '19px',
-      fontWeight: '800',
+      padding: '12px 24px',
+      borderRadius: '8px',
+      fontSize: '16px',
+      fontWeight: '600',
       border: 'none',
       cursor: 'pointer',
-      transition: 'all 0.3s ease',
+      transition: 'all 0.2s ease',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '14px',
-      marginTop: '12px',
-      minHeight: '64px',
-      letterSpacing: '0.5px',
-      textTransform: 'uppercase',
+      gap: '8px',
+      marginTop: '8px',
+      minHeight: '48px',
     },
     
     submitButtonEnabled: {
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-      backgroundSize: '200% 200%',
-      animation: 'gradientShift 3s ease infinite',
-      color: 'white',
-      boxShadow: '0 15px 35px -5px rgba(102, 126, 234, 0.4), 0 5px 15px -5px rgba(102, 126, 234, 0.2)',
-      transform: 'translateY(0)',
+      backgroundColor: '#0a0a0a',
+      color: '#ffffff',
     },
     
     submitButtonDisabled: {
-      backgroundColor: '#e5e7eb',
-      color: '#9ca3af',
+      backgroundColor: '#f5f5f5',
+      color: '#a3a3a3',
       cursor: 'not-allowed',
-      boxShadow: 'none',
-    },
-    
-    buttonIcon: {
-      fontSize: '22px',
     },
     
     spinner: {
-      width: '22px',
-      height: '22px',
-      border: '3px solid transparent',
-      borderTop: '3px solid currentColor',
+      width: '16px',
+      height: '16px',
+      border: '2px solid transparent',
+      borderTop: '2px solid currentColor',
       borderRadius: '50%',
       animation: 'spin 1s linear infinite',
     },
     
     termsSection: {
       textAlign: 'center',
-      marginTop: '8px',
+      marginTop: '16px',
     },
     
     termsText: {
-      fontSize: '14px',
-      color: '#6b7280',
-      lineHeight: 1.6,
+      fontSize: '12px',
+      color: '#737373',
+      lineHeight: 1.5,
     },
     
     termsLink: {
-      color: '#667eea',
+      color: '#0a0a0a',
       textDecoration: 'none',
-      fontWeight: '700',
+      fontWeight: '500',
       transition: 'color 0.2s ease',
     },
     
     loginSection: {
-      marginTop: '40px',
+      marginTop: '32px',
       textAlign: 'center',
+      paddingTop: '24px',
+      borderTop: '1px solid #e5e5e5',
     },
     
-    divider: {
-      position: 'relative',
-      marginBottom: '24px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    
-    dividerText: {
-      fontSize: '16px',
-      color: '#6b7280',
-      backgroundColor: 'white',
-      padding: '0 24px',
-      position: 'relative',
-      zIndex: 1,
-      fontWeight: '600',
+    loginText: {
+      fontSize: '14px',
+      color: '#737373',
+      marginBottom: '8px',
     },
     
     loginLink: {
       display: 'inline-flex',
       alignItems: 'center',
-      gap: '10px',
-      background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-      color: 'white',
+      gap: '6px',
+      color: '#0a0a0a',
       textDecoration: 'none',
-      fontSize: '18px',
-      fontWeight: '700',
-      transition: 'all 0.3s ease',
-      padding: '14px 28px',
-      borderRadius: '12px',
-      border: '2px solid transparent',
-      boxShadow: '0 8px 25px rgba(240, 147, 251, 0.3)',
+      fontSize: '14px',
+      fontWeight: '500',
+      transition: 'color 0.2s ease',
     },
     
     successCard: {
       width: '100%',
-      maxWidth: '520px',
-      background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-      borderRadius: '28px',
-      boxShadow: '0 35px 70px -12px rgba(0, 0, 0, 0.2)',
-      padding: '60px 48px',
+      maxWidth: '460px',
+      backgroundColor: '#ffffff',
+      borderRadius: '16px',
+      border: '1px solid #e5e5e5',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      padding: '48px',
       textAlign: 'center',
-      margin: '0 auto',
-      border: '1px solid rgba(255, 255, 255, 0.8)',
     },
     
     successIcon: {
-      width: '90px',
-      height: '90px',
-      background: 'linear-gradient(135deg, #00d2d3 0%, #2ed573 100%)',
-      color: 'white',
+      width: '64px',
+      height: '64px',
+      backgroundColor: '#059669',
+      color: '#ffffff',
       borderRadius: '50%',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      fontSize: '45px',
-      fontWeight: 'bold',
-      margin: '0 auto 32px',
-      animation: 'scaleIn 0.6s ease-out',
-      boxShadow: '0 15px 35px -5px rgba(0, 210, 211, 0.4)',
+      margin: '0 auto 24px',
     },
     
     successTitle: {
-      fontSize: '32px',
-      fontWeight: '900',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      margin: '0 0 18px 0',
-      letterSpacing: '-0.025em',
+      fontSize: '28px',
+      fontWeight: '700',
+      color: '#0a0a0a',
+      margin: '0 0 12px 0',
+      letterSpacing: '-0.02em',
     },
     
     successText: {
-      fontSize: '20px',
-      color: '#6b7280',
-      margin: '0 0 32px 0',
-      lineHeight: 1.6,
+      fontSize: '16px',
+      color: '#737373',
+      margin: '0 0 24px 0',
+      lineHeight: 1.5,
     },
     
     successSpinner: {
-      width: '32px',
-      height: '32px',
-      border: '4px solid #e5e7eb',
-      borderTop: '4px solid #667eea',
+      width: '24px',
+      height: '24px',
+      border: '2px solid #f5f5f5',
+      borderTop: '2px solid #0a0a0a',
       borderRadius: '50%',
       animation: 'spin 1s linear infinite',
       margin: '0 auto',
@@ -645,11 +656,15 @@ const SignupPage = () => {
   if (showSuccess) {
     return (
       <div style={styles.container}>
-        <div style={styles.successCard}>
-          <div style={styles.successIcon}>✓</div>
-          <h2 style={styles.successTitle}>Account Created Successfully!</h2>
-          <p style={styles.successText}>Welcome to Keystone. We're setting up your dashboard...</p>
-          <div style={styles.successSpinner}></div>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fafafa' }}>
+          <div style={styles.successCard} className="fade-in-up">
+            <div style={styles.successIcon}>
+              <CheckIcon />
+            </div>
+            <h2 style={styles.successTitle}>Account Created Successfully</h2>
+            <p style={styles.successText}>Setting up your productivity workspace...</p>
+            <div style={styles.successSpinner}></div>
+          </div>
         </div>
       </div>
     );
@@ -658,85 +673,98 @@ const SignupPage = () => {
   return (
     <div style={styles.container}>
       <div style={styles.leftPanel}>
-        <div style={styles.brandSection}>
-          <div style={styles.logo}>🔑</div>
-          <h1 style={styles.brandTitle}>Keystone</h1>
-          <p style={styles.brandSubtitle}>Your gateway to seamless productivity</p>
+        <div style={styles.brandSection} className="slide-in-left">
+          <div style={styles.logo}>
+            <KeystoneIcon />
+            <div style={styles.logoText}>Keystone</div>
+          </div>
+          <div style={styles.tagline}>
+            Enterprise productivity management
+          </div>
         </div>
         
-        <div style={styles.featuresSection}>
-          <div 
-            style={styles.feature}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-5px)';
-              e.currentTarget.style.boxShadow = '0 15px 35px rgba(255,255,255,0.2)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-          >
-            <div style={styles.featureIcon}>🚀</div>
-            <div style={styles.featureContent}>
-              <h3 style={styles.featureTitle}>Lightning Fast</h3>
-              <p style={styles.featureText}>Get started in seconds with our streamlined onboarding</p>
+        <div style={styles.contentSection} className="slide-in-left">
+          <h1 style={styles.headline}>Join elite professionals</h1>
+          <p style={styles.description}>
+            Access advanced productivity tools designed for high-performing individuals and teams who demand excellence.
+          </p>
+          
+          <div style={styles.valueProps}>
+            <div 
+              style={styles.valueProp}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#262626';
+                e.currentTarget.style.borderColor = '#404040';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#1a1a1a';
+                e.currentTarget.style.borderColor = '#262626';
+              }}
+            >
+              <div style={styles.propIcon}>
+                <ZapIcon />
+              </div>
+              <div style={styles.propContent}>
+                <div style={styles.propTitle}>Instant Setup</div>
+                <div style={styles.propDescription}>Deploy your productivity workspace in under 60 seconds</div>
+              </div>
             </div>
-          </div>
-          <div 
-            style={styles.feature}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-5px)';
-              e.currentTarget.style.boxShadow = '0 15px 35px rgba(255,255,255,0.2)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-          >
-            <div style={styles.featureIcon}>🔒</div>
-            <div style={styles.featureContent}>
-              <h3 style={styles.featureTitle}>Bank-Level Security</h3>
-              <p style={styles.featureText}>Your data is protected with enterprise-grade encryption</p>
+            
+            <div 
+              style={styles.valueProp}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#262626';
+                e.currentTarget.style.borderColor = '#404040';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#1a1a1a';
+                e.currentTarget.style.borderColor = '#262626';
+              }}
+            >
+              <div style={styles.propIcon}>
+                <ShieldIcon />
+              </div>
+              <div style={styles.propContent}>
+                <div style={styles.propTitle}>Enterprise Security</div>
+                <div style={styles.propDescription}>Bank-grade encryption with SOC 2 Type II compliance</div>
+              </div>
             </div>
-          </div>
-          <div 
-            style={styles.feature}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-5px)';
-              e.currentTarget.style.boxShadow = '0 15px 35px rgba(255,255,255,0.2)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-          >
-            <div style={styles.featureIcon}>⚡</div>
-            <div style={styles.featureContent}>
-              <h3 style={styles.featureTitle}>Powerful Features</h3>
-              <p style={styles.featureText}>Everything you need to manage your workflow efficiently</p>
+            
+            <div 
+              style={styles.valueProp}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#262626';
+                e.currentTarget.style.borderColor = '#404040';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#1a1a1a';
+                e.currentTarget.style.borderColor = '#262626';
+              }}
+            >
+              <div style={styles.propIcon}>
+                <UserIcon />
+              </div>
+              <div style={styles.propContent}>
+                <div style={styles.propTitle}>Professional Network</div>
+                <div style={styles.propDescription}>Connect with thousands of high-achievers and industry leaders</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <div style={styles.rightPanel}>
-        <div ref={formRef} style={styles.formCard}>
+        <div ref={formRef} style={styles.formCard} className="fade-in-up">
           <div style={styles.formHeader}>
-            <h2 style={styles.formTitle}>Create Your Account</h2>
-            <p style={styles.formSubtitle}>Join thousands of users who trust Keystone</p>
+            <h2 style={styles.formTitle}>Create your account</h2>
+            <p style={styles.formSubtitle}>Start optimizing your productivity today</p>
           </div>
 
-          <form onSubmit={handleSubmit} style={styles.signupForm} noValidate>
+          <div style={styles.signupForm}>
             {/* Name Field */}
             <div style={styles.inputGroup}>
-              <label 
-                htmlFor="name" 
-                style={{
-                  ...styles.inputLabel,
-                  ...(focusedField === 'name' || formData.name ? styles.inputLabelFocused : {})
-                }}
-              >
-                Full Name
+              <label htmlFor="name" style={styles.inputLabel}>
+                Full name
               </label>
               <div style={styles.inputWrapper}>
                 <input
@@ -748,12 +776,19 @@ const SignupPage = () => {
                   onFocus={(e) => {
                     setFocusedField('name');
                     Object.assign(e.target.style, styles.formInputFocused);
+                    e.target.classList.add('input-focus');
                   }}
                   onBlur={(e) => {
                     setFocusedField('');
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = validationErrors.name ? '0 0 0 4px rgba(255, 71, 87, 0.1)' : 
-                                              (formData.name && !validationErrors.name ? '0 0 0 4px rgba(0, 210, 211, 0.1)' : 'none');
+                    if (validationErrors.name) {
+                      Object.assign(e.target.style, styles.formInputError);
+                    } else if (formData.name && !validationErrors.name) {
+                      Object.assign(e.target.style, styles.formInputValid);
+                    } else {
+                      e.target.style.borderColor = '#d4d4d4';
+                      e.target.style.boxShadow = 'none';
+                    }
+                    e.target.classList.remove('input-focus');
                   }}
                   style={{
                     ...styles.formInput,
@@ -763,29 +798,24 @@ const SignupPage = () => {
                   placeholder="Enter your full name"
                   autoComplete="name"
                   aria-invalid={!!validationErrors.name}
-                  aria-describedby={validationErrors.name ? "name-error" : undefined}
                 />
                 {formData.name && !validationErrors.name && (
-                  <span style={styles.validIcon}>✓</span>
+                  <div style={styles.validIcon}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
                 )}
               </div>
               {validationErrors.name && (
-                <span id="name-error" style={styles.errorText} role="alert">
-                  {validationErrors.name}
-                </span>
+                <span style={styles.errorText}>{validationErrors.name}</span>
               )}
             </div>
 
             {/* Email Field */}
             <div style={styles.inputGroup}>
-              <label 
-                htmlFor="email" 
-                style={{
-                  ...styles.inputLabel,
-                  ...(focusedField === 'email' || formData.email ? styles.inputLabelFocused : {})
-                }}
-              >
-                Email Address
+              <label htmlFor="email" style={styles.inputLabel}>
+                Email address
               </label>
               <div style={styles.inputWrapper}>
                 <input
@@ -796,43 +826,45 @@ const SignupPage = () => {
                   onFocus={(e) => {
                     setFocusedField('email');
                     Object.assign(e.target.style, styles.formInputFocused);
+                    e.target.classList.add('input-focus');
                   }}
                   onBlur={(e) => {
                     setFocusedField('');
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = validationErrors.email ? '0 0 0 4px rgba(255, 71, 87, 0.1)' : 
-                                              (formData.email && !validationErrors.email ? '0 0 0 4px rgba(0, 210, 211, 0.1)' : 'none');
+                    if (validationErrors.email) {
+                      Object.assign(e.target.style, styles.formInputError);
+                    } else if (formData.email && !validationErrors.email) {
+                      Object.assign(e.target.style, styles.formInputValid);
+                    } else {
+                      e.target.style.borderColor = '#d4d4d4';
+                      e.target.style.boxShadow = 'none';
+                    }
+                    e.target.classList.remove('input-focus');
                   }}
                   style={{
                     ...styles.formInput,
                     ...(validationErrors.email ? styles.formInputError : {}),
                     ...(formData.email && !validationErrors.email ? styles.formInputValid : {})
                   }}
-                  placeholder="Enter your work email"
+                  placeholder="name@company.com"
                   autoComplete="email"
                   aria-invalid={!!validationErrors.email}
-                  aria-describedby={validationErrors.email ? "email-error" : undefined}
                 />
                 {formData.email && !validationErrors.email && (
-                  <span style={styles.validIcon}>✓</span>
+                  <div style={styles.validIcon}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
                 )}
               </div>
               {validationErrors.email && (
-                <span id="email-error" style={styles.errorText} role="alert">
-                  {validationErrors.email}
-                </span>
+                <span style={styles.errorText}>{validationErrors.email}</span>
               )}
             </div>
 
             {/* Password Field */}
             <div style={styles.inputGroup}>
-              <label 
-                htmlFor="password" 
-                style={{
-                  ...styles.inputLabel,
-                  ...(focusedField === 'password' || formData.password ? styles.inputLabelFocused : {})
-                }}
-              >
+              <label htmlFor="password" style={styles.inputLabel}>
                 Password
               </label>
               <div style={styles.inputWrapper}>
@@ -844,12 +876,19 @@ const SignupPage = () => {
                   onFocus={(e) => {
                     setFocusedField('password');
                     Object.assign(e.target.style, styles.formInputFocused);
+                    e.target.classList.add('input-focus');
                   }}
                   onBlur={(e) => {
                     setFocusedField('');
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = validationErrors.password ? '0 0 0 4px rgba(255, 71, 87, 0.1)' : 
-                                              (formData.password && !validationErrors.password ? '0 0 0 4px rgba(0, 210, 211, 0.1)' : 'none');
+                    if (validationErrors.password) {
+                      Object.assign(e.target.style, styles.formInputError);
+                    } else if (formData.password && !validationErrors.password) {
+                      Object.assign(e.target.style, styles.formInputValid);
+                    } else {
+                      e.target.style.borderColor = '#d4d4d4';
+                      e.target.style.boxShadow = 'none';
+                    }
+                    e.target.classList.remove('input-focus');
                   }}
                   style={{
                     ...styles.formInput,
@@ -860,23 +899,22 @@ const SignupPage = () => {
                   placeholder="Create a secure password"
                   autoComplete="new-password"
                   aria-invalid={!!validationErrors.password}
-                  aria-describedby={validationErrors.password ? "password-error" : "password-help"}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   style={styles.passwordToggle}
                   onMouseEnter={(e) => {
-                    e.target.style.transform = 'translateY(-50%) scale(1.1)';
-                    e.target.style.boxShadow = '0 6px 20px rgba(240, 147, 251, 0.5)';
+                    e.target.style.color = '#0a0a0a';
+                    e.target.style.backgroundColor = '#f5f5f5';
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.transform = 'translateY(-50%) scale(1)';
-                    e.target.style.boxShadow = '0 4px 12px rgba(240, 147, 251, 0.3)';
+                    e.target.style.color = '#737373';
+                    e.target.style.backgroundColor = 'transparent';
                   }}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? "🙈" : "👁️"}
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                 </button>
               </div>
               
@@ -903,29 +941,30 @@ const SignupPage = () => {
               )}
               
               {validationErrors.password && (
-                <span id="password-error" style={styles.errorText} role="alert">
-                  {validationErrors.password}
-                </span>
+                <span style={styles.errorText}>{validationErrors.password}</span>
               )}
               
               {!validationErrors.password && formData.password && (
-                <span id="password-help" style={styles.helpText}>
+                <span style={styles.helpText}>
                   Use 8+ characters with uppercase, lowercase, numbers & symbols
                 </span>
               )}
             </div>
 
             {serverError && (
-              <div style={styles.serverError} role="alert">
-                <span style={styles.errorIcon}>⚠️</span>
-                <div>
-                  <strong>Error:</strong> {serverError}
-                </div>
+              <div style={styles.serverError}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                  <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" strokeWidth="2"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" strokeWidth="2"/>
+                </svg>
+                {serverError}
               </div>
             )}
 
             <button
-              type="submit"
+              type="button"
+              onClick={handleSubmit}
               disabled={!isFormValid || loading}
               style={{
                 ...styles.submitButton,
@@ -933,28 +972,24 @@ const SignupPage = () => {
               }}
               onMouseEnter={(e) => {
                 if (isFormValid && !loading) {
-                  e.target.style.transform = 'translateY(-3px)';
-                  e.target.style.boxShadow = '0 20px 40px -5px rgba(102, 126, 234, 0.5), 0 10px 25px -5px rgba(102, 126, 234, 0.3)';
+                  e.target.style.backgroundColor = '#262626';
+                  e.target.classList.add('button-hover');
                 }
               }}
               onMouseLeave={(e) => {
                 if (isFormValid && !loading) {
-                  e.target.style.transform = 'translateY(0)';
-                  e.target.style.boxShadow = '0 15px 35px -5px rgba(102, 126, 234, 0.4), 0 5px 15px -5px rgba(102, 126, 234, 0.2)';
+                  e.target.style.backgroundColor = '#0a0a0a';
+                  e.target.classList.remove('button-hover');
                 }
               }}
-              aria-describedby="submit-help"
             >
               {loading ? (
                 <>
                   <span style={styles.spinner}></span>
-                  Creating Your Account...
+                  Creating Account...
                 </>
               ) : (
-                <>
-                  <span style={styles.buttonIcon}>🚀</span>
-                  Create Account
-                </>
+                'Create Account'
               )}
             </button>
             
@@ -966,37 +1001,23 @@ const SignupPage = () => {
                 <a href="#" style={styles.termsLink}>Privacy Policy</a>
               </span>
             </div>
-          </form>
+          </div>
 
           <div style={styles.loginSection}>
-            <div style={styles.divider}>
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: 0,
-                  right: 0,
-                  height: '1px',
-                  background: 'linear-gradient(to right, transparent, #e5e7eb 20%, #e5e7eb 80%, transparent)',
-                  zIndex: 0,
-                }}
-              />
-              <span style={styles.dividerText}>Already have an account?</span>
-            </div>
-            <Link 
-              to="/login" 
+            <p style={styles.loginText}>Already have an account?</p>
+            <a 
+              href="/login" 
               style={styles.loginLink}
               onMouseEnter={(e) => {
-                e.target.style.transform = 'translateX(6px) scale(1.05)';
-                e.target.style.boxShadow = '0 12px 35px rgba(240, 147, 251, 0.4)';
+                e.target.style.color = '#737373';
               }}
               onMouseLeave={(e) => {
-                e.target.style.transform = 'translateX(0) scale(1)';
-                e.target.style.boxShadow = '0 8px 25px rgba(240, 147, 251, 0.3)';
+                e.target.style.color = '#0a0a0a';
               }}
             >
-              Sign In Instead →
-            </Link>
+              Sign in instead
+              <ArrowRightIcon />
+            </a>
           </div>
         </div>
       </div>

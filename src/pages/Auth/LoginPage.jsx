@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../state/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { login as loginUser } from '../../services/apiService';
 
 const LoginPage = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -17,8 +19,6 @@ const LoginPage = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   
-  const { login } = useAuth();
-  const navigate = useNavigate();
   const emailInputRef = useRef(null);
   const formRef = useRef(null);
 
@@ -64,6 +64,7 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
+      // Call actual login API
       const response = await loginUser(formData.email, formData.password);
       const { token, data } = response.data;
       const userData = { ...data.user, token };
@@ -73,15 +74,15 @@ const LoginPage = () => {
       setTimeout(() => {
         login(userData);
         navigate('/');
-      }, 1500);
+      }, 1200);
 
     } catch (err) {
       if (err.response?.data?.message) {
         setServerError(err.response.data.message);
       } else if (err.response?.status === 401) {
-        setServerError('Invalid email or password. Please try again.');
+        setServerError('Invalid email or password');
       } else {
-        setServerError('Unable to log in. Please try again.');
+        setServerError('Authentication failed. Please check your credentials and try again.');
       }
       
       formRef.current?.classList.add('shake');
@@ -91,43 +92,79 @@ const LoginPage = () => {
     }
   };
 
-  // Add CSS animations via a style element
+  // Professional SVG Icons
+  const ChartIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 17L9 11L13 15L21 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M21 7H16V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const TargetIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+      <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="2"/>
+      <circle cx="12" cy="12" r="2" stroke="currentColor" strokeWidth="2"/>
+    </svg>
+  );
+
+  const EfficiencyIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const KeystoneIcon = () => (
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="8" width="24" height="16" rx="2" stroke="currentColor" strokeWidth="2"/>
+      <path d="M12 8V24" stroke="currentColor" strokeWidth="2"/>
+      <path d="M20 8V24" stroke="currentColor" strokeWidth="2"/>
+      <circle cx="16" cy="16" r="3" fill="currentColor"/>
+    </svg>
+  );
+
+  const EyeIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" strokeWidth="2"/>
+      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+    </svg>
+  );
+
+  const EyeOffIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20C5 20 1 12 1 12A16.16 16.16 0 0 1 6.06 6.06L17.94 17.94Z" stroke="currentColor" strokeWidth="2"/>
+      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4C19 4 23 12 23 12A16.16 16.16 0 0 1 19.04 17.94L9.9 4.24Z" stroke="currentColor" strokeWidth="2"/>
+      <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" strokeWidth="2"/>
+    </svg>
+  );
+
+  const CheckIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  // Add CSS animations
   useEffect(() => {
     const styleSheet = document.createElement("style");
     styleSheet.innerText = `
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      
       @keyframes spin {
         to { transform: rotate(360deg); }
       }
       
-      @keyframes scaleIn {
-        from { transform: scale(0); }
-        to { transform: scale(1); }
-      }
-      
-      @keyframes slideUp {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      
-      .shake {
-        animation: shake 0.6s ease-in-out;
-      }
-      
       @keyframes shake {
         0%, 20%, 40%, 60%, 80%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
-      }
-      
-      @keyframes gradientShift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
       }
       
       @keyframes pulse {
@@ -135,9 +172,26 @@ const LoginPage = () => {
         50% { opacity: 0.8; }
       }
       
-      @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
+      .fade-in-up {
+        animation: fadeInUp 0.5s ease-out;
+      }
+      
+      .slide-in-left {
+        animation: slideInLeft 0.5s ease-out;
+      }
+      
+      .shake {
+        animation: shake 0.4s ease-in-out;
+      }
+      
+      .input-focus {
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
+      }
+      
+      .button-hover {
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
       }
     `;
     document.head.appendChild(styleSheet);
@@ -151,109 +205,121 @@ const LoginPage = () => {
     container: {
       minHeight: '100vh',
       display: 'flex',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
-      background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 25%, #667eea 50%, #764ba2 75%, #f093fb 100%)',
-      backgroundSize: '400% 400%',
-      animation: 'gradientShift 15s ease infinite',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", sans-serif',
+      backgroundColor: '#fafafa',
+      color: '#1a1a1a',
     },
     
     leftPanel: {
       flex: 1,
-      background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #667eea 100%)',
-      backgroundSize: '300% 300%',
-      animation: 'gradientShift 10s ease infinite',
-      color: 'white',
+      backgroundColor: '#0a0a0a',
+      color: '#ffffff',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
-      alignItems: 'center',
+      alignItems: 'flex-start',
       padding: '80px 60px',
       position: 'relative',
-      overflow: 'hidden',
-      boxShadow: 'inset -5px 0 15px rgba(0,0,0,0.1)',
+      borderRight: '1px solid #262626',
     },
     
-    welcomeSection: {
-      textAlign: 'center',
-      marginBottom: '60px',
+    brandSection: {
+      marginBottom: '80px',
     },
     
     logo: {
-      fontSize: '64px',
-      marginBottom: '32px',
-      filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))',
-      animation: 'float 6s ease-in-out infinite',
-    },
-    
-    welcomeTitle: {
-      fontSize: '52px',
-      fontWeight: '900',
-      margin: '0 0 20px 0',
-      letterSpacing: '-0.02em',
-      background: 'linear-gradient(45deg, #ffffff, #f0f8ff, #e6f3ff)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      textShadow: '0 4px 8px rgba(0,0,0,0.3)',
-    },
-    
-    welcomeSubtitle: {
-      fontSize: '24px',
-      opacity: 0.95,
-      margin: '0 0 40px 0',
-      lineHeight: 1.6,
-      color: '#f0f8ff',
-      textShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    },
-    
-    statsSection: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '32px',
-      width: '100%',
-      maxWidth: '400px',
-    },
-    
-    stat: {
       display: 'flex',
       alignItems: 'center',
-      gap: '20px',
-      padding: '24px',
-      borderRadius: '20px',
-      background: 'rgba(255, 255, 255, 0.15)',
-      backdropFilter: 'blur(15px)',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
-      transition: 'all 0.3s ease',
-      cursor: 'pointer',
+      gap: '12px',
+      marginBottom: '16px',
     },
     
-    statIcon: {
-      fontSize: '36px',
-      backgroundColor: 'rgba(255, 255, 255, 0.25)',
-      padding: '18px',
-      borderRadius: '18px',
-      backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255, 255, 255, 0.3)',
-      boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
-    },
-    
-    statContent: {
-      flex: 1,
-    },
-    
-    statNumber: {
-      fontSize: '28px',
-        fontWeight: '900',
-      margin: '0 0 4px 0',
+    logoIcon: {
       color: '#ffffff',
-      textShadow: '0 2px 4px rgba(0,0,0,0.2)',
     },
     
-    statLabel: {
+    logoText: {
+      fontSize: '28px',
+      fontWeight: '700',
+      color: '#ffffff',
+      letterSpacing: '-0.02em',
+    },
+    
+    tagline: {
       fontSize: '16px',
-      opacity: 0.9,
-      margin: '0',
-      color: '#f0f8ff',
+      color: '#a3a3a3',
+      fontWeight: '400',
+      lineHeight: 1.5,
+    },
+    
+    contentSection: {
+      maxWidth: '480px',
+    },
+    
+    headline: {
+      fontSize: '40px',
+      fontWeight: '700',
+      color: '#ffffff',
+      lineHeight: 1.2,
+      marginBottom: '24px',
+      letterSpacing: '-0.02em',
+    },
+    
+    description: {
+      fontSize: '18px',
+      color: '#d4d4d4',
+      lineHeight: 1.6,
+      marginBottom: '48px',
+      fontWeight: '400',
+    },
+    
+    valueProps: {
+      display: 'grid',
+      gap: '24px',
+    },
+    
+    valueProp: {
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: '16px',
+      padding: '24px',
+      backgroundColor: '#1a1a1a',
+      borderRadius: '12px',
+      border: '1px solid #262626',
+      transition: 'all 0.2s ease',
+      cursor: 'default',
+    },
+    
+    propIcon: {
+      width: '48px',
+      height: '48px',
+      backgroundColor: '#262626',
+      borderRadius: '8px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#ffffff',
+      flexShrink: 0,
+      border: '1px solid #404040',
+    },
+    
+    propContent: {
+      flex: 1,
+      paddingTop: '2px',
+    },
+    
+    propTitle: {
+      fontSize: '16px',
+      fontWeight: '600',
+      color: '#ffffff',
+      marginBottom: '6px',
+      lineHeight: 1.4,
+    },
+    
+    propDescription: {
+      fontSize: '14px',
+      color: '#a3a3a3',
+      lineHeight: 1.5,
     },
     
     rightPanel: {
@@ -261,41 +327,35 @@ const LoginPage = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '60px',
-      background: 'linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)',
+      padding: '40px',
+      backgroundColor: '#fafafa',
     },
     
     formCard: {
       width: '100%',
-      maxWidth: '480px',
+      maxWidth: '420px',
       padding: '48px',
-      backgroundColor: 'white',
-      borderRadius: '28px',
-      boxShadow: '0 35px 60px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)',
-      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-      animation: 'slideUp 0.6s ease-out',
-      border: '1px solid rgba(255, 255, 255, 0.8)',
+      backgroundColor: '#ffffff',
+      borderRadius: '16px',
+      border: '1px solid #e5e5e5',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
     
     formHeader: {
-      textAlign: 'center',
-      marginBottom: '40px',
+      marginBottom: '32px',
     },
     
     formTitle: {
-      fontSize: '36px',
-      fontWeight: '900',
-      background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #667eea 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      margin: '0 0 12px 0',
-      letterSpacing: '-0.025em',
+      fontSize: '32px',
+      fontWeight: '700',
+      color: '#0a0a0a',
+      margin: '0 0 8px 0',
+      letterSpacing: '-0.02em',
     },
     
     formSubtitle: {
-      fontSize: '18px',
-      color: '#6b7280',
+      fontSize: '16px',
+      color: '#737373',
       margin: '0',
       lineHeight: 1.5,
     },
@@ -303,24 +363,20 @@ const LoginPage = () => {
     loginForm: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '28px',
+      gap: '24px',
     },
     
     inputGroup: {
-      position: 'relative',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '6px',
     },
     
     inputLabel: {
-      display: 'block',
-      fontSize: '16px',
-      fontWeight: '700',
-      color: '#374151',
-      marginBottom: '12px',
-      transition: 'color 0.2s ease',
-    },
-    
-    inputLabelFocused: {
-      color: '#4facfe',
+      fontSize: '14px',
+      fontWeight: '500',
+      color: '#0a0a0a',
+      marginBottom: '6px',
     },
     
     inputWrapper: {
@@ -329,270 +385,220 @@ const LoginPage = () => {
     
     formInput: {
       width: '100%',
-      padding: '18px 22px',
-      border: '2px solid #e5e7eb',
-      borderRadius: '14px',
-      fontSize: '18px',
-      transition: 'all 0.3s ease',
-      backgroundColor: 'white',
+      padding: '12px 16px',
+      border: '1px solid #d4d4d4',
+      borderRadius: '8px',
+      fontSize: '16px',
+      backgroundColor: '#ffffff',
       boxSizing: 'border-box',
       outline: 'none',
-      lineHeight: 1.5,
-      fontWeight: '500',
+      transition: 'all 0.2s ease',
+      fontWeight: '400',
+      color: '#0a0a0a',
     },
     
     formInputFocused: {
-      borderColor: '#4facfe',
-      boxShadow: '0 0 0 4px rgba(79, 172, 254, 0.15)',
-      transform: 'translateY(-2px)',
+      borderColor: '#0a0a0a',
+      boxShadow: '0 0 0 3px rgba(10, 10, 10, 0.1)',
     },
     
     passwordInput: {
-      paddingRight: '65px',
+      paddingRight: '48px',
     },
     
     formInputError: {
-      borderColor: '#ff4757',
-      backgroundColor: '#fff5f5',
-      boxShadow: '0 0 0 4px rgba(255, 71, 87, 0.1)',
-    },
-    
-    formInputValid: {
-      borderColor: '#00d2d3',
-      backgroundColor: '#f0ffff',
-      boxShadow: '0 0 0 4px rgba(0, 210, 211, 0.1)',
-    },
-    
-    validIcon: {
-      position: 'absolute',
-      right: '18px',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      color: '#00d2d3',
-      fontSize: '22px',
-      fontWeight: 'bold',
-      pointerEvents: 'none',
+      borderColor: '#dc2626',
+      boxShadow: '0 0 0 3px rgba(220, 38, 38, 0.1)',
     },
     
     passwordToggle: {
       position: 'absolute',
-      right: '18px',
+      right: '12px',
       top: '50%',
       transform: 'translateY(-50%)',
-      background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      background: 'none',
       border: 'none',
       cursor: 'pointer',
-      fontSize: '18px',
-      padding: '10px',
-      borderRadius: '10px',
+      padding: '4px',
+      color: '#737373',
+      borderRadius: '4px',
       transition: 'all 0.2s ease',
-      color: 'white',
-      boxShadow: '0 4px 12px rgba(79, 172, 254, 0.3)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    
+    optionsRow: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: '-8px',
     },
     
     checkboxGroup: {
       display: 'flex',
       alignItems: 'center',
-      gap: '12px',
-      marginTop: '-8px',
+      gap: '8px',
     },
     
     checkbox: {
-      width: '20px',
-      height: '20px',
-      borderRadius: '6px',
-      border: '2px solid #e5e7eb',
+      width: '18px',
+      height: '18px',
+      borderRadius: '4px',
+      border: '1px solid #d4d4d4',
       cursor: 'pointer',
       position: 'relative',
+      backgroundColor: '#ffffff',
       transition: 'all 0.2s ease',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     
     checkboxChecked: {
-      background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-      borderColor: '#4facfe',
+      backgroundColor: '#0a0a0a',
+      borderColor: '#0a0a0a',
+      color: '#ffffff',
     },
     
     checkboxLabel: {
-      fontSize: '15px',
-      color: '#374151',
+      fontSize: '14px',
+      color: '#0a0a0a',
       cursor: 'pointer',
       userSelect: 'none',
+      fontWeight: '400',
     },
     
     forgotLink: {
-      fontSize: '15px',
-      color: '#4facfe',
+      fontSize: '14px',
+      color: '#0a0a0a',
       textDecoration: 'none',
-      fontWeight: '600',
-      marginLeft: 'auto',
+      fontWeight: '500',
       transition: 'color 0.2s ease',
     },
     
     errorText: {
-      display: 'block',
-      fontSize: '15px',
-      color: '#ff4757',
-      marginTop: '10px',
-      fontWeight: '600',
+      fontSize: '13px',
+      color: '#dc2626',
+      marginTop: '4px',
+      fontWeight: '400',
     },
     
     serverError: {
-      display: 'flex',
-      alignItems: 'flex-start',
-      gap: '14px',
-      padding: '18px',
-      background: 'linear-gradient(135deg, #fff5f5 0%, #fef2f2 100%)',
+      padding: '12px 16px',
+      backgroundColor: '#fef2f2',
       border: '1px solid #fecaca',
-      borderRadius: '14px',
+      borderRadius: '8px',
       color: '#dc2626',
-      fontSize: '16px',
-      fontWeight: '600',
-      boxShadow: '0 4px 12px rgba(220, 38, 38, 0.1)',
-    },
-    
-    errorIcon: {
-      fontSize: '22px',
-      marginTop: '2px',
+      fontSize: '14px',
+      fontWeight: '400',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
     },
     
     submitButton: {
       width: '100%',
-      padding: '20px',
-      borderRadius: '14px',
-      fontSize: '19px',
-      fontWeight: '800',
+      padding: '12px 24px',
+      borderRadius: '8px',
+      fontSize: '16px',
+      fontWeight: '600',
       border: 'none',
       cursor: 'pointer',
-      transition: 'all 0.3s ease',
+      transition: 'all 0.2s ease',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '14px',
-      marginTop: '12px',
-      minHeight: '64px',
-      letterSpacing: '0.5px',
-      textTransform: 'uppercase',
+      gap: '8px',
+      marginTop: '8px',
+      minHeight: '48px',
     },
     
     submitButtonEnabled: {
-      background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #667eea 100%)',
-      backgroundSize: '200% 200%',
-      animation: 'gradientShift 3s ease infinite',
-      color: 'white',
-      boxShadow: '0 15px 35px -5px rgba(79, 172, 254, 0.4), 0 5px 15px -5px rgba(79, 172, 254, 0.2)',
-      transform: 'translateY(0)',
+      backgroundColor: '#0a0a0a',
+      color: '#ffffff',
     },
     
     submitButtonDisabled: {
-      backgroundColor: '#e5e7eb',
-      color: '#9ca3af',
+      backgroundColor: '#f5f5f5',
+      color: '#a3a3a3',
       cursor: 'not-allowed',
-      boxShadow: 'none',
-    },
-    
-    buttonIcon: {
-      fontSize: '22px',
     },
     
     spinner: {
-      width: '22px',
-      height: '22px',
-      border: '3px solid transparent',
-      borderTop: '3px solid currentColor',
+      width: '16px',
+      height: '16px',
+      border: '2px solid transparent',
+      borderTop: '2px solid currentColor',
       borderRadius: '50%',
       animation: 'spin 1s linear infinite',
     },
     
     signupSection: {
-      marginTop: '40px',
+      marginTop: '32px',
       textAlign: 'center',
+      paddingTop: '24px',
+      borderTop: '1px solid #e5e5e5',
     },
     
-    divider: {
-      position: 'relative',
-      marginBottom: '24px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    
-    dividerText: {
-      fontSize: '16px',
-      color: '#6b7280',
-      backgroundColor: 'white',
-      padding: '0 24px',
-      position: 'relative',
-      zIndex: 1,
-      fontWeight: '600',
+    signupText: {
+      fontSize: '14px',
+      color: '#737373',
+      marginBottom: '8px',
     },
     
     signupLink: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '10px',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      color: 'white',
+      display: 'inline-block',
+      color: '#0a0a0a',
       textDecoration: 'none',
-      fontSize: '18px',
-      fontWeight: '700',
-      transition: 'all 0.3s ease',
-      padding: '14px 28px',
-      borderRadius: '12px',
-      border: '2px solid transparent',
-      boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
+      fontSize: '14px',
+      fontWeight: '500',
+      transition: 'color 0.2s ease',
     },
     
     successCard: {
       width: '100%',
-      maxWidth: '480px',
-      background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-      borderRadius: '28px',
-      boxShadow: '0 35px 70px -12px rgba(0, 0, 0, 0.2)',
-      padding: '60px 48px',
+      maxWidth: '420px',
+      backgroundColor: '#ffffff',
+      borderRadius: '16px',
+      border: '1px solid #e5e5e5',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      padding: '48px',
       textAlign: 'center',
-      margin: '0 auto',
-      border: '1px solid rgba(255, 255, 255, 0.8)',
     },
     
     successIcon: {
-      width: '90px',
-      height: '90px',
-      background: 'linear-gradient(135deg, #00d2d3 0%, #2ed573 100%)',
-      color: 'white',
+      width: '64px',
+      height: '64px',
+      backgroundColor: '#059669',
+      color: '#ffffff',
       borderRadius: '50%',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      fontSize: '45px',
-      fontWeight: 'bold',
-      margin: '0 auto 32px',
-      animation: 'scaleIn 0.6s ease-out',
-      boxShadow: '0 15px 35px -5px rgba(0, 210, 211, 0.4)',
+      margin: '0 auto 24px',
     },
     
     successTitle: {
-      fontSize: '32px',
-      fontWeight: '900',
-      background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #667eea 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      margin: '0 0 18px 0',
-      letterSpacing: '-0.025em',
+      fontSize: '28px',
+      fontWeight: '700',
+      color: '#0a0a0a',
+      margin: '0 0 12px 0',
+      letterSpacing: '-0.02em',
     },
     
     successText: {
-      fontSize: '20px',
-      color: '#6b7280',
-      margin: '0 0 32px 0',
-      lineHeight: 1.6,
+      fontSize: '16px',
+      color: '#737373',
+      margin: '0 0 24px 0',
+      lineHeight: 1.5,
     },
     
     successSpinner: {
-      width: '32px',
-      height: '32px',
-      border: '4px solid #e5e7eb',
-      borderTop: '4px solid #4facfe',
+      width: '24px',
+      height: '24px',
+      border: '2px solid #f5f5f5',
+      borderTop: '2px solid #0a0a0a',
       borderRadius: '50%',
       animation: 'spin 1s linear infinite',
       margin: '0 auto',
@@ -602,11 +608,15 @@ const LoginPage = () => {
   if (showSuccess) {
     return (
       <div style={styles.container}>
-        <div style={styles.successCard}>
-          <div style={styles.successIcon}>🎉</div>
-          <h2 style={styles.successTitle}>Welcome Back!</h2>
-          <p style={styles.successText}>Successfully logged in. Redirecting to dashboard...</p>
-          <div style={styles.successSpinner}></div>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fafafa' }}>
+          <div style={styles.successCard} className="fade-in-up">
+            <div style={styles.successIcon}>
+              <CheckIcon />
+            </div>
+            <h2 style={styles.successTitle}>Access Granted</h2>
+            <p style={styles.successText}>Redirecting to your productivity dashboard...</p>
+            <div style={styles.successSpinner}></div>
+          </div>
         </div>
       </div>
     );
@@ -615,87 +625,97 @@ const LoginPage = () => {
   return (
     <div style={styles.container}>
       <div style={styles.leftPanel}>
-        <div style={styles.welcomeSection}>
-          <div style={styles.logo}>🔑</div>
-          <h1 style={styles.welcomeTitle}>Welcome Back</h1>
-          <p style={styles.welcomeSubtitle}>Continue your journey with Keystone</p>
+        <div style={styles.brandSection} className="slide-in-left">
+          <div style={styles.logo}>
+            <KeystoneIcon />
+            <div style={styles.logoText}>Keystone</div>
+          </div>
+          <div style={styles.tagline}>
+            Enterprise productivity management
+          </div>
         </div>
         
-        <div style={styles.statsSection}>
-          <div 
-            style={styles.stat}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)';
-              e.currentTarget.style.boxShadow = '0 20px 40px rgba(255,255,255,0.2)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0) scale(1)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-          >
-            <div style={styles.statIcon}>📊</div>
-            <div style={styles.statContent}>
-              <div style={styles.statNumber}>50K+</div>
-              <div style={styles.statLabel}>Active Users</div>
-            </div>
-          </div>
+        <div style={styles.contentSection} className="slide-in-left">
+          <h1 style={styles.headline}>Stay ahead of the curve</h1>
+          <p style={styles.description}>
+            Advanced task management and productivity optimization for professionals who demand excellence in personal and professional execution.
+          </p>
           
-          <div 
-            style={styles.stat}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)';
-              e.currentTarget.style.boxShadow = '0 20px 40px rgba(255,255,255,0.2)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0) scale(1)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-          >
-            <div style={styles.statIcon}>⭐</div>
-            <div style={styles.statContent}>
-              <div style={styles.statNumber}>99.9%</div>
-              <div style={styles.statLabel}>Uptime</div>
+          <div style={styles.valueProps}>
+            <div 
+              style={styles.valueProp}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#262626';
+                e.currentTarget.style.borderColor = '#404040';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#1a1a1a';
+                e.currentTarget.style.borderColor = '#262626';
+              }}
+            >
+              <div style={styles.propIcon}>
+                <EfficiencyIcon />
+              </div>
+              <div style={styles.propContent}>
+                <div style={styles.propTitle}>Strategic Time Management</div>
+                <div style={styles.propDescription}>Unified workspace for personal, professional, and strategic initiatives</div>
+              </div>
             </div>
-          </div>
-          
-          <div 
-            style={styles.stat}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)';
-              e.currentTarget.style.boxShadow = '0 20px 40px rgba(255,255,255,0.2)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0) scale(1)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-          >
-            <div style={styles.statIcon}>🚀</div>
-            <div style={styles.statContent}>
-              <div style={styles.statNumber}>10M+</div>
-              <div style={styles.statLabel}>Tasks Completed</div>
+            
+            <div 
+              style={styles.valueProp}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#262626';
+                e.currentTarget.style.borderColor = '#404040';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#1a1a1a';
+                e.currentTarget.style.borderColor = '#262626';
+              }}
+            >
+              <div style={styles.propIcon}>
+                <TargetIcon />
+              </div>
+              <div style={styles.propContent}>
+                <div style={styles.propTitle}>Performance Optimization</div>
+                <div style={styles.propDescription}>Data-driven insights to maximize efficiency and eliminate bottlenecks</div>
+              </div>
+            </div>
+            
+            <div 
+              style={styles.valueProp}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#262626';
+                e.currentTarget.style.borderColor = '#404040';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#1a1a1a';
+                e.currentTarget.style.borderColor = '#262626';
+              }}
+            >
+              <div style={styles.propIcon}>
+                <ChartIcon />
+              </div>
+              <div style={styles.propContent}>
+                <div style={styles.propTitle}>Competitive Advantage</div>
+                <div style={styles.propDescription}>Systematic approach to maintaining peak productivity across all domains</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <div style={styles.rightPanel}>
-        <div ref={formRef} style={styles.formCard}>
+        <div ref={formRef} style={styles.formCard} className="fade-in-up">
           <div style={styles.formHeader}>
-            <h2 style={styles.formTitle}>Sign In</h2>
-            <p style={styles.formSubtitle}>Enter your credentials to access your account</p>
+            <h2 style={styles.formTitle}>Welcome back</h2>
+            <p style={styles.formSubtitle}>Continue optimizing your productivity</p>
           </div>
 
-          <form onSubmit={handleSubmit} style={styles.loginForm} noValidate>
-            {/* Email Field */}
+          <div style={styles.loginForm}>
             <div style={styles.inputGroup}>
-              <label 
-                htmlFor="email" 
-                style={{
-                  ...styles.inputLabel,
-                  ...(focusedField === 'email' || formData.email ? styles.inputLabelFocused : {})
-                }}
-              >
-                Email Address
+              <label htmlFor="email" style={styles.inputLabel}>
+                Email address
               </label>
               <div style={styles.inputWrapper}>
                 <input
@@ -707,66 +727,36 @@ const LoginPage = () => {
                   onFocus={(e) => {
                     setFocusedField('email');
                     Object.assign(e.target.style, styles.formInputFocused);
+                    e.target.classList.add('input-focus');
                   }}
                   onBlur={(e) => {
                     setFocusedField('');
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = validationErrors.email ? '0 0 0 4px rgba(255, 71, 87, 0.1)' : 
-                                              (formData.email && !validationErrors.email ? '0 0 0 4px rgba(0, 210, 211, 0.1)' : 'none');
+                    if (validationErrors.email) {
+                      Object.assign(e.target.style, styles.formInputError);
+                    } else {
+                      e.target.style.borderColor = '#d4d4d4';
+                      e.target.style.boxShadow = 'none';
+                    }
+                    e.target.classList.remove('input-focus');
                   }}
                   style={{
                     ...styles.formInput,
-                    ...(validationErrors.email ? styles.formInputError : {}),
-                    ...(formData.email && !validationErrors.email ? styles.formInputValid : {})
+                    ...(validationErrors.email ? styles.formInputError : {})
                   }}
-                  placeholder="Enter your email"
+                  placeholder="name@company.com"
                   autoComplete="email"
                   aria-invalid={!!validationErrors.email}
-                  aria-describedby={validationErrors.email ? "email-error" : undefined}
                 />
-                {formData.email && !validationErrors.email && (
-                  <span style={styles.validIcon}>✓</span>
-                )}
               </div>
               {validationErrors.email && (
-                <span id="email-error" style={styles.errorText} role="alert">
-                  {validationErrors.email}
-                </span>
+                <span style={styles.errorText}>{validationErrors.email}</span>
               )}
             </div>
 
-            {/* Password Field */}
             <div style={styles.inputGroup}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <label 
-                  htmlFor="password" 
-                  style={{
-                    ...styles.inputLabel,
-                    margin: 0,
-                    ...(focusedField === 'password' || formData.password ? styles.inputLabelFocused : {})
-                  }}
-                >
-                  Password
-                </label>
-                <a 
-                  href="#" 
-                  style={styles.forgotLink}
-                  onMouseEnter={(e) => {
-                    e.target.style.color = '#0066cc';
-                    e.target.style.textDecoration = 'underline';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.color = '#4facfe';
-                    e.target.style.textDecoration = 'none';
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    alert('Forgot password functionality would be implemented here');
-                  }}
-                >
-                  Forgot Password?
-                </a>
-              </div>
+              <label htmlFor="password" style={styles.inputLabel}>
+                Password
+              </label>
               <div style={styles.inputWrapper}>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -776,90 +766,103 @@ const LoginPage = () => {
                   onFocus={(e) => {
                     setFocusedField('password');
                     Object.assign(e.target.style, styles.formInputFocused);
+                    e.target.classList.add('input-focus');
                   }}
                   onBlur={(e) => {
                     setFocusedField('');
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = validationErrors.password ? '0 0 0 4px rgba(255, 71, 87, 0.1)' : 
-                                              (formData.password && !validationErrors.password ? '0 0 0 4px rgba(0, 210, 211, 0.1)' : 'none');
+                    if (validationErrors.password) {
+                      Object.assign(e.target.style, styles.formInputError);
+                    } else {
+                      e.target.style.borderColor = '#d4d4d4';
+                      e.target.style.boxShadow = 'none';
+                    }
+                    e.target.classList.remove('input-focus');
                   }}
                   style={{
                     ...styles.formInput,
                     ...styles.passwordInput,
-                    ...(validationErrors.password ? styles.formInputError : {}),
-                    ...(formData.password && !validationErrors.password ? styles.formInputValid : {})
+                    ...(validationErrors.password ? styles.formInputError : {})
                   }}
                   placeholder="Enter your password"
                   autoComplete="current-password"
                   aria-invalid={!!validationErrors.password}
-                  aria-describedby={validationErrors.password ? "password-error" : undefined}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   style={styles.passwordToggle}
                   onMouseEnter={(e) => {
-                    e.target.style.transform = 'translateY(-50%) scale(1.1)';
-                    e.target.style.boxShadow = '0 6px 20px rgba(79, 172, 254, 0.5)';
+                    e.target.style.color = '#0a0a0a';
+                    e.target.style.backgroundColor = '#f5f5f5';
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.transform = 'translateY(-50%) scale(1)';
-                    e.target.style.boxShadow = '0 4px 12px rgba(79, 172, 254, 0.3)';
+                    e.target.style.color = '#737373';
+                    e.target.style.backgroundColor = 'transparent';
                   }}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? "🙈" : "👁️"}
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                 </button>
               </div>
               {validationErrors.password && (
-                <span id="password-error" style={styles.errorText} role="alert">
-                  {validationErrors.password}
-                </span>
+                <span style={styles.errorText}>{validationErrors.password}</span>
               )}
             </div>
 
-            {/* Remember Me */}
-            <div style={styles.checkboxGroup}>
-              <div
-                style={{
-                  ...styles.checkbox,
-                  ...(rememberMe ? styles.checkboxChecked : {})
-                }}
-                onClick={() => setRememberMe(!rememberMe)}
-              >
-                {rememberMe && (
-                  <span style={{ 
-                    position: 'absolute', 
-                    top: '50%', 
-                    left: '50%', 
-                    transform: 'translate(-50%, -50%)',
-                    color: 'white',
-                    fontSize: '14px',
-                    fontWeight: 'bold'
-                  }}>
-                    ✓
-                  </span>
-                )}
+            <div style={styles.optionsRow}>
+              <div style={styles.checkboxGroup}>
+                <div
+                  style={{
+                    ...styles.checkbox,
+                    ...(rememberMe ? styles.checkboxChecked : {})
+                  }}
+                  onClick={() => setRememberMe(!rememberMe)}
+                >
+                  {rememberMe && (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                </div>
+                <label 
+                  style={styles.checkboxLabel}
+                  onClick={() => setRememberMe(!rememberMe)}
+                >
+                  Keep me signed in
+                </label>
               </div>
-              <label 
-                style={styles.checkboxLabel}
-                onClick={() => setRememberMe(!rememberMe)}
+              
+              <a 
+                href="#" 
+                style={styles.forgotLink}
+                onMouseEnter={(e) => {
+                  e.target.style.color = '#737373';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.color = '#0a0a0a';
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                }}
               >
-                Remember me for 30 days
-              </label>
+                Forgot password?
+              </a>
             </div>
 
             {serverError && (
-              <div style={styles.serverError} role="alert">
-                <span style={styles.errorIcon}>⚠️</span>
-                <div>
-                  <strong>Error:</strong> {serverError}
-                </div>
+              <div style={styles.serverError}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                  <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" strokeWidth="2"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" strokeWidth="2"/>
+                </svg>
+                {serverError}
               </div>
             )}
 
             <button
-              type="submit"
+              type="button"
+              onClick={handleSubmit}
               disabled={!isFormValid || loading}
               style={{
                 ...styles.submitButton,
@@ -867,60 +870,46 @@ const LoginPage = () => {
               }}
               onMouseEnter={(e) => {
                 if (isFormValid && !loading) {
-                  e.target.style.transform = 'translateY(-3px)';
-                  e.target.style.boxShadow = '0 20px 40px -5px rgba(79, 172, 254, 0.5), 0 10px 25px -5px rgba(79, 172, 254, 0.3)';
+                  e.target.style.backgroundColor = '#262626';
+                  e.target.classList.add('button-hover');
                 }
               }}
               onMouseLeave={(e) => {
                 if (isFormValid && !loading) {
-                  e.target.style.transform = 'translateY(0)';
-                  e.target.style.boxShadow = '0 15px 35px -5px rgba(79, 172, 254, 0.4), 0 5px 15px -5px rgba(79, 172, 254, 0.2)';
+                  e.target.style.backgroundColor = '#0a0a0a';
+                  e.target.classList.remove('button-hover');
                 }
               }}
             >
               {loading ? (
                 <>
                   <span style={styles.spinner}></span>
-                  Signing In...
+                  Authenticating...
                 </>
               ) : (
-                <>
-                  <span style={styles.buttonIcon}>🚀</span>
-                  Sign In
-                </>
+                'Continue to Dashboard'
               )}
             </button>
-          </form>
+          </div>
 
           <div style={styles.signupSection}>
-            <div style={styles.divider}>
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: 0,
-                  right: 0,
-                  height: '1px',
-                  background: 'linear-gradient(to right, transparent, #e5e7eb 20%, #e5e7eb 80%, transparent)',
-                  zIndex: 0,
-                }}
-              />
-              <span style={styles.dividerText}>Don't have an account?</span>
-            </div>
-            <Link 
-              to="/signup" 
+            <p style={styles.signupText}>New to Keystone?</p>
+            <a 
+              href="/signup" 
               style={styles.signupLink}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate('/signup');
+              }}
               onMouseEnter={(e) => {
-                e.target.style.transform = 'translateX(6px) scale(1.05)';
-                e.target.style.boxShadow = '0 12px 35px rgba(102, 126, 234, 0.4)';
+                e.target.style.color = '#737373';
               }}
               onMouseLeave={(e) => {
-                e.target.style.transform = 'translateX(0) scale(1)';
-                e.target.style.boxShadow = '0 8px 25px rgba(102, 126, 234, 0.3)';
+                e.target.style.color = '#0a0a0a';
               }}
             >
-              Create Account →
-            </Link>
+              Create your account
+            </a>
           </div>
         </div>
       </div>

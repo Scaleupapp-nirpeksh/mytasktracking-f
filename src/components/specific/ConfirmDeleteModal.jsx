@@ -5,14 +5,14 @@ const ConfirmDeleteModal = ({ task, onClose, onTaskDeleted }) => {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
 
-  // Add CSS animations
+  // Add CSS animations matching the design system
   useEffect(() => {
     const styleSheet = document.createElement("style");
     styleSheet.innerText = `
       @keyframes modalSlideIn {
         from {
           opacity: 0;
-          transform: translateY(-50px) scale(0.95);
+          transform: translateY(-20px) scale(0.98);
         }
         to {
           opacity: 1;
@@ -29,18 +29,7 @@ const ConfirmDeleteModal = ({ task, onClose, onTaskDeleted }) => {
         to { transform: rotate(360deg); }
       }
       
-      @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-4px); }
-        75% { transform: translateX(4px); }
-      }
-      
-      @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.8; }
-      }
-      
-      @keyframes slideInUp {
+      @keyframes fadeInUp {
         from {
           opacity: 0;
           transform: translateY(20px);
@@ -72,6 +61,29 @@ const ConfirmDeleteModal = ({ task, onClose, onTaskDeleted }) => {
     }
   };
 
+  // Professional SVG Icons matching the design system
+  const XIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const AlertTriangleIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10.29 3.86L1.82 18C1.64466 18.3024 1.55611 18.6453 1.56331 18.9931C1.57051 19.3408 1.67325 19.6798 1.86037 19.9764C2.04749 20.273 2.31324 20.5157 2.6295 20.6777C2.94576 20.8396 3.29973 20.9148 3.65 20.895H20.35C20.7003 20.9148 21.0542 20.8396 21.3705 20.6777C21.6868 20.5157 21.9525 20.273 22.1396 19.9764C22.3268 19.6798 22.4295 19.3408 22.4367 18.9931C22.4439 18.6453 22.3553 18.3024 22.18 18L13.71 3.86C13.5317 3.56611 13.2807 3.32312 12.9812 3.15447C12.6817 2.98582 12.3437 2.89725 12 2.89725C11.6563 2.89725 11.3183 2.98582 11.0188 3.15447C10.7193 3.32312 10.4683 3.56611 10.29 3.86V3.86Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+
+  const TrashIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="3,6 5,6 21,6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
   const styles = {
     modalOverlay: {
       position: 'fixed',
@@ -79,7 +91,7 @@ const ConfirmDeleteModal = ({ task, onClose, onTaskDeleted }) => {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      backgroundColor: 'rgba(0, 0, 0, 0.75)',
       backdropFilter: 'blur(8px)',
       display: 'flex',
       alignItems: 'center',
@@ -90,117 +102,152 @@ const ConfirmDeleteModal = ({ task, onClose, onTaskDeleted }) => {
     },
     
     modalContent: {
-      backgroundColor: 'white',
-      borderRadius: '20px',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+      backgroundColor: '#ffffff',
+      borderRadius: '16px',
+      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
       width: '100%',
-      maxWidth: '500px',
+      maxWidth: '480px',
       animation: 'modalSlideIn 0.4s ease-out',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
-      overflow: 'hidden',
+      border: '1px solid #e5e5e5',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", sans-serif',
     },
     
     modalHeader: {
-      padding: '32px 32px 0 32px',
-      textAlign: 'center',
-      borderBottom: 'none',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '24px 32px',
+      borderBottom: '1px solid #e5e5e5',
     },
     
-    modalTitle: {
-      fontSize: '28px',
-      fontWeight: '800',
-      color: '#1e293b',
-      margin: 0,
-      background: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
+    headerContent: {
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center',
       gap: '12px',
+      flex: 1,
     },
     
     warningIcon: {
-      fontSize: '32px',
-      filter: 'drop-shadow(0 2px 4px rgba(220, 38, 38, 0.3))',
-      animation: 'pulse 2s infinite',
+      color: '#dc2626',
+      flexShrink: 0,
+    },
+    
+    modalTitle: {
+      fontSize: '20px',
+      fontWeight: '600',
+      color: '#0a0a0a',
+      margin: 0,
+    },
+    
+    closeButton: {
+      width: '40px',
+      height: '40px',
+      borderRadius: '8px',
+      backgroundColor: '#f5f5f5',
+      border: 'none',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#737373',
+      transition: 'all 0.2s ease',
+      flexShrink: 0,
     },
     
     modalBody: {
       padding: '32px',
-      textAlign: 'center',
-      animation: 'slideInUp 0.5s ease-out',
+      animation: 'fadeInUp 0.5s ease-out',
     },
     
     confirmText: {
-      fontSize: '18px',
-      color: '#374151',
+      fontSize: '16px',
+      color: '#525252',
       margin: '0 0 16px 0',
-      lineHeight: '1.6',
+      lineHeight: '1.5',
+    },
+    
+    taskTitleContainer: {
+      backgroundColor: '#fafafa',
+      border: '1px solid #e5e5e5',
+      borderRadius: '8px',
+      padding: '12px 16px',
+      marginBottom: '20px',
+    },
+    
+    taskTitleLabel: {
+      fontSize: '12px',
       fontWeight: '500',
+      color: '#737373',
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em',
+      marginBottom: '4px',
+      display: 'block',
     },
     
     taskTitle: {
-      color: '#dc2626',
-      fontWeight: '700',
+      fontSize: '16px',
+      fontWeight: '600',
+      color: '#0a0a0a',
+      margin: 0,
+      wordBreak: 'break-word',
+    },
+    
+    warningBox: {
       backgroundColor: '#fef2f2',
-      padding: '4px 12px',
-      borderRadius: '8px',
       border: '1px solid #fecaca',
-      display: 'inline-block',
-      margin: '0 4px',
+      borderRadius: '8px',
+      padding: '16px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      marginBottom: '24px',
+    },
+    
+    warningBoxIcon: {
+      color: '#dc2626',
+      flexShrink: 0,
     },
     
     warningText: {
-      fontSize: '16px',
+      fontSize: '14px',
       color: '#dc2626',
-      fontWeight: '700',
-      margin: '0 0 24px 0',
-      padding: '16px',
-      backgroundColor: '#fef2f2',
-      borderRadius: '12px',
-      border: '1px solid #fecaca',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '8px',
+      fontWeight: '500',
+      margin: 0,
     },
     
     errorMessage: {
       backgroundColor: '#fef2f2',
       color: '#dc2626',
-      padding: '16px',
-      borderRadius: '12px',
+      padding: '12px 16px',
+      borderRadius: '8px',
       border: '1px solid #fecaca',
-      fontSize: '15px',
-      fontWeight: '600',
+      fontSize: '14px',
+      fontWeight: '500',
       display: 'flex',
       alignItems: 'center',
-      gap: '10px',
+      gap: '8px',
       marginTop: '16px',
-      animation: 'shake 0.5s ease-in-out',
     },
     
     modalFooter: {
       display: 'flex',
-      justifyContent: 'center',
-      gap: '16px',
-      padding: '0 32px 32px 32px',
-      borderTop: 'none',
+      justifyContent: 'flex-end',
+      gap: '12px',
+      padding: '20px 32px',
+      borderTop: '1px solid #e5e5e5',
+      backgroundColor: '#fafafa',
     },
     
     buttonSecondary: {
-      padding: '14px 28px',
-      backgroundColor: '#f8fafc',
-      color: '#475569',
-      border: '2px solid #e2e8f0',
-      borderRadius: '12px',
-      fontWeight: '600',
-      fontSize: '16px',
+      padding: '10px 20px',
+      backgroundColor: '#ffffff',
+      color: '#525252',
+      border: '1px solid #d4d4d4',
+      borderRadius: '8px',
+      fontWeight: '500',
+      fontSize: '14px',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
-      minWidth: '120px',
     },
     
     buttonSecondaryDisabled: {
@@ -209,56 +256,33 @@ const ConfirmDeleteModal = ({ task, onClose, onTaskDeleted }) => {
     },
     
     buttonDanger: {
-      padding: '14px 28px',
-      background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
-      color: 'white',
+      padding: '10px 20px',
+      backgroundColor: '#dc2626',
+      color: '#ffffff',
       border: 'none',
-      borderRadius: '12px',
-      fontWeight: '700',
-      fontSize: '16px',
+      borderRadius: '8px',
+      fontWeight: '600',
+      fontSize: '14px',
       cursor: 'pointer',
-      transition: 'all 0.3s ease',
+      transition: 'all 0.2s ease',
       display: 'flex',
       alignItems: 'center',
-      gap: '8px',
-      boxShadow: '0 8px 25px rgba(220, 38, 38, 0.3)',
-      textTransform: 'uppercase',
-      letterSpacing: '0.5px',
-      minWidth: '140px',
-      justifyContent: 'center',
+      gap: '6px',
     },
     
     buttonDangerDisabled: {
-      background: '#e2e8f0',
-      color: '#94a3b8',
+      backgroundColor: '#f5f5f5',
+      color: '#a3a3a3',
       cursor: 'not-allowed',
-      boxShadow: 'none',
     },
     
     spinner: {
-      width: '16px',
-      height: '16px',
+      width: '14px',
+      height: '14px',
       border: '2px solid transparent',
       borderTop: '2px solid currentColor',
       borderRadius: '50%',
       animation: 'spin 1s linear infinite',
-    },
-    
-    iconContainer: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: '80px',
-      height: '80px',
-      backgroundColor: '#fef2f2',
-      borderRadius: '50%',
-      margin: '0 auto 24px auto',
-      border: '4px solid #fecaca',
-    },
-    
-    dangerIcon: {
-      fontSize: '40px',
-      animation: 'pulse 2s infinite',
     },
   };
 
@@ -268,28 +292,54 @@ const ConfirmDeleteModal = ({ task, onClose, onTaskDeleted }) => {
     <div style={styles.modalOverlay} onClick={onClose}>
       <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div style={styles.modalHeader}>
-          <div style={styles.iconContainer}>
-            <span style={styles.dangerIcon}>⚠️</span>
+          <div style={styles.headerContent}>
+            <div style={styles.warningIcon}>
+              <AlertTriangleIcon />
+            </div>
+            <h2 style={styles.modalTitle}>Delete Task</h2>
           </div>
-          <h2 style={styles.modalTitle}>
-            Confirm Deletion
-          </h2>
+          <button 
+            style={styles.closeButton}
+            onClick={onClose}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#e5e5e5';
+              e.target.style.color = '#dc2626';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#f5f5f5';
+              e.target.style.color = '#737373';
+            }}
+          >
+            <XIcon />
+          </button>
         </div>
 
         <div style={styles.modalBody}>
           <p style={styles.confirmText}>
-            Are you sure you want to delete the task:
+            Are you sure you want to delete this task? This action cannot be undone.
           </p>
-          <span style={styles.taskTitle}>"{task.title}"</span>
           
-          <div style={styles.warningText}>
-            <span style={{ fontSize: '20px' }}>🚨</span>
-            This action cannot be undone
+          <div style={styles.taskTitleContainer}>
+            <span style={styles.taskTitleLabel}>Task to be deleted</span>
+            <p style={styles.taskTitle}>{task.title}</p>
+          </div>
+
+          <div style={styles.warningBox}>
+            <div style={styles.warningBoxIcon}>
+              <AlertTriangleIcon />
+            </div>
+            <p style={styles.warningText}>
+              This will permanently remove the task and all its data.
+            </p>
           </div>
 
           {error && (
             <div style={styles.errorMessage}>
-              <span style={{ fontSize: '18px' }}>❌</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" strokeWidth="2"/>
+                <line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" strokeWidth="2"/>
+              </svg>
               {error}
             </div>
           )}
@@ -306,16 +356,14 @@ const ConfirmDeleteModal = ({ task, onClose, onTaskDeleted }) => {
             disabled={loading}
             onMouseEnter={(e) => {
               if (!loading) {
-                e.target.style.backgroundColor = '#e2e8f0';
-                e.target.style.borderColor = '#cbd5e1';
-                e.target.style.transform = 'translateY(-1px)';
+                e.target.style.backgroundColor = '#f5f5f5';
+                e.target.style.borderColor = '#a3a3a3';
               }
             }}
             onMouseLeave={(e) => {
               if (!loading) {
-                e.target.style.backgroundColor = '#f8fafc';
-                e.target.style.borderColor = '#e2e8f0';
-                e.target.style.transform = 'translateY(0)';
+                e.target.style.backgroundColor = '#ffffff';
+                e.target.style.borderColor = '#d4d4d4';
               }
             }}
           >
@@ -332,14 +380,14 @@ const ConfirmDeleteModal = ({ task, onClose, onTaskDeleted }) => {
             disabled={loading}
             onMouseEnter={(e) => {
               if (!loading) {
-                e.target.style.transform = 'translateY(-2px) scale(1.02)';
-                e.target.style.boxShadow = '0 12px 35px rgba(220, 38, 38, 0.4)';
+                e.target.style.backgroundColor = '#b91c1c';
+                e.target.style.transform = 'translateY(-1px)';
               }
             }}
             onMouseLeave={(e) => {
               if (!loading) {
-                e.target.style.transform = 'translateY(0) scale(1)';
-                e.target.style.boxShadow = '0 8px 25px rgba(220, 38, 38, 0.3)';
+                e.target.style.backgroundColor = '#dc2626';
+                e.target.style.transform = 'translateY(0)';
               }
             }}
           >
@@ -350,7 +398,7 @@ const ConfirmDeleteModal = ({ task, onClose, onTaskDeleted }) => {
               </>
             ) : (
               <>
-                <span style={{ fontSize: '16px' }}>🗑️</span>
+                <TrashIcon />
                 Delete Task
               </>
             )}
