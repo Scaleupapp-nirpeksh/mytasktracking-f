@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <!-- Main background gradient -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Accent gradient for elements -->
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffecd2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fcb045;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Success gradient -->
+    <linearGradient id="successGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a8edea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fed6e3;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Shadow filter -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.2)"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container with rounded square -->
+  <rect x="2" y="2" width="28" height="28" rx="7" ry="7" fill="url(#bgGradient)" filter="url(#shadow)"/>
+  
+  <!-- Abstract geometric representation of organized tasks -->
+  <!-- Top priority task (largest) -->
+  <rect x="7" y="8" width="12" height="3" rx="1.5" fill="url(#accentGradient)" opacity="0.95"/>
+  <circle cx="21" cy="9.5" r="1.5" fill="url(#successGradient)"/>
+  
+  <!-- Medium priority tasks -->
+  <rect x="7" y="13" width="9" height="2.5" rx="1.25" fill="white" opacity="0.8"/>
+  <circle cx="18" cy="14.25" r="1.25" fill="url(#successGradient)" opacity="0.7"/>
+  
+  <rect x="7" y="17" width="10" height="2.5" rx="1.25" fill="white" opacity="0.6"/>
+  <circle cx="19" cy="18.25" r="1.25" fill="white" opacity="0.4" stroke="white" stroke-width="0.5"/>
+  
+  <!-- Lower priority task -->
+  <rect x="7" y="21" width="7" height="2" rx="1" fill="white" opacity="0.4"/>
+  <circle cx="16" cy="22" r="1" fill="white" opacity="0.3" stroke="white" stroke-width="0.5"/>
+  
+  <!-- Floating progress indicator -->
+  <circle cx="24" cy="24" r="4" fill="url(#accentGradient)" filter="url(#shadow)"/>
+  <path d="M22.5 24L23.5 25L25.5 23" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>
