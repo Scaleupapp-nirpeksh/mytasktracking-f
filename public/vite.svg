@@ -1,1 +1,50 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="31.88" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 257"><defs><linearGradient id="IconifyId1813088fe1fbc01fb466" x1="-.828%" x2="57.636%" y1="7.652%" y2="78.411%"><stop offset="0%" stop-color="#41D1FF"></stop><stop offset="100%" stop-color="#BD34FE"></stop></linearGradient><linearGradient id="IconifyId1813088fe1fbc01fb467" x1="43.376%" x2="50.316%" y1="2.242%" y2="89.03%"><stop offset="0%" stop-color="#FFEA83"></stop><stop offset="8.333%" stop-color="#FFDD35"></stop><stop offset="100%" stop-color="#FFA800"></stop></linearGradient></defs><path fill="url(#IconifyId1813088fe1fbc01fb466)" d="M255.153 37.938L134.897 252.976c-2.483 4.44-8.862 4.466-11.382.048L.875 37.958c-2.746-4.814 1.371-10.646 6.827-9.67l120.385 21.517a6.537 6.537 0 0 0 2.322-.004l117.867-21.483c5.438-.991 9.574 4.796 6.877 9.62Z"></path><path fill="url(#IconifyId1813088fe1fbc01fb467)" d="M185.432.063L96.44 17.501a3.268 3.268 0 0 0-2.634 3.014l-5.474 92.456a3.268 3.268 0 0 0 3.997 3.378l24.777-5.718c2.318-.535 4.413 1.507 3.936 3.838l-7.361 36.047c-.495 2.426 1.782 4.5 4.151 3.78l15.304-4.649c2.372-.72 4.652 1.36 4.15 3.788l-11.698 56.621c-.732 3.542 3.979 5.473 5.943 2.437l1.313-2.028l72.516-144.72c1.215-2.423-.88-5.186-3.54-4.672l-25.505 4.922c-2.396.462-4.435-1.77-3.759-4.114l16.646-57.705c.677-2.35-1.37-4.583-3.769-4.113Z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <!-- Main background gradient -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Accent gradient for elements -->
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffecd2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fcb045;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Success gradient -->
+    <linearGradient id="successGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a8edea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fed6e3;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Shadow filter -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.2)"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container with rounded square -->
+  <rect x="2" y="2" width="28" height="28" rx="7" ry="7" fill="url(#bgGradient)" filter="url(#shadow)"/>
+  
+  <!-- Abstract geometric representation of organized tasks -->
+  <!-- Top priority task (largest) -->
+  <rect x="7" y="8" width="12" height="3" rx="1.5" fill="url(#accentGradient)" opacity="0.95"/>
+  <circle cx="21" cy="9.5" r="1.5" fill="url(#successGradient)"/>
+  
+  <!-- Medium priority tasks -->
+  <rect x="7" y="13" width="9" height="2.5" rx="1.25" fill="white" opacity="0.8"/>
+  <circle cx="18" cy="14.25" r="1.25" fill="url(#successGradient)" opacity="0.7"/>
+  
+  <rect x="7" y="17" width="10" height="2.5" rx="1.25" fill="white" opacity="0.6"/>
+  <circle cx="19" cy="18.25" r="1.25" fill="white" opacity="0.4" stroke="white" stroke-width="0.5"/>
+  
+  <!-- Lower priority task -->
+  <rect x="7" y="21" width="7" height="2" rx="1" fill="white" opacity="0.4"/>
+  <circle cx="16" cy="22" r="1" fill="white" opacity="0.3" stroke="white" stroke-width="0.5"/>
+  
+  <!-- Floating progress indicator -->
+  <circle cx="24" cy="24" r="4" fill="url(#accentGradient)" filter="url(#shadow)"/>
+  <path d="M22.5 24L23.5 25L25.5 23" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>
