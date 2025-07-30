@@ -75,6 +75,25 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
       .fade-in-up {
         animation: fadeInUp 0.3s ease-out;
       }
+      
+      /* Custom scrollbar */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f5f5f5;
+        border-radius: 3px;
+      }
+      
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #d4d4d4;
+        border-radius: 3px;
+      }
+      
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #a3a3a3;
+      }
     `;
     document.head.appendChild(styleSheet);
     
@@ -223,10 +242,11 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
       backgroundColor: 'rgba(0, 0, 0, 0.75)',
       backdropFilter: 'blur(8px)',
       display: 'flex',
-      alignItems: 'center',
+      alignItems: 'flex-start',
       justifyContent: 'center',
       zIndex: 1000,
-      padding: '20px',
+      padding: '40px 20px',
+      overflowY: 'auto',
       animation: 'overlayFadeIn 0.3s ease-out',
     },
     
@@ -236,13 +256,13 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
       boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
       width: '100%',
       maxWidth: '1200px',
-      maxHeight: '90vh',
-      overflow: 'hidden',
+      minHeight: '600px',
       animation: 'modalSlideIn 0.4s ease-out',
       border: '1px solid #e5e5e5',
       display: 'flex',
       flexDirection: 'column',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", sans-serif',
+      margin: 'auto',
     },
     
     modalHeader: {
@@ -252,6 +272,7 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
       padding: '24px 32px',
       borderBottom: '1px solid #e5e5e5',
       backgroundColor: '#ffffff',
+      flexShrink: 0,
     },
     
     headerContent: {
@@ -325,25 +346,30 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
     modalBody: {
       display: 'flex',
       flex: 1,
-      minHeight: '600px',
-      overflow: 'hidden',
+      minHeight: 0, // Important: allows flex children to shrink
     },
     
     leftPanel: {
       flex: 1,
-      padding: '32px',
       borderRight: '1px solid #e5e5e5',
       backgroundColor: '#fafafa',
-      overflow: 'auto',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden',
     },
     
     rightPanel: {
       flex: 1,
-      padding: '32px',
       backgroundColor: '#ffffff',
       display: 'flex',
       flexDirection: 'column',
+      overflow: 'hidden',
+    },
+    
+    scrollableContent: {
+      flex: 1,
       overflow: 'auto',
+      padding: '32px',
     },
     
     progressSection: {
@@ -412,9 +438,6 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
       display: 'flex',
       flexDirection: 'column',
       gap: '12px',
-      maxHeight: '450px',
-      overflowY: 'auto',
-      paddingRight: '8px',
     },
     
     taskCard: {
@@ -491,6 +514,8 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
       flex: 1,
       display: 'flex',
       flexDirection: 'column',
+      padding: '32px',
+      minHeight: 0, // Important: allows flex children to shrink
     },
     
     notesHeader: {
@@ -498,6 +523,7 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
       justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: '16px',
+      flexShrink: 0,
     },
     
     saveStatus: {
@@ -507,6 +533,13 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
       fontSize: '12px',
       color: '#737373',
       fontWeight: '500',
+    },
+    
+    textareaContainer: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: 0,
     },
     
     notesTextarea: {
@@ -537,6 +570,7 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
       padding: '20px 32px',
       borderTop: '1px solid #e5e5e5',
       backgroundColor: '#fafafa',
+      flexShrink: 0,
     },
     
     footerInfo: {
@@ -650,75 +684,77 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
         <div style={styles.modalBody}>
           {/* Left Panel - Tasks */}
           <div style={styles.leftPanel}>
-            <div style={styles.progressSection} className="fade-in-up">
-              <div style={styles.progressHeader}>
-                <h3 style={styles.progressTitle}>Meeting Progress</h3>
-                <span style={styles.progressStats}>
-                  {discussedTasks.size} of {meeting.taskSnapshots.length}
-                </span>
+            <div style={styles.scrollableContent} className="custom-scrollbar">
+              <div style={styles.progressSection} className="fade-in-up">
+                <div style={styles.progressHeader}>
+                  <h3 style={styles.progressTitle}>Meeting Progress</h3>
+                  <span style={styles.progressStats}>
+                    {discussedTasks.size} of {meeting.taskSnapshots.length}
+                  </span>
+                </div>
+                <div style={styles.progressBar}>
+                  <div style={styles.progressFill} />
+                </div>
+                <p style={styles.progressText}>{progressPercentage}% Complete</p>
               </div>
-              <div style={styles.progressBar}>
-                <div style={styles.progressFill} />
-              </div>
-              <p style={styles.progressText}>{progressPercentage}% Complete</p>
-            </div>
 
-            <h3 style={styles.sectionTitle}>
-              <FileTextIcon />
-              Key Tasks to Review
-            </h3>
-            
-            <div style={styles.tasksList}>
-              {meeting.taskSnapshots.map((task, index) => {
-                const isDiscussed = discussedTasks.has(task.originalTaskId);
-                return (
-                  <div 
-                    key={task.originalTaskId || index}
-                    style={{
-                      ...styles.taskCard,
-                      ...(isDiscussed ? styles.taskCardDiscussed : {}),
-                    }}
-                    className="fade-in-up"
-                    onClick={() => toggleTaskDiscussed(task.originalTaskId)}
-                    onMouseEnter={(e) => {
-                      if (!isDiscussed) {
-                        e.currentTarget.style.borderColor = '#d4d4d4';
-                        e.currentTarget.style.transform = 'translateY(-1px)';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isDiscussed) {
-                        e.currentTarget.style.borderColor = '#e5e5e5';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = 'none';
-                      }
-                    }}
-                  >
-                    <div style={styles.taskHeader}>
-                      <h4 style={styles.taskTitle}>{task.title}</h4>
-                      <div style={styles.taskActions}>
-                        <span style={getStatusBadgeStyle(task.status)}>
-                          {task.status}
-                        </span>
-                        <div style={{
-                          ...styles.discussedCheckbox,
-                          ...(isDiscussed ? styles.discussedCheckboxChecked : {})
-                        }}>
-                          {isDiscussed && (
-                            <div style={styles.checkmark}>
-                              <CheckIcon />
-                            </div>
-                          )}
+              <h3 style={styles.sectionTitle}>
+                <FileTextIcon />
+                Key Tasks to Review
+              </h3>
+              
+              <div style={styles.tasksList}>
+                {meeting.taskSnapshots.map((task, index) => {
+                  const isDiscussed = discussedTasks.has(task.originalTaskId);
+                  return (
+                    <div 
+                      key={task.originalTaskId || index}
+                      style={{
+                        ...styles.taskCard,
+                        ...(isDiscussed ? styles.taskCardDiscussed : {}),
+                      }}
+                      className="fade-in-up"
+                      onClick={() => toggleTaskDiscussed(task.originalTaskId)}
+                      onMouseEnter={(e) => {
+                        if (!isDiscussed) {
+                          e.currentTarget.style.borderColor = '#d4d4d4';
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isDiscussed) {
+                          e.currentTarget.style.borderColor = '#e5e5e5';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = 'none';
+                        }
+                      }}
+                    >
+                      <div style={styles.taskHeader}>
+                        <h4 style={styles.taskTitle}>{task.title}</h4>
+                        <div style={styles.taskActions}>
+                          <span style={getStatusBadgeStyle(task.status)}>
+                            {task.status}
+                          </span>
+                          <div style={{
+                            ...styles.discussedCheckbox,
+                            ...(isDiscussed ? styles.discussedCheckboxChecked : {})
+                          }}>
+                            {isDiscussed && (
+                              <div style={styles.checkmark}>
+                                <CheckIcon />
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
+                      {task.description && (
+                        <p style={styles.taskDescription}>{task.description}</p>
+                      )}
                     </div>
-                    {task.description && (
-                      <p style={styles.taskDescription}>{task.description}</p>
-                    )}
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
 
@@ -757,24 +793,27 @@ const ActiveMeetingModal = ({ meeting, onClose, onMeetingUpdated }) => {
                 </div>
               )}
 
-              <textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Take notes during your meeting...
+              <div style={styles.textareaContainer}>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Take notes during your meeting...
 
 What are the key discussion points?
 What decisions were made?
 What are the next action items?
 Any blockers or challenges discussed?"
-                style={styles.notesTextarea}
-                onFocus={(e) => {
-                  Object.assign(e.target.style, styles.notesTextareaFocused);
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#d4d4d4';
-                  e.target.style.boxShadow = 'none';
-                }}
-              />
+                  style={styles.notesTextarea}
+                  className="custom-scrollbar"
+                  onFocus={(e) => {
+                    Object.assign(e.target.style, styles.notesTextareaFocused);
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#d4d4d4';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
