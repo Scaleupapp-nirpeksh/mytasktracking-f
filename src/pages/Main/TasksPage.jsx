@@ -9,6 +9,7 @@ import EditTaskModal from '../../components/specific/EditTaskModal';
 import ConfirmDeleteModal from '../../components/specific/ConfirmDeleteModal';
 import MagicInput from '../../components/specific/MagicInput';
 import KanbanBoard from '../../components/specific/KanbanBoard';
+import CalendarView from '../../components/specific/CalendarView';
 
 const TasksPage = () => {
   const { workspaceId } = useParams();
@@ -94,6 +95,15 @@ const TasksPage = () => {
 
   const CalendarIcon = () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
+      <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+
+  const CalendarViewIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
       <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
       <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -784,6 +794,20 @@ const TasksPage = () => {
   };
 
   const renderTasksContent = () => {
+    if (viewMode === 'calendar') {
+      return (
+        <CalendarView
+          tasks={filteredTasks}
+          onTaskClick={(task) => setSelectedTask(task)}
+          onTaskUpdated={handleTaskUpdated}
+          onAddTask={(date) => {
+            setPrefilledData({ dueDate: date.toISOString() });
+            setIsAddModalOpen(true);
+          }}
+        />
+      );
+    }
+
     if (viewMode === 'kanban') {
       return (
         <div style={styles.kanbanWrapper}>
@@ -993,7 +1017,7 @@ const TasksPage = () => {
               }}
             >
               <CalendarIcon />
-              <span style={styles.navItemText}>Calendar</span>
+              <span style={styles.navItemText}>Meetings</span>
             </NavLink>
             <NavLink
               to="/settings"
@@ -1060,96 +1084,98 @@ const TasksPage = () => {
 
         {/* Page Content */}
         <div style={styles.pageContent}>
-          {/* Stats Grid */}
-          <div style={styles.statsGrid}>
-            <div 
-              style={styles.statCard}
-              onMouseEnter={(e) => {
-                e.target.style.borderColor = '#d4d4d4';
-                e.target.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.borderColor = '#e5e5e5';
-                e.target.style.transform = 'translateY(0)';
-              }}
-            >
-              <div style={styles.statCardHeader}>
-                <div style={styles.statLabel}>Total Tasks</div>
-                <div style={styles.statIcon}>
-                  <TaskIcon />
+          {/* Stats Grid - Only show when not in calendar view */}
+          {viewMode !== 'calendar' && (
+            <div style={styles.statsGrid}>
+              <div 
+                style={styles.statCard}
+                onMouseEnter={(e) => {
+                  e.target.style.borderColor = '#d4d4d4';
+                  e.target.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.borderColor = '#e5e5e5';
+                  e.target.style.transform = 'translateY(0)';
+                }}
+              >
+                <div style={styles.statCardHeader}>
+                  <div style={styles.statLabel}>Total Tasks</div>
+                  <div style={styles.statIcon}>
+                    <TaskIcon />
+                  </div>
+                </div>
+                <div style={styles.statValue}>{taskStats.total}</div>
+                <div style={styles.statDescription}>Across all workspaces</div>
+              </div>
+
+              <div 
+                style={styles.statCard}
+                onMouseEnter={(e) => {
+                  e.target.style.borderColor = '#d4d4d4';
+                  e.target.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.borderColor = '#e5e5e5';
+                  e.target.style.transform = 'translateY(0)';
+                }}
+              >
+                <div style={styles.statCardHeader}>
+                  <div style={styles.statLabel}>To Do</div>
+                  <div style={styles.statIcon}>
+                    <TaskIcon />
+                  </div>
+                </div>
+                <div style={styles.statValue}>{taskStats.pending}</div>
+                <div style={styles.statDescription}>Pending tasks</div>
+              </div>
+
+              <div 
+                style={styles.statCard}
+                onMouseEnter={(e) => {
+                  e.target.style.borderColor = '#d4d4d4';
+                  e.target.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.borderColor = '#e5e5e5';
+                  e.target.style.transform = 'translateY(0)';
+                }}
+              >
+                <div style={styles.statCardHeader}>
+                  <div style={styles.statLabel}>In Progress</div>
+                  <div style={styles.statIcon}>
+                    <TaskIcon />
+                  </div>
+                </div>
+                <div style={styles.statValue}>{taskStats.inProgress}</div>
+                <div style={styles.statDescription}>Currently active</div>
+              </div>
+
+              <div 
+                style={styles.statCard}
+                onMouseEnter={(e) => {
+                  e.target.style.borderColor = '#d4d4d4';
+                  e.target.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.borderColor = '#e5e5e5';
+                  e.target.style.transform = 'translateY(0)';
+                }}
+              >
+                <div style={styles.statCardHeader}>
+                  <div style={styles.statLabel}>Completed</div>
+                  <div style={styles.statIcon}>
+                    <TaskIcon />
+                  </div>
+                </div>
+                <div style={styles.statValue}>{taskStats.completed}</div>
+                <div style={styles.statDescription}>
+                  {taskStats.total > 0 ? `${Math.round((taskStats.completed / taskStats.total) * 100)}% completion rate` : 'No tasks yet'}
                 </div>
               </div>
-              <div style={styles.statValue}>{taskStats.total}</div>
-              <div style={styles.statDescription}>Across all workspaces</div>
             </div>
+          )}
 
-            <div 
-              style={styles.statCard}
-              onMouseEnter={(e) => {
-                e.target.style.borderColor = '#d4d4d4';
-                e.target.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.borderColor = '#e5e5e5';
-                e.target.style.transform = 'translateY(0)';
-              }}
-            >
-              <div style={styles.statCardHeader}>
-                <div style={styles.statLabel}>To Do</div>
-                <div style={styles.statIcon}>
-                  <TaskIcon />
-                </div>
-              </div>
-              <div style={styles.statValue}>{taskStats.pending}</div>
-              <div style={styles.statDescription}>Pending tasks</div>
-            </div>
-
-            <div 
-              style={styles.statCard}
-              onMouseEnter={(e) => {
-                e.target.style.borderColor = '#d4d4d4';
-                e.target.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.borderColor = '#e5e5e5';
-                e.target.style.transform = 'translateY(0)';
-              }}
-            >
-              <div style={styles.statCardHeader}>
-                <div style={styles.statLabel}>In Progress</div>
-                <div style={styles.statIcon}>
-                  <TaskIcon />
-                </div>
-              </div>
-              <div style={styles.statValue}>{taskStats.inProgress}</div>
-              <div style={styles.statDescription}>Currently active</div>
-            </div>
-
-            <div 
-              style={styles.statCard}
-              onMouseEnter={(e) => {
-                e.target.style.borderColor = '#d4d4d4';
-                e.target.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.borderColor = '#e5e5e5';
-                e.target.style.transform = 'translateY(0)';
-              }}
-            >
-              <div style={styles.statCardHeader}>
-                <div style={styles.statLabel}>Completed</div>
-                <div style={styles.statIcon}>
-                  <TaskIcon />
-                </div>
-              </div>
-              <div style={styles.statValue}>{taskStats.completed}</div>
-              <div style={styles.statDescription}>
-                {taskStats.total > 0 ? `${Math.round((taskStats.completed / taskStats.total) * 100)}% completion rate` : 'No tasks yet'}
-              </div>
-            </div>
-          </div>
-
-          {/* Controls Section */}
+          {/* Controls Section - Hide MagicInput when in calendar view */}
           <div style={styles.controlsSection}>
             <div style={styles.controlsRow}>
               <div style={styles.searchInputWrapper}>
@@ -1235,33 +1261,44 @@ const TasksPage = () => {
                 >
                   <KanbanIcon /> Board
                 </button>
+                <button
+                  onClick={() => setViewMode('calendar')}
+                  style={{
+                    ...styles.viewButton,
+                    ...(viewMode === 'calendar' ? styles.viewButtonActive : {}),
+                  }}
+                >
+                  <CalendarViewIcon /> Calendar
+                </button>
               </div>
             </div>
 
-            <MagicInput onParse={handleParse} />
+            {viewMode !== 'calendar' && <MagicInput onParse={handleParse} />}
           </div>
 
-          {/* Tasks Header */}
-          <div style={styles.tasksHeader}>
-            <h2 style={styles.tasksTitle}>
-              {filteredTasks.length} {viewMode === 'kanban' ? 'Tasks Board' : 'Tasks'}
-            </h2>
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              style={styles.addTaskButton}
-              onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#262626';
-                e.target.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#0a0a0a';
-                e.target.style.transform = 'translateY(0)';
-              }}
-            >
-              <PlusIcon />
-              New Task
-            </button>
-          </div>
+          {/* Tasks Header - Only show when not in calendar view */}
+          {viewMode !== 'calendar' && (
+            <div style={styles.tasksHeader}>
+              <h2 style={styles.tasksTitle}>
+                {filteredTasks.length} {viewMode === 'kanban' ? 'Tasks Board' : 'Tasks'}
+              </h2>
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                style={styles.addTaskButton}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#262626';
+                  e.target.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = '#0a0a0a';
+                  e.target.style.transform = 'translateY(0)';
+                }}
+              >
+                <PlusIcon />
+                New Task
+              </button>
+            </div>
+          )}
           
           {/* Tasks Content */}
           {renderTasksContent()}

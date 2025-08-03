@@ -754,7 +754,7 @@ const DashboardPage = () => {
               }}
             >
               <CalendarIcon />
-              <span style={styles.navItemText}>Calendar</span>
+              <span style={styles.navItemText}>Meetings</span>
             </NavLink>
             <NavLink
               to="/settings"
