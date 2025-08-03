@@ -1,4 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { 
+  getTaskNotes, 
+  addNoteToTask, 
+  updateNoteInTask, 
+  deleteNoteFromTask,
+  getTaskHistory,
+  getTaskActivitySummary 
+} from '../../services/apiService';
 
 const formatDate = (dateString) => {
   if (!dateString) return 'No due date';
@@ -9,7 +17,150 @@ const formatDate = (dateString) => {
   });
 };
 
+const formatDateTime = (dateString) => {
+  if (!dateString) return '';
+  return new Date(dateString).toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
+
 const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => {
+  // Existing state
+  const [activeTab, setActiveTab] = useState('details');
+  
+  // Notes state
+  const [notes, setNotes] = useState([]);
+  const [notesLoading, setNotesLoading] = useState(false);
+  const [newNoteContent, setNewNoteContent] = useState('');
+  const [addingNote, setAddingNote] = useState(false);
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [editNoteContent, setEditNoteContent] = useState('');
+  
+  // Activity state
+  const [history, setHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [activitySummary, setActivitySummary] = useState(null);
+  
+  // Error state
+  const [error, setError] = useState('');
+
+  // Load data when modal opens or task changes
+  useEffect(() => {
+    if (task && task._id) {
+      loadNotes();
+      loadHistory();
+      loadActivitySummary();
+    }
+  }, [task]);
+
+  // Load notes
+  const loadNotes = async () => {
+    if (!task?._id) return;
+    
+    setNotesLoading(true);
+    try {
+      const response = await getTaskNotes(task._id, { limit: 20 });
+      setNotes(response.data.data.notes || []);
+    } catch (err) {
+      console.error('Error loading notes:', err);
+      setError('Failed to load notes');
+    } finally {
+      setNotesLoading(false);
+    }
+  };
+
+  // Load history
+  const loadHistory = async () => {
+    if (!task?._id) return;
+    
+    setHistoryLoading(true);
+    try {
+      const response = await getTaskHistory(task._id, { limit: 30 });
+      setHistory(response.data.data.history || []);
+    } catch (err) {
+      console.error('Error loading history:', err);
+      setError('Failed to load activity history');
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  // Load activity summary
+  const loadActivitySummary = async () => {
+    if (!task?._id) return;
+    
+    try {
+      const response = await getTaskActivitySummary(task._id);
+      setActivitySummary(response.data.data);
+    } catch (err) {
+      console.error('Error loading activity summary:', err);
+    }
+  };
+
+  // Add new note
+  const handleAddNote = async () => {
+    if (!newNoteContent.trim()) return;
+    
+    setAddingNote(true);
+    try {
+      await addNoteToTask(task._id, newNoteContent);
+      setNewNoteContent('');
+      await loadNotes(); // Refresh notes
+      await loadHistory(); // Refresh history since adding note creates history entry
+    } catch (err) {
+      console.error('Error adding note:', err);
+      setError('Failed to add note');
+    } finally {
+      setAddingNote(false);
+    }
+  };
+
+  // Edit note
+  const handleEditNote = async (noteId) => {
+    if (!editNoteContent.trim()) return;
+    
+    try {
+      await updateNoteInTask(task._id, noteId, editNoteContent);
+      setEditingNoteId(null);
+      setEditNoteContent('');
+      await loadNotes(); // Refresh notes
+      await loadHistory(); // Refresh history
+    } catch (err) {
+      console.error('Error updating note:', err);
+      setError('Failed to update note');
+    }
+  };
+
+  // Delete note
+  const handleDeleteNote = async (noteId) => {
+    if (!window.confirm('Are you sure you want to delete this note?')) return;
+    
+    try {
+      await deleteNoteFromTask(task._id, noteId);
+      await loadNotes(); // Refresh notes
+      await loadHistory(); // Refresh history
+    } catch (err) {
+      console.error('Error deleting note:', err);
+      setError('Failed to delete note');
+    }
+  };
+
+  // Start editing note
+  const startEditingNote = (note) => {
+    setEditingNoteId(note._id);
+    setEditNoteContent(note.content);
+  };
+
+  // Cancel editing
+  const cancelEditing = () => {
+    setEditingNoteId(null);
+    setEditNoteContent('');
+  };
+
   // Add CSS animations matching the design system
   useEffect(() => {
     const styleSheet = document.createElement("style");
@@ -38,6 +189,21 @@ const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => 
         to {
           opacity: 1;
           transform: translateY(0);
+        }
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
         }
       }
     `;
@@ -128,6 +294,47 @@ const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => 
     </svg>
   );
 
+  const MessageSquareIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const ClockIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+      <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const UserIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
+    </svg>
+  );
+
+  const PlusIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+
+  const SaveIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16L21 8V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <polyline points="17,21 17,13 7,13 7,21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <polyline points="7,3 7,8 15,8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const SpinnerIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="60 20" style={{ animation: 'spin 1s linear infinite' }}/>
+    </svg>
+  );
+
   const styles = {
     modalOverlay: {
       position: 'fixed',
@@ -150,12 +357,14 @@ const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => 
       borderRadius: '16px',
       boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
       width: '100%',
-      maxWidth: '800px',
+      maxWidth: '900px',
       maxHeight: '90vh',
-      overflow: 'auto',
+      overflow: 'hidden',
       animation: 'modalSlideIn 0.4s ease-out',
       border: '1px solid #e5e5e5',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", sans-serif',
+      display: 'flex',
+      flexDirection: 'column',
     },
     
     modalHeader: {
@@ -164,6 +373,7 @@ const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => 
       alignItems: 'flex-start',
       padding: '24px 32px',
       borderBottom: '1px solid #e5e5e5',
+      flexShrink: 0,
     },
     
     titleContainer: {
@@ -203,7 +413,39 @@ const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => 
       flexShrink: 0,
     },
     
+    tabContainer: {
+      display: 'flex',
+      borderBottom: '1px solid #e5e5e5',
+      backgroundColor: '#fafafa',
+      flexShrink: 0,
+    },
+    
+    tab: {
+      padding: '16px 24px',
+      backgroundColor: 'transparent',
+      border: 'none',
+      fontSize: '14px',
+      fontWeight: '500',
+      color: '#737373',
+      cursor: 'pointer',
+      transition: 'all 0.2s ease',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      position: 'relative',
+      flex: 1,
+      justifyContent: 'center',
+    },
+    
+    tabActive: {
+      color: '#0a0a0a',
+      backgroundColor: '#ffffff',
+      borderBottom: '2px solid #0a0a0a',
+    },
+    
     modalBody: {
+      flex: 1,
+      overflow: 'auto',
       padding: '32px',
     },
     
@@ -330,6 +572,200 @@ const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => 
       flexShrink: 0,
     },
     
+    // Notes styles
+    notesContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '20px',
+    },
+    
+    addNoteSection: {
+      backgroundColor: '#fafafa',
+      padding: '20px',
+      borderRadius: '12px',
+      border: '1px solid #e5e5e5',
+    },
+    
+    addNoteTextarea: {
+      width: '100%',
+      minHeight: '80px',
+      padding: '12px 16px',
+      border: '1px solid #d4d4d4',
+      borderRadius: '8px',
+      fontSize: '14px',
+      fontFamily: 'inherit',
+      resize: 'vertical',
+      outline: 'none',
+      transition: 'all 0.2s ease',
+      boxSizing: 'border-box',
+      marginBottom: '12px',
+    },
+    
+    addNoteActions: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      gap: '8px',
+    },
+    
+    notesList: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '12px',
+    },
+    
+    noteItem: {
+      backgroundColor: '#ffffff',
+      padding: '16px',
+      borderRadius: '8px',
+      border: '1px solid #e5e5e5',
+      transition: 'all 0.2s ease',
+      animation: 'slideIn 0.3s ease-out',
+    },
+    
+    noteHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: '8px',
+    },
+    
+    noteAuthor: {
+      fontSize: '12px',
+      fontWeight: '500',
+      color: '#737373',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '4px',
+    },
+    
+    noteActions: {
+      display: 'flex',
+      gap: '4px',
+    },
+    
+    noteActionButton: {
+      padding: '4px',
+      backgroundColor: 'transparent',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer',
+      color: '#737373',
+      transition: 'all 0.2s ease',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    
+    noteContent: {
+      fontSize: '14px',
+      lineHeight: '1.5',
+      color: '#0a0a0a',
+      whiteSpace: 'pre-wrap',
+      margin: '8px 0',
+    },
+    
+    noteTimestamp: {
+      fontSize: '11px',
+      color: '#a3a3a3',
+      marginTop: '8px',
+    },
+    
+    editNoteTextarea: {
+      width: '100%',
+      minHeight: '60px',
+      padding: '8px 12px',
+      border: '1px solid #d4d4d4',
+      borderRadius: '6px',
+      fontSize: '14px',
+      fontFamily: 'inherit',
+      resize: 'vertical',
+      outline: 'none',
+      boxSizing: 'border-box',
+      marginBottom: '8px',
+    },
+    
+    // Activity styles
+    activityContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '20px',
+    },
+    
+    activitySummarySection: {
+      backgroundColor: '#fafafa',
+      padding: '20px',
+      borderRadius: '12px',
+      border: '1px solid #e5e5e5',
+    },
+    
+    summaryGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+      gap: '16px',
+    },
+    
+    summaryItem: {
+      textAlign: 'center',
+    },
+    
+    summaryValue: {
+      fontSize: '24px',
+      fontWeight: '700',
+      color: '#0a0a0a',
+      display: 'block',
+    },
+    
+    summaryLabel: {
+      fontSize: '12px',
+      color: '#737373',
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em',
+      fontWeight: '500',
+      marginTop: '4px',
+    },
+    
+    historyList: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1px',
+      backgroundColor: '#e5e5e5',
+      borderRadius: '8px',
+      overflow: 'hidden',
+    },
+    
+    historyItem: {
+      backgroundColor: '#ffffff',
+      padding: '16px',
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: '12px',
+      transition: 'all 0.2s ease',
+    },
+    
+    historyIcon: {
+      color: '#737373',
+      marginTop: '2px',
+      flexShrink: 0,
+    },
+    
+    historyContent: {
+      flex: 1,
+    },
+    
+    historyDescription: {
+      fontSize: '14px',
+      color: '#0a0a0a',
+      margin: '0 0 4px 0',
+    },
+    
+    historyMeta: {
+      fontSize: '12px',
+      color: '#737373',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+    },
+    
     emptyState: {
       textAlign: 'center',
       padding: '40px 20px',
@@ -351,6 +787,17 @@ const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => 
       margin: 0,
     },
     
+    errorMessage: {
+      backgroundColor: '#fef2f2',
+      color: '#dc2626',
+      padding: '12px 16px',
+      borderRadius: '8px',
+      border: '1px solid #fecaca',
+      fontSize: '14px',
+      fontWeight: '500',
+      marginBottom: '16px',
+    },
+    
     modalFooter: {
       display: 'flex',
       justifyContent: 'space-between',
@@ -358,6 +805,7 @@ const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => 
       padding: '20px 32px',
       borderTop: '1px solid #e5e5e5',
       backgroundColor: '#fafafa',
+      flexShrink: 0,
     },
     
     footerActions: {
@@ -375,6 +823,9 @@ const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => 
       fontSize: '14px',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
     },
     
     buttonPrimary: {
@@ -405,6 +856,20 @@ const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => 
       display: 'flex',
       alignItems: 'center',
       gap: '6px',
+    },
+    
+    buttonSmall: {
+      padding: '6px 12px',
+      fontSize: '12px',
+      borderRadius: '6px',
+    },
+    
+    loadingSpinner: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '40px',
+      color: '#737373',
     },
   };
 
@@ -437,7 +902,450 @@ const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => 
     return <FileTextIcon />;
   };
 
+  const getHistoryIcon = (action) => {
+    switch (action) {
+      case 'created':
+        return <PlusIcon />;
+      case 'completed':
+        return <ActivityIcon />;
+      case 'status_changed':
+        return <ActivityIcon />;
+      case 'priority_changed':
+        return <FlagIcon />;
+      case 'due_date_changed':
+        return <CalendarIcon />;
+      case 'note_added':
+      case 'note_updated':
+      case 'note_deleted':
+        return <MessageSquareIcon />;
+      case 'attachment_added':
+      case 'attachment_removed':
+        return <PaperclipIcon />;
+      default:
+        return <ActivityIcon />;
+    }
+  };
+
   if (!task) return null;
+
+  const renderDetailsTab = () => (
+    <div>
+      {/* Task Details Section */}
+      <div style={styles.detailSection}>
+        <h3 style={styles.sectionTitle}>
+          <ActivityIcon />
+          Task Details
+        </h3>
+        <div style={styles.detailGrid}>
+          <div 
+            style={styles.detailItem}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#f5f5f5';
+              e.target.style.borderColor = '#d4d4d4';
+              e.target.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#fafafa';
+              e.target.style.borderColor = '#e5e5e5';
+              e.target.style.transform = 'translateY(0)';
+            }}
+          >
+            <span style={styles.detailLabel}>
+              <ActivityIcon />
+              Status
+            </span>
+            <span 
+              style={{
+                ...styles.statusBadge,
+                backgroundColor: getStatusColor(task.status)
+              }}
+            >
+              {task.status}
+            </span>
+          </div>
+          
+          <div 
+            style={styles.detailItem}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#f5f5f5';
+              e.target.style.borderColor = '#d4d4d4';
+              e.target.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#fafafa';
+              e.target.style.borderColor = '#e5e5e5';
+              e.target.style.transform = 'translateY(0)';
+            }}
+          >
+            <span style={styles.detailLabel}>
+              <FlagIcon />
+              Priority
+            </span>
+            <span 
+              style={{
+                ...styles.priorityBadge,
+                backgroundColor: getPriorityColor(task.priority)
+              }}
+            >
+              {task.priority}
+            </span>
+          </div>
+          
+          <div 
+            style={styles.detailItem}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#f5f5f5';
+              e.target.style.borderColor = '#d4d4d4';
+              e.target.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#fafafa';
+              e.target.style.borderColor = '#e5e5e5';
+              e.target.style.transform = 'translateY(0)';
+            }}
+          >
+            <span style={styles.detailLabel}>
+              <CalendarIcon />
+              Due Date
+            </span>
+            <span style={styles.detailValue}>{formatDate(task.dueDate)}</span>
+          </div>
+          
+          <div 
+            style={styles.detailItem}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#f5f5f5';
+              e.target.style.borderColor = '#d4d4d4';
+              e.target.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#fafafa';
+              e.target.style.borderColor = '#e5e5e5';
+              e.target.style.transform = 'translateY(0)';
+            }}
+          >
+            <span style={styles.detailLabel}>
+              <FolderIcon />
+              Workspace
+            </span>
+            <span style={styles.detailValue}>{workspaceName}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Description Section */}
+      {task.description && (
+        <div style={styles.detailSection}>
+          <h3 style={styles.sectionTitle}>
+            <FileTextIcon />
+            Description
+          </h3>
+          <p style={styles.description}>{task.description}</p>
+        </div>
+      )}
+
+      {/* Attachments Section */}
+      <div style={styles.detailSection}>
+        <h3 style={styles.sectionTitle}>
+          <PaperclipIcon />
+          Attachments ({task.attachments ? task.attachments.length : 0})
+        </h3>
+        <div style={styles.attachmentsList}>
+          {task.attachments && task.attachments.length > 0 ? (
+            task.attachments.map((att, index) => (
+              <div 
+                key={index} 
+                style={styles.attachmentItem}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#f5f5f5';
+                  e.target.style.borderColor = '#d4d4d4';
+                  e.target.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = '#fafafa';
+                  e.target.style.borderColor = '#e5e5e5';
+                  e.target.style.transform = 'translateY(0)';
+                }}
+              >
+                <div style={styles.attachmentIcon}>
+                  {getFileIcon(att.fileName)}
+                </div>
+                <a
+                  href={att.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={styles.attachmentLink}
+                  onMouseEnter={(e) => {
+                    e.target.style.color = '#737373';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.color = '#0a0a0a';
+                  }}
+                >
+                  {att.fileName}
+                </a>
+                <div style={styles.downloadIcon}>
+                  <DownloadIcon />
+                </div>
+              </div>
+            ))
+          ) : (
+            <div style={styles.emptyState}>
+              <div style={styles.emptyIcon}>
+                <PaperclipIcon />
+              </div>
+              <p style={styles.emptyText}>No files attached to this task</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderNotesTab = () => (
+    <div style={styles.notesContainer}>
+      {error && (
+        <div style={styles.errorMessage}>
+          {error}
+        </div>
+      )}
+
+      {/* Add New Note Section */}
+      <div style={styles.addNoteSection}>
+        <h3 style={styles.sectionTitle}>
+          <PlusIcon />
+          Add Note
+        </h3>
+        <textarea
+          value={newNoteContent}
+          onChange={(e) => setNewNoteContent(e.target.value)}
+          placeholder="Add a note to this task..."
+          style={styles.addNoteTextarea}
+          onFocus={(e) => {
+            e.target.style.borderColor = '#0a0a0a';
+            e.target.style.boxShadow = '0 0 0 3px rgba(10, 10, 10, 0.1)';
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = '#d4d4d4';
+            e.target.style.boxShadow = 'none';
+          }}
+        />
+        <div style={styles.addNoteActions}>
+          <button
+            type="button"
+            onClick={handleAddNote}
+            disabled={!newNoteContent.trim() || addingNote}
+            style={{
+              ...styles.buttonPrimary,
+              ...styles.buttonSmall,
+              ...((!newNoteContent.trim() || addingNote) ? { opacity: 0.5, cursor: 'not-allowed' } : {})
+            }}
+          >
+            {addingNote ? <SpinnerIcon /> : <PlusIcon />}
+            {addingNote ? 'Adding...' : 'Add Note'}
+          </button>
+        </div>
+      </div>
+
+      {/* Notes List */}
+      <div style={styles.detailSection}>
+        <h3 style={styles.sectionTitle}>
+          <MessageSquareIcon />
+          Notes ({notes.length})
+        </h3>
+        
+        {notesLoading ? (
+          <div style={styles.loadingSpinner}>
+            <SpinnerIcon />
+            <span style={{ marginLeft: '8px' }}>Loading notes...</span>
+          </div>
+        ) : notes.length > 0 ? (
+          <div style={styles.notesList}>
+            {notes.map((note) => (
+              <div key={note._id} style={styles.noteItem}>
+                <div style={styles.noteHeader}>
+                  <div style={styles.noteAuthor}>
+                    <UserIcon />
+                    {note.author?.name || 'Unknown User'}
+                    {note.isEdited && <span style={{ color: '#a3a3a3', fontSize: '11px' }}>(edited)</span>}
+                  </div>
+                  <div style={styles.noteActions}>
+                    <button
+                      style={styles.noteActionButton}
+                      onClick={() => startEditingNote(note)}
+                      onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = '#f5f5f5';
+                        e.target.style.color = '#0a0a0a';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = 'transparent';
+                        e.target.style.color = '#737373';
+                      }}
+                    >
+                      <EditIcon />
+                    </button>
+                    <button
+                      style={styles.noteActionButton}
+                      onClick={() => handleDeleteNote(note._id)}
+                      onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = '#fee2e2';
+                        e.target.style.color = '#dc2626';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = 'transparent';
+                        e.target.style.color = '#737373';
+                      }}
+                    >
+                      <TrashIcon />
+                    </button>
+                  </div>
+                </div>
+                
+                {editingNoteId === note._id ? (
+                  <div>
+                    <textarea
+                      value={editNoteContent}
+                      onChange={(e) => setEditNoteContent(e.target.value)}
+                      style={styles.editNoteTextarea}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = '#0a0a0a';
+                        e.target.style.boxShadow = '0 0 0 2px rgba(10, 10, 10, 0.1)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = '#d4d4d4';
+                        e.target.style.boxShadow = 'none';
+                      }}
+                    />
+                    <div style={styles.addNoteActions}>
+                      <button
+                        type="button"
+                        onClick={cancelEditing}
+                        style={{
+                          ...styles.buttonSecondary,
+                          ...styles.buttonSmall,
+                        }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleEditNote(note._id)}
+                        disabled={!editNoteContent.trim()}
+                        style={{
+                          ...styles.buttonPrimary,
+                          ...styles.buttonSmall,
+                          ...(!editNoteContent.trim() ? { opacity: 0.5, cursor: 'not-allowed' } : {})
+                        }}
+                      >
+                        <SaveIcon />
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={styles.noteContent}>{note.content}</div>
+                )}
+                
+                <div style={styles.noteTimestamp}>
+                  <ClockIcon style={{ width: '12px', height: '12px', marginRight: '4px' }} />
+                  {formatDateTime(note.createdAt)}
+                  {note.isEdited && ` • Updated ${formatDateTime(note.updatedAt)}`}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={styles.emptyState}>
+            <div style={styles.emptyIcon}>
+              <MessageSquareIcon />
+            </div>
+            <p style={styles.emptyText}>No notes added to this task yet</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderActivityTab = () => (
+    <div style={styles.activityContainer}>
+      {error && (
+        <div style={styles.errorMessage}>
+          {error}
+        </div>
+      )}
+
+      {/* Activity Summary */}
+      {activitySummary && (
+        <div style={styles.activitySummarySection}>
+          <h3 style={styles.sectionTitle}>
+            <ActivityIcon />
+            Activity Summary
+          </h3>
+          <div style={styles.summaryGrid}>
+            <div style={styles.summaryItem}>
+              <span style={styles.summaryValue}>{activitySummary.stats?.totalNotes || 0}</span>
+              <span style={styles.summaryLabel}>Notes</span>
+            </div>
+            <div style={styles.summaryItem}>
+              <span style={styles.summaryValue}>{activitySummary.stats?.totalHistoryEntries || 0}</span>
+              <span style={styles.summaryLabel}>Activities</span>
+            </div>
+            <div style={styles.summaryItem}>
+              <span style={styles.summaryValue}>
+                {activitySummary.stats?.lastActivity 
+                  ? formatDateTime(activitySummary.stats.lastActivity).split(',')[0]
+                  : 'None'
+                }
+              </span>
+              <span style={styles.summaryLabel}>Last Activity</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* History List */}
+      <div style={styles.detailSection}>
+        <h3 style={styles.sectionTitle}>
+          <ClockIcon />
+          Activity History
+        </h3>
+        
+        {historyLoading ? (
+          <div style={styles.loadingSpinner}>
+            <SpinnerIcon />
+            <span style={{ marginLeft: '8px' }}>Loading activity...</span>
+          </div>
+        ) : history.length > 0 ? (
+          <div style={styles.historyList}>
+            {history.map((entry, index) => (
+              <div key={index} style={styles.historyItem}>
+                <div style={styles.historyIcon}>
+                  {getHistoryIcon(entry.action)}
+                </div>
+                <div style={styles.historyContent}>
+                  <p style={styles.historyDescription}>{entry.description}</p>
+                  <div style={styles.historyMeta}>
+                    <UserIcon />
+                    <span>{entry.user?.name || 'Unknown User'}</span>
+                    <span>•</span>
+                    <ClockIcon />
+                    <span>{formatDateTime(entry.timestamp)}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={styles.emptyState}>
+            <div style={styles.emptyIcon}>
+              <ClockIcon />
+            </div>
+            <p style={styles.emptyText}>No activity recorded for this task yet</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div style={styles.modalOverlay} onClick={onClose}>
@@ -467,176 +1375,44 @@ const TaskDetailModal = ({ task, workspaceName, onClose, onEdit, onDelete }) => 
           </button>
         </div>
 
+        {/* Tab Navigation */}
+        <div style={styles.tabContainer}>
+          <button
+            style={{
+              ...styles.tab,
+              ...(activeTab === 'details' ? styles.tabActive : {})
+            }}
+            onClick={() => setActiveTab('details')}
+          >
+            <FileTextIcon />
+            Details
+          </button>
+          <button
+            style={{
+              ...styles.tab,
+              ...(activeTab === 'notes' ? styles.tabActive : {})
+            }}
+            onClick={() => setActiveTab('notes')}
+          >
+            <MessageSquareIcon />
+            Notes ({notes.length})
+          </button>
+          <button
+            style={{
+              ...styles.tab,
+              ...(activeTab === 'activity' ? styles.tabActive : {})
+            }}
+            onClick={() => setActiveTab('activity')}
+          >
+            <ClockIcon />
+            Activity ({history.length})
+          </button>
+        </div>
+
         <div style={styles.modalBody}>
-          {/* Task Details Section */}
-          <div style={styles.detailSection}>
-            <h3 style={styles.sectionTitle}>
-              <ActivityIcon />
-              Task Details
-            </h3>
-            <div style={styles.detailGrid}>
-              <div 
-                style={styles.detailItem}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#f5f5f5';
-                  e.target.style.borderColor = '#d4d4d4';
-                  e.target.style.transform = 'translateY(-1px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = '#fafafa';
-                  e.target.style.borderColor = '#e5e5e5';
-                  e.target.style.transform = 'translateY(0)';
-                }}
-              >
-                <span style={styles.detailLabel}>
-                  <ActivityIcon />
-                  Status
-                </span>
-                <span 
-                  style={{
-                    ...styles.statusBadge,
-                    backgroundColor: getStatusColor(task.status)
-                  }}
-                >
-                  {task.status}
-                </span>
-              </div>
-              
-              <div 
-                style={styles.detailItem}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#f5f5f5';
-                  e.target.style.borderColor = '#d4d4d4';
-                  e.target.style.transform = 'translateY(-1px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = '#fafafa';
-                  e.target.style.borderColor = '#e5e5e5';
-                  e.target.style.transform = 'translateY(0)';
-                }}
-              >
-                <span style={styles.detailLabel}>
-                  <FlagIcon />
-                  Priority
-                </span>
-                <span 
-                  style={{
-                    ...styles.priorityBadge,
-                    backgroundColor: getPriorityColor(task.priority)
-                  }}
-                >
-                  {task.priority}
-                </span>
-              </div>
-              
-              <div 
-                style={styles.detailItem}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#f5f5f5';
-                  e.target.style.borderColor = '#d4d4d4';
-                  e.target.style.transform = 'translateY(-1px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = '#fafafa';
-                  e.target.style.borderColor = '#e5e5e5';
-                  e.target.style.transform = 'translateY(0)';
-                }}
-              >
-                <span style={styles.detailLabel}>
-                  <CalendarIcon />
-                  Due Date
-                </span>
-                <span style={styles.detailValue}>{formatDate(task.dueDate)}</span>
-              </div>
-              
-              <div 
-                style={styles.detailItem}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#f5f5f5';
-                  e.target.style.borderColor = '#d4d4d4';
-                  e.target.style.transform = 'translateY(-1px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = '#fafafa';
-                  e.target.style.borderColor = '#e5e5e5';
-                  e.target.style.transform = 'translateY(0)';
-                }}
-              >
-                <span style={styles.detailLabel}>
-                  <FolderIcon />
-                  Workspace
-                </span>
-                <span style={styles.detailValue}>{workspaceName}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Description Section */}
-          {task.description && (
-            <div style={styles.detailSection}>
-              <h3 style={styles.sectionTitle}>
-                <FileTextIcon />
-                Description
-              </h3>
-              <p style={styles.description}>{task.description}</p>
-            </div>
-          )}
-
-          {/* Attachments Section */}
-          <div style={styles.detailSection}>
-            <h3 style={styles.sectionTitle}>
-              <PaperclipIcon />
-              Attachments ({task.attachments ? task.attachments.length : 0})
-            </h3>
-            <div style={styles.attachmentsList}>
-              {task.attachments && task.attachments.length > 0 ? (
-                task.attachments.map((att, index) => (
-                  <div 
-                    key={index} 
-                    style={styles.attachmentItem}
-                    onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = '#f5f5f5';
-                      e.target.style.borderColor = '#d4d4d4';
-                      e.target.style.transform = 'translateY(-1px)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = '#fafafa';
-                      e.target.style.borderColor = '#e5e5e5';
-                      e.target.style.transform = 'translateY(0)';
-                    }}
-                  >
-                    <div style={styles.attachmentIcon}>
-                      {getFileIcon(att.fileName)}
-                    </div>
-                    <a
-                      href={att.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={styles.attachmentLink}
-                      onMouseEnter={(e) => {
-                        e.target.style.color = '#737373';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.color = '#0a0a0a';
-                      }}
-                    >
-                      {att.fileName}
-                    </a>
-                    <div style={styles.downloadIcon}>
-                      <DownloadIcon />
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div style={styles.emptyState}>
-                  <div style={styles.emptyIcon}>
-                    <PaperclipIcon />
-                  </div>
-                  <p style={styles.emptyText}>No files attached to this task</p>
-                </div>
-              )}
-            </div>
-          </div>
+          {activeTab === 'details' && renderDetailsTab()}
+          {activeTab === 'notes' && renderNotesTab()}
+          {activeTab === 'activity' && renderActivityTab()}
         </div>
 
         <div style={styles.modalFooter}>
